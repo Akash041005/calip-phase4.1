@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Navbar from "../../../components/dashboard/Navbar";
 import AuctionFilterTabs from "../../../components/auction/AuctionFilterTabs";
 import AuctionCard from "../../../components/auction/AuctionCard";
-import { getUpcomingPresales } from "../../../lib/presalesApi";
+import { getUpcomingPresales, isPresaleEnded } from "../../../lib/presalesApi";
 
 export default function AuctionUpcomingPage() {
   const [auctions, setAuctions] = useState([]);
@@ -15,7 +15,10 @@ export default function AuctionUpcomingPage() {
     let cancelled = false;
     getUpcomingPresales()
       .then((res) => {
-        if (!cancelled) setAuctions(res.data ?? res);
+        if (!cancelled) {
+          const rows = res.data ?? res;
+          setAuctions(Array.isArray(rows) ? rows.filter((item) => !isPresaleEnded(item)) : []);
+        }
       })
       .catch((err) => {
         if (!cancelled) setError(err.message || "Failed to load auctions");

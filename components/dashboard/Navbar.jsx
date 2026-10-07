@@ -13,7 +13,7 @@ import { stopScroll, startScroll } from "../motion/SmoothScrollProvider";
 import { useTheme } from "../auth/ThemeProvider";
 
 const navLinks = [
-  { label: "Dashboard", href: "/", key: "dashboard" },
+  { label: "Dashboard", href: "/dashboard", key: "dashboard" },
   { label: "Marketplace", href: "/marketplace", key: "marketplace" },
   { label: "Auction", href: "/auction/live", key: "auction" },
   { label: "Founders", href: "/founders", key: "founders" },
@@ -30,7 +30,7 @@ function resolveActivePage(pathname, propActive) {
   if (propActive) {
     return propActive;
   }
-  if (!pathname || pathname === "/") {
+  if (!pathname || pathname === "/" || pathname.startsWith("/dashboard")) {
     return "dashboard";
   }
   if (pathname.startsWith("/marketplace")) return "marketplace";
@@ -128,7 +128,7 @@ export default function Navbar({ activePage: propActivePage }) {
   return (
     <header className={`sticky top-0 z-40 w-full border-b border-[#e5e7eb] bg-[#fafaf7] motion-safe:transition-transform motion-safe:duration-300 dark:border-[#2a2e3e] dark:bg-[#12141c] ${navHidden ? "-translate-y-full" : "translate-y-0"}`}>
       <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-[16px] sm:px-[24px] lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-0 lg:px-[40px]">
-        <Link href="/" aria-label="Calip home">
+        <Link href="/dashboard" aria-label="Calip dashboard">
           <Image
             src="/caliplogo.png"
             alt="Calip"

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const platformLinks = [
-  { label: "Home", href: "/" },
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Overview", href: "/overview" },
   { label: "Auction", href: "/auction/live" },
   { label: "Companies", href: "/companies" },

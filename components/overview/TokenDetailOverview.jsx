@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../../lib/usersApi";
 import { getTokens, getTokenOHLC, getTokenSupply, getTokenTrades } from "../../lib/tradingApi";
+import TokenTradePanel from "../marketplace/TokenTradePanel";
 
 const DONUT_PALETTE = ["#0284c7", "#e67e22", "#d4af37", "#9b5de5", "#7c6cf0", "#fbbf24"];
 const DONUT_CIRCUMFERENCE = 402;
@@ -73,6 +74,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
 
   // Watchlist Integration (Real Backend)
   const targetId = startupData?._id || startupData?.id || tokenId;
+  const startupId = startupData?._id || liveToken?.startupId || null;
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [watchlistStatus, setWatchlistStatus] = useState("idle"); // "idle" | "adding" | "added" | "removing" | "error"
   const [watchlistError, setWatchlistError] = useState("");
@@ -148,7 +150,6 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
   const [hoveredCandle, setHoveredCandle] = useState(null);
   const [cursorPos, setCursorPos] = useState(null); // { x, y, price }
   const [hoveredDonutSeg, setHoveredDonutSeg] = useState(null);
-  const [payAmount, setPayAmount] = useState(100);
 
   const canvasRef = useRef(null);
   const chartContainerRef = useRef(null);
@@ -498,9 +499,6 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
     setHoveredCandle(null);
   };
 
-  const virtualPrice = 1.25;
-  const receiveAmount = (payAmount * virtualPrice) / (livePrice || 0.00143);
-
   // Active stats for header (either hovered candle or latest candle)
   const displayCandle = hoveredCandle || candles[candles.length - 1];
   const deltaPct = displayCandle
@@ -639,7 +637,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
           This token isn&apos;t on the backend yet — showing startup info only. Charts, trades and allocation will appear once it&apos;s listed via <span className="font-mono">GET /tokens</span>.
         </p>
       )}
-      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_340px] gap-4 items-start">
+      <div className="grid min-w-0 grid-cols-1 gap-4 items-start xl:grid-cols-[260px_minmax(0,1fr)_320px]">
         {/* COLUMN 1: TRADES FEED */}
         <aside className="hidden lg:flex flex-col rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-4 shadow-xl">
           <h3 className="text-[14px] font-bold text-white mb-2">Trades</h3>
@@ -1017,66 +1015,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
             </div>
           </div>
 
-          {/* 2. Swap Trade Box */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-4 shadow-xl space-y-3">
-            <div className="rounded-lg bg-[#121927] border border-[#1a2436] p-3 space-y-1.5">
-              <div className="flex items-center justify-between text-[11px] text-[#5e6f85] font-semibold">
-                <span>Pay Total</span>
-                <div className="flex gap-1">
-                  {[25, 50, 75, 100].map((pct) => (
-                    <button
-                      key={pct}
-                      onClick={() => setPayAmount((500 * pct) / 100)}
-                      className="px-2 py-0.5 rounded bg-[#162132] border border-[#22334a] text-neutral-300 hover:text-[#7c6cf0] hover:border-[#7c6cf0]/40 text-[10.5px] font-mono transition"
-                    >
-                      {pct === 100 ? "Max" : `${pct}%`}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <input
-                  type="number"
-                  value={payAmount}
-                  onChange={(e) => setPayAmount(parseFloat(e.target.value) || 0)}
-                  className="bg-transparent border-none outline-none font-mono text-[20px] font-bold text-white w-full"
-                />
-                <span className="px-2.5 py-1 rounded-full bg-[#1c2636] border border-[#223249] text-[12px] font-bold text-white whitespace-nowrap">
-                  🌱 VIRTUAL ▾
-                </span>
-              </div>
-              <div className="text-[11px] font-mono text-neutral-500">${(payAmount * virtualPrice).toFixed(2)}</div>
-            </div>
-
-            <div className="flex justify-center -my-1">
-              <div className="w-7 h-7 rounded-full bg-[#182333] border border-[#6366F1]/30 flex items-center justify-center text-[#6366F1] shadow-[0_0_8px_rgba(99,102,241,0.2)]">
-                <ArrowDown className="w-3.5 h-3.5" />
-              </div>
-            </div>
-
-            <div className="rounded-lg bg-[#121927] border border-[#1a2436] p-3 space-y-1.5">
-              <span className="text-[11px] text-[#5e6f85] font-semibold">Guaranteed Receive Amount</span>
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[19px] font-bold text-white">{receiveAmount.toFixed(2)}</span>
-                <span className="px-2.5 py-1 rounded-full bg-[#1c2636] border border-[#223249] text-[12px] font-bold text-white whitespace-nowrap">
-                  ▦ {token.symbol}
-                </span>
-              </div>
-              <div className="text-[11px] font-mono text-neutral-500">${(payAmount * virtualPrice).toFixed(2)}</div>
-            </div>
-
-            <div className="flex justify-between text-[11px] text-neutral-500">
-              <span>Slippage: <strong className="text-neutral-300">3%</strong></span>
-              <span>Price Impact: <strong className="text-neutral-300">--</strong></span>
-            </div>
-
-            <button
-              onClick={() => alert(`⚡ Order Placed! Swapped for ${token.symbol}`)}
-              className="w-full py-3 rounded-xl bg-[#6366F1] text-white font-extrabold text-[14px] hover:shadow-[0_0_20px_rgba(99,102,241,0.45)] transition active:scale-[0.99]"
-            >
-              Buy ${token.symbol}
-            </button>
-          </div>
+          <TokenTradePanel token={token} startupId={startupId} />
 
           {/* 3. Holders Card */}
           <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-5 shadow-xl">

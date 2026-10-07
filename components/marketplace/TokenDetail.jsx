@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Users, Activity, ShieldAlert } from "lucide-react";
 import TokenPerformanceChart from "./TokenPerformanceChart";
 import WatchlistButton from "./WatchlistButton";
 import FadeUp from "../motion/FadeUp";
+import TokenTradePanel from "./TokenTradePanel";
 
 function timeAgo(iso) {
   const hours = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 3600000));
@@ -14,10 +14,8 @@ function timeAgo(iso) {
 }
 
 export default function TokenDetail({ token, watched, onToggleWatch }) {
-  const [participateNote, setParticipateNote] = useState(false);
-
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto min-w-0 max-w-5xl overflow-x-hidden px-4 py-8 sm:px-6 lg:px-8">
       <FadeUp>
         <Link href="/marketplace" className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-neutral-400 transition hover:text-white">
           <ArrowLeft className="h-4 w-4" /> Back to Marketplace
@@ -26,8 +24,8 @@ export default function TokenDetail({ token, watched, onToggleWatch }) {
 
       {/* Identity */}
       <FadeUp delay={0.05}>
-        <div className="mt-4 flex flex-col gap-4 rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
+        <div className="mt-4 flex min-w-0 flex-col gap-4 rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#1a2538] text-[19px] font-extrabold text-[#818cf8]">
               {token.symbol.slice(0, 2)}
             </div>
@@ -51,16 +49,22 @@ export default function TokenDetail({ token, watched, onToggleWatch }) {
       <FadeUp delay={0.1}>
         <div className="mt-6 rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6">
           <h2 className="text-[15px] font-bold text-white">Performance</h2>
-          <div className="mt-3">
+          <div className="mt-3 min-w-0 overflow-hidden">
             <TokenPerformanceChart token={token} />
           </div>
         </div>
       </FadeUp>
 
+      <FadeUp delay={0.11}>
+        <div className="mt-6 min-w-0">
+          <TokenTradePanel token={token} startupId={token.startupId} />
+        </div>
+      </FadeUp>
+
       {/* About + founder + metrics */}
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="mt-6 grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
         <FadeUp delay={0.12} className="lg:col-span-2">
-          <div className="h-full rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6">
+          <div className="h-full min-w-0 overflow-hidden rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6">
             <h2 className="text-[15px] font-bold text-white">About the Startup</h2>
             <p className="mt-2 text-[13.5px] leading-relaxed text-neutral-300">{token.about}</p>
             <div className="mt-5 border-t border-white/5 pt-4">
@@ -72,7 +76,7 @@ export default function TokenDetail({ token, watched, onToggleWatch }) {
           </div>
         </FadeUp>
         <FadeUp delay={0.16}>
-          <div className="flex h-full flex-col gap-3 rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6">
+          <div className="flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6">
             <h2 className="text-[15px] font-bold text-white">Startup Metrics</h2>
             {[
               { icon: Users, label: "Holders", value: token.metrics.holders.toLocaleString("en-IN") },
@@ -95,23 +99,6 @@ export default function TokenDetail({ token, watched, onToggleWatch }) {
         </FadeUp>
       </div>
 
-      {/* Participate placeholder */}
-      <FadeUp delay={0.2}>
-        <div className="mt-6 rounded-2xl border border-[#6366f1]/30 bg-[#6366f1]/5 p-6 text-center">
-          <button
-            type="button"
-            onClick={() => setParticipateNote((v) => !v)}
-            className="inline-flex h-[46px] items-center justify-center rounded-xl bg-[#6366F1] px-8 text-[14px] font-bold text-white transition hover:bg-[#5558e3]"
-          >
-            Invest / Participate
-          </button>
-          <p className="mt-2 text-[12px] text-neutral-400">
-            {participateNote
-              ? "Participation opens soon — this button is a design placeholder."
-              : "Participation opens soon."}
-          </p>
-        </div>
-      </FadeUp>
     </div>
   );
 }

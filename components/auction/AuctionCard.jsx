@@ -24,7 +24,14 @@ function formatINR(value) {
   return `₹${Number(value).toLocaleString("en-IN")}`;
 }
 
-function mapStatus(raw) {
+function mapStatus(item) {
+  const raw = item.status;
+  const now = Date.now();
+  const startDate = item.startDate ? new Date(item.startDate).getTime() : null;
+  const endDate = item.endDate ? new Date(item.endDate).getTime() : null;
+
+  if ((raw === "completed" || raw === "cancelled") || (Number.isFinite(endDate) && endDate < now)) return "closed";
+  if (raw === "active" && Number.isFinite(startDate) && startDate > now) return "upcoming";
   if (raw === "completed") return "closed";
   if (raw === "active") return "live";
   return raw || "live";
@@ -68,7 +75,7 @@ export default function AuctionCard({ item }) {
   const logoLetter = companyName.charAt(0).toUpperCase();
   const sector = item.startupId?.industrySector || item.startupId?.category || "Tech";
   const description = item.description || "";
-  const status = mapStatus(item.status);
+  const status = mapStatus(item);
   const currentBid = formatINR(item.tokenPrice);
   const targetAmount = formatINR((item.totalTokens || 0) * (item.tokenPrice || 0));
   const avgBid = formatINR(item.tokenPrice);
@@ -85,6 +92,20 @@ export default function AuctionCard({ item }) {
   const handlePlaceBid = async (e) => {
     e.preventDefault();
     if (!bidAmount || !tokenAmount) return;
+    const amount = Number(bidAmount);
+    const tokens = Number(tokenAmount);
+    const minInvestment = Number(item.minInvestment) || 0;
+    const maxInvestment = Number(item.maxInvestment) || 0;
+    if (!Number.isFinite(amount) || amount <= 0 || !Number.isFinite(tokens) || tokens <= 0) {
+      setErrorMsg("Enter a valid positive bid amount and token quantity.");
+      return;
+    }
+    if (amount < minInvestment || (maxInvestment > 0 && amount > maxInvestment)) {
+      setErrorMsg(
+        `Bid amount must be between ${formatINR(minInvestment)} and ${maxInvestment > 0 ? formatINR(maxInvestment) : "no maximum"}.`
+      );
+      return;
+    }
     setSubmitting(true);
     setErrorMsg("");
     setSuccessMsg("");
@@ -262,12 +283,21 @@ export default function AuctionCard({ item }) {
               <input
                 type="number"
                 required
-                min="1"
+                min={Math.max(1, Number(item.minInvestment) || 1)}
+                max={Number(item.maxInvestment) > 0 ? Number(item.maxInvestment) : undefined}
                 value={bidAmount}
                 onChange={(e) => setBidAmount(e.target.value)}
                 placeholder="e.g. 50000"
                 className="mt-1 h-[40px] w-full rounded-lg border border-[#e5e7eb] px-3 text-[14px] text-[#1a1a2e] outline-none focus:border-[#6366f1] dark:border-[#2a2e3e] dark:bg-[#12151f] dark:text-white"
               />
+              {(Number(item.minInvestment) > 0 || Number(item.maxInvestment) > 0) && (
+                <p className="mt-1 text-[11px] text-[#6b7280] dark:text-[#8b93a7]">
+                  {Number(item.minInvestment) > 0 ? `Minimum ${formatINR(item.minInvestment)}` : ""}
+                  {Number(item.maxInvestment) > 0
+                    ? `${Number(item.minInvestment) > 0 ? " · " : ""}Maximum ${formatINR(item.maxInvestment)}`
+                    : ""}
+                </p>
+              )}
             </div>
 
             <div>

@@ -1,17 +1,27 @@
 "use client";
 
-import Navbar from "../components/dashboard/Navbar";
-import TopTraderTicker from "../components/dashboard/TopTraderTicker";
-import MarketTerminal from "../components/market/MarketTerminal";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import LandingPage from "../components/landing/LandingPage";
+import { useAuth } from "../components/auth/AuthProvider";
 
 export default function Home() {
-  return (
-    <div className="min-h-screen bg-[#070a0f] text-[#f8fafc]">
-      <Navbar />
-      <TopTraderTicker />
-      <main className="pb-12">
-        <MarketTerminal />
+  const router = useRouter();
+  const { isReady, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isReady && isAuthenticated) router.replace("/dashboard");
+  }, [isReady, isAuthenticated, router]);
+
+  if (isReady && isAuthenticated) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#070a0f] text-white" aria-live="polite">
+        <Loader2 className="h-5 w-5 animate-spin text-indigo-400" />
+        <span className="sr-only">Opening your Calip workspace</span>
       </main>
-    </div>
-  );
+    );
+  }
+
+  return <LandingPage />;
 }

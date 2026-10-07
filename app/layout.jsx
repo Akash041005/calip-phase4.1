@@ -1,10 +1,11 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "../components/landing/landing.css";
 import AuthProvider from "../components/auth/AuthProvider";
 import ThemeProvider from "../components/auth/ThemeProvider";
 import SmoothScrollProvider from "../components/motion/SmoothScrollProvider";
 import PageTransition from "../components/motion/PageTransition";
-import Footer from "../components/dashboard/Footer";
+import RouteAccessGate from "../components/auth/RouteAccessGate";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -15,8 +16,8 @@ const inter = Inter({
 import ChimiConsentGate from "../components/auth/ChimiConsentGate";
 
 export const metadata = {
-  title: "Calip — Dashboard",
-  description: "Your investment portfolio at a glance",
+  title: "Calip | See the signal. Move with conviction.",
+  description: "Discover promising companies and explore Calip's research workspace.",
 };
 
 export default function RootLayout({ children }) {
@@ -25,14 +26,13 @@ export default function RootLayout({ children }) {
       <body className="min-h-full">
         <AuthProvider>
           <ThemeProvider>
-            <ChimiConsentGate>
-              <SmoothScrollProvider>
-                <PageTransition>
-                  {children}
-                  <Footer />
-                </PageTransition>
-              </SmoothScrollProvider>
-            </ChimiConsentGate>
+            <RouteAccessGate>
+              <ChimiConsentGate>
+                <SmoothScrollProvider>
+                  <PageTransition>{children}</PageTransition>
+                </SmoothScrollProvider>
+              </ChimiConsentGate>
+            </RouteAccessGate>
           </ThemeProvider>
         </AuthProvider>
       </body>

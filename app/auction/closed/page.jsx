@@ -4,7 +4,12 @@ import { useState, useEffect } from "react";
 import Navbar from "../../../components/dashboard/Navbar";
 import AuctionFilterTabs from "../../../components/auction/AuctionFilterTabs";
 import AuctionCard from "../../../components/auction/AuctionCard";
-import { getCompletedPresales } from "../../../lib/presalesApi";
+import {
+  getActivePresales,
+  getCompletedPresales,
+  getUpcomingPresales,
+  isPresaleEnded,
+} from "../../../lib/presalesApi";
 
 export default function AuctionClosedPage() {
   const [auctions, setAuctions] = useState([]);
@@ -13,9 +18,16 @@ export default function AuctionClosedPage() {
 
   useEffect(() => {
     let cancelled = false;
-    getCompletedPresales()
-      .then((res) => {
-        if (!cancelled) setAuctions(res.data ?? res);
+    Promise.all([getCompletedPresales(), getActivePresales(), getUpcomingPresales()])
+      .then((responses) => {
+        if (!cancelled) {
+          const rows = responses.flatMap((res) => {
+            const data = res.data ?? res;
+            return Array.isArray(data) ? data : [];
+          });
+          const uniqueRows = [...new Map(rows.map((item) => [item._id, item])).values()];
+          setAuctions(uniqueRows.filter((item) => isPresaleEnded(item)));
+        }
       })
       .catch((err) => {
         if (!cancelled) setError(err.message || "Failed to load auctions");

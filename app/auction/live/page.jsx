@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Navbar from "../../../components/dashboard/Navbar";
 import AuctionFilterTabs from "../../../components/auction/AuctionFilterTabs";
 import AuctionCard from "../../../components/auction/AuctionCard";
-import { getActivePresales } from "../../../lib/presalesApi";
+import { getActivePresales, isPresaleOpenForBidding } from "../../../lib/presalesApi";
 
 export default function AuctionLivePage() {
   const [auctions, setAuctions] = useState([]);
@@ -15,7 +15,10 @@ export default function AuctionLivePage() {
     let cancelled = false;
     getActivePresales()
       .then((res) => {
-        if (!cancelled) setAuctions(res.data ?? res);
+        if (!cancelled) {
+          const rows = res.data ?? res;
+          setAuctions(Array.isArray(rows) ? rows.filter((item) => isPresaleOpenForBidding(item)) : []);
+        }
       })
       .catch((err) => {
         if (!cancelled) setError(err.message || "Failed to load auctions");
@@ -55,7 +58,7 @@ export default function AuctionLivePage() {
           )}
 
           {!loading && !error && auctions.length === 0 && (
-            <p className="py-20 text-center text-[#6b7280] dark:text-[#9ca3af]">No auctions found</p>
+            <p className="py-20 text-center text-[#6b7280] dark:text-[#9ca3af]">No auctions are open for bidding right now.</p>
           )}
 
           {!loading && !error && auctions.length > 0 && (
