@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Chimi, the Calip companion">
+  <defs>
+    <linearGradient id="chimi-head" x1="60" y1="60" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1e1b4b"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="chimi-rim" x1="60" y1="60" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#818cf8"/>
+      <stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+    <radialGradient id="chimi-halo" cx="50%" cy="42%" r="55%">
+      <stop stop-color="#6366f1" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="120" cy="118" r="104" fill="url(#chimi-halo)"/>
+  <ellipse cx="120" cy="208" rx="46" ry="8" fill="#0b0f19" opacity="0.55"/>
+  <line x1="120" y1="46" x2="120" y2="62" stroke="#a5b4fc" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="120" cy="40" r="9" fill="#6366f1"/>
+  <circle cx="120" cy="40" r="4" fill="#c7d2fe"/>
+  <rect x="44" y="96" width="10" height="40" rx="5" fill="#4f46e5"/>
+  <rect x="186" y="96" width="10" height="40" rx="5" fill="#4f46e5"/>
+  <rect x="52" y="62" width="136" height="108" rx="34" fill="url(#chimi-head)" stroke="url(#chimi-rim)" stroke-width="3"/>
+  <rect x="66" y="78" width="108" height="62" rx="20" fill="#0b0f19" stroke="#1e293b" stroke-width="2"/>
+  <circle cx="101" cy="109" r="9" fill="#818cf8"/>
+  <circle cx="139" cy="109" r="9" fill="#818cf8"/>
+  <circle cx="104" cy="106" r="3" fill="#ffffff"/>
+  <circle cx="142" cy="106" r="3" fill="#ffffff"/>
+  <rect x="104" y="128" width="32" height="5" rx="2.5" fill="#64748b"/>
+  <path d="M84 170 C92 178 104 182 120 182 C136 182 148 178 156 170 L150 190 C150 190 136 196 120 196 C104 196 90 190 90 190 Z" fill="#312e81" stroke="#4338ca" stroke-width="2"/>
+  <circle cx="120" cy="188" r="5" fill="#818cf8"/>
+</svg>
