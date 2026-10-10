@@ -80,56 +80,55 @@ export default function ActiveSessions() {
 
   return (
     <SettingsCard>
-      <div className="px-[35px] pt-[15px] pb-[4px]">
-        <h2 className="text-[20px] font-bold leading-none text-black dark:text-white">
+      <div className="pb-4 border-b border-white/[0.08]">
+        <h2 className="text-[18px] font-bold text-white">
           Active Sessions
         </h2>
-        <p className="mt-[6px] text-[14px] leading-none text-[#8791a7] dark:text-[#9ca3af]">
-          Devices currently signed in to your account
+        <p className="mt-1 text-[13px] text-slate-400">
+          Devices and active sessions currently signed in to your account.
         </p>
       </div>
 
-      {sessionList.map((session, index) => {
-        const Icon = sessionIconMap[session.icon] || Monitor;
+      <div className="divide-y divide-white/[0.08]">
+        {sessionList.map((session) => {
+          const Icon = sessionIconMap[session.icon] || Monitor;
 
-        return (
-          <div key={session.id}>
-            {index > 0 && (
-              <div className="mx-[35px] h-px bg-[#e5e7eb] dark:bg-[#2a2e3e]" />
-            )}
-            <div className="flex items-center gap-[20px] px-[35px] py-[18px]">
-              <div className="flex h-[59px] w-[58px] shrink-0 items-center justify-center rounded-[20px] border border-[#131622] dark:border-[#2a2e3e] bg-[#6450ea] dark:bg-[#5546d4]">
-                <Icon className="h-[28px] w-[28px] text-white" strokeWidth={1.5} />
+          return (
+            <div key={session.id} className="flex items-center gap-4 py-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04]">
+                <Icon className="h-5 w-5 text-white" strokeWidth={1.5} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[16px] font-semibold leading-none text-[#9da3b0] dark:text-[#b0b5bf]">
-                  {session.title}
-                </p>
-                <p className="mt-[4px] text-[14px] leading-none text-[#8791a7] dark:text-[#9ca3af]">
+                <div className="flex items-center gap-2">
+                  <p className="text-[15px] font-semibold text-white">
+                    {session.title}
+                  </p>
+                  {session.badge && (
+                    <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                      {session.badge}
+                    </span>
+                  )}
+                </div>
+                <p className="mt-1 text-[13px] text-slate-400">
                   {session.location}
                 </p>
               </div>
-              {session.badge && (
-                <span className="flex h-[21px] w-[99px] items-center justify-center rounded-[5px] bg-[#6450ea] text-[9px] font-bold uppercase leading-none tracking-wide text-white">
-                  {session.badge}
-                </span>
-              )}
               <button
                 type="button"
                 onClick={() => handleDelete(session.id)}
-                className="flex h-[59px] w-[58px] shrink-0 items-center justify-center rounded-[15px] border border-[#471a2e] bg-[#6450ea] transition-colors hover:bg-[#5741dc]"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] text-slate-400 transition hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400"
                 aria-label={`Sign out ${session.title}`}
               >
                 {removing === session.id ? (
-                  <Loader2 className="h-[24px] w-[24px] animate-spin text-white" strokeWidth={1.5} />
+                  <Loader2 className="h-4 w-4 animate-spin text-white" strokeWidth={1.5} />
                 ) : (
-                  <Trash2 className="h-[24px] w-[24px] text-white" strokeWidth={1.5} />
+                  <Trash2 className="h-4 w-4" strokeWidth={1.5} />
                 )}
               </button>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </SettingsCard>
   );
 }

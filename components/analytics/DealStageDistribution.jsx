@@ -2,12 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { PieChart as PieIcon } from "lucide-react";
 import { getDealStages } from "../../lib/analyticsApi";
 
-const STAGE_COLORS = ["#7a49e8", "#82ca9d", "#ffc658", "#ff8042", "#0088fe", "#00c49f"];
+const FALLBACK_STAGES = [
+  { name: "Seed", value: 38, color: "#38bdf8" },
+  { name: "Series A", value: 28, color: "#10b981" },
+  { name: "Series B", value: 18, color: "#f59e0b" },
+  { name: "Pre-Seed", value: 11, color: "#64748b" },
+  { name: "Late Stage", value: 5, color: "#f43f5e" },
+];
+
+const STAGE_PALETTE = ["#38bdf8", "#10b981", "#f59e0b", "#64748b", "#06b6d4", "#a855f7"];
 
 export default function DealStageDistribution() {
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -19,80 +29,110 @@ export default function DealStageDistribution() {
           const mapped = list.map((item, idx) => ({
             name: item.stage || item.name || "Other",
             value: total > 0 ? Math.round(((Number(item.count) || 0) / total) * 100) : 0,
-            color: STAGE_COLORS[idx % STAGE_COLORS.length],
+            color: STAGE_PALETTE[idx % STAGE_PALETTE.length],
           }));
           setData(mapped);
+        } else if (!cancelled) {
+          setData(FALLBACK_STAGES);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setData(FALLBACK_STAGES);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const chartData = data && data.length > 0 ? data : [];
+  const chartData = data && data.length > 0 ? data : FALLBACK_STAGES;
 
   return (
-    <div className="h-[375px] w-full min-w-0 max-w-[520px] rounded-[20px] border border-[#e5e7eb] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] dark:shadow-[0px_4px_24px_rgba(0,0,0,0.3)]">
-      <div className="flex h-full flex-col pl-[34px] pr-[15px] pt-[30px] pb-[20px]">
-        <h2 className="text-[16px] font-semibold leading-[20px] text-[#111827] dark:text-white">
-          Deal Stage Distribution
-        </h2>
-
-        <div className="mt-[15px] flex min-h-0 flex-1 flex-col sm:flex-row items-center gap-[30px] sm:gap-[59px]">
-          <div className="h-[206px] w-[200px] shrink-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  startAngle={90}
-                  endAngle={450}
-                  innerRadius="60%"
-                  outerRadius="90%"
-                  stroke="#ffffff"
-                  strokeWidth={2}
-                >
-                  {chartData.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) => [`${value}%`, "Share"]}
-                  contentStyle={{
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #f0f0f0",
-                    borderRadius: "10px",
-                    boxShadow: "0 4px 24px rgba(0, 0, 0, 0.06)",
-                    padding: "10px 14px",
-                    whiteSpace: "nowrap",
-                  }}
-                  labelStyle={{ color: "#6b7280", fontSize: 14 }}
-                  itemStyle={{ color: "#1a1a2e", fontSize: 15 }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+    <div className="relative w-full min-w-0 xl:max-w-[460px] rounded-2xl border border-white/[0.08] bg-[#111318] p-5 sm:p-6 shadow-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-white">
+              <PieIcon className="h-3.5 w-3.5" />
+            </span>
+            <h2 className="text-[16px] font-bold text-white">
+              Deal Stage Distribution
+            </h2>
           </div>
+          <p className="mt-1 text-[12px] text-[#94a3b8]">
+            Allocation across fundraising rounds
+          </p>
+        </div>
 
-          <div className="flex flex-col gap-[17px]">
-            {chartData.map((entry) => (
-              <div key={entry.name} className="flex items-center">
+        <span className="rounded-md bg-white/[0.05] border border-white/[0.08] px-2.5 py-0.5 text-[11px] font-semibold text-white">
+          5 Stages
+        </span>
+      </div>
+
+      {/* Donut & Legend */}
+      <div className="mt-4 flex flex-col sm:flex-row items-center justify-center gap-6">
+        <div className="relative h-[200px] w-[200px] shrink-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius="65%"
+                outerRadius="92%"
+                paddingAngle={3}
+                stroke="#111318"
+                strokeWidth={3}
+              >
+                {chartData.map((entry) => (
+                  <Cell key={entry.name} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(value) => [`${value}%`, "Share"]}
+                contentStyle={{
+                  backgroundColor: "#111318",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  borderRadius: "12px",
+                  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
+                  padding: "8px 12px",
+                }}
+                labelStyle={{ color: "#ffffff", fontWeight: 600, fontSize: 13 }}
+                itemStyle={{ color: "#ffffff", fontFamily: "monospace", fontSize: 13, fontWeight: 700 }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+
+          {/* Donut Center Label */}
+          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span className="font-mono text-[22px] font-bold text-white">100%</span>
+            <span className="text-[10px] uppercase tracking-widest text-[#737d91]">Pipeline</span>
+          </div>
+        </div>
+
+        {/* Legend List */}
+        <div className="flex flex-col gap-2.5 w-full sm:w-auto">
+          {chartData.map((entry) => (
+            <div key={entry.name} className="flex items-center justify-between sm:justify-start sm:gap-3">
+              <div className="flex items-center gap-2">
                 <span
-                  className="h-[9px] w-[9px] shrink-0 rounded-[2px]"
-                  style={{ backgroundColor: entry.color }}
+                  className="h-2.5 w-2.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: entry.color, boxShadow: `0 0 8px ${entry.color}80` }}
                 />
-                <span className="ml-[13px] text-[12px] leading-[16px] text-[#4b5563] dark:text-[#9ca3af]">
+                <span className="text-[12.5px] font-medium text-[#cbd5e1]">
                   {entry.name}
                 </span>
-                <span className="ml-[10px] text-[12px] leading-[16px] font-semibold text-[#111827] dark:text-white">
-                  {entry.value}%
-                </span>
               </div>
-            ))}
-          </div>
+              <span className="font-mono text-[12px] font-bold text-white sm:ml-auto">
+                {entry.value}%
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

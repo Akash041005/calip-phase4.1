@@ -21,7 +21,7 @@ import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../../lib/use
 import { getTokens, getTokenOHLC, getTokenSupply, getTokenTrades } from "../../lib/tradingApi";
 import TokenTradePanel from "../marketplace/TokenTradePanel";
 
-const DONUT_PALETTE = ["#0284c7", "#e67e22", "#d4af37", "#9b5de5", "#7c6cf0", "#fbbf24"];
+const DONUT_PALETTE = ["#38bdf8", "#f59e0b", "#10b981", "#64748b", "#06b6d4", "#a855f7"];
 const DONUT_CIRCUMFERENCE = 402;
 
 const PLACEHOLDER_TOKEN = {
@@ -343,7 +343,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
       const highY = toY(c.high);
       const lowY = toY(c.low);
 
-      const color = c.isGreen ? "#6366f1" : "#ff4b60";
+      const color = c.isGreen ? "#10b981" : "#ef4444";
       ctx.strokeStyle = color;
       ctx.fillStyle = color;
 
@@ -364,7 +364,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
     const lastCandle = visibleCandles[visibleCandles.length - 1];
     const liveY = toY(lastCandle.close);
 
-    ctx.strokeStyle = "#6366f1";
+    ctx.strokeStyle = "#10b981";
     ctx.setLineDash([4, 4]);
     ctx.beginPath();
     ctx.moveTo(0, liveY);
@@ -373,9 +373,9 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
     ctx.setLineDash([]);
 
     // Live price tag on right scale
-    ctx.fillStyle = "#7c6cf0";
+    ctx.fillStyle = "#10b981";
     ctx.fillRect(chartWidth, liveY - 9, rightMargin - 4, 18);
-    ctx.fillStyle = "#070a0f";
+    ctx.fillStyle = "#090a0f";
     ctx.font = "bold 10px JetBrains Mono";
     ctx.textAlign = "center";
     ctx.fillText(lastCandle.close.toFixed(6), chartWidth + rightMargin / 2 - 2, liveY + 3.5);
@@ -548,13 +548,13 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/")}
-            className="flex items-center justify-center w-9 h-9 rounded-lg border border-[#1a2436] bg-[#0f1520] text-neutral-400 hover:text-white hover:bg-[#141d2c] transition"
+            className="flex items-center justify-center w-9 h-9 rounded-lg border border-white/[0.08] bg-[#111318] text-neutral-400 hover:text-white hover:bg-white/[0.06] transition"
             title="Back to Dashboard"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
 
-          <div className="w-9 h-9 rounded-lg bg-[#151f2e] border border-[#24354c] flex items-center justify-center text-[18px]">
+          <div className="w-9 h-9 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-[18px]">
             ▦
           </div>
 
@@ -563,13 +563,13 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
             <span className="text-[13px] font-bold text-neutral-400">{token.symbol}</span>
             <span
               onClick={() => navigator.clipboard.writeText(token.contract)}
-              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/5 border border-[#1a2436] text-[12px] font-mono text-neutral-400 hover:text-[#7c6cf0] cursor-pointer transition"
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/5 border border-white/[0.08] text-[12px] font-mono text-neutral-400 hover:text-white cursor-pointer transition"
               title="Click to copy contract"
             >
               {token.contract}
               <Copy className="w-3 h-3" />
             </span>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#7c6cf0]/10 border border-[#7c6cf0]/30 text-[#7c6cf0] text-[12px] font-semibold">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[12px] font-semibold">
               {token.tag}
             </span>
           </div>
@@ -583,7 +583,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[12.5px] font-semibold transition border ${
               isInWatchlist
                 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-400 group"
-                : "bg-[#6366F1]/10 border-[#6366F1]/30 text-[#818cf8] hover:bg-[#6366F1] hover:text-white"
+                : "cl-btn-primary"
             } disabled:opacity-50 disabled:cursor-not-allowed`}
             title={isInWatchlist ? "Click to remove from Watchlist" : "Add to your Watchlist"}
           >
@@ -614,18 +614,18 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
             <span className="text-[11px] text-rose-400 font-medium">{watchlistError}</span>
           )}
 
-          <div className="h-5 w-px bg-[#1a2436] mx-1" />
+          <div className="h-5 w-px bg-white/[0.08] mx-1" />
 
-          <button className="w-8 h-8 rounded-lg border border-[#1a2436] bg-[#0f1520] text-neutral-400 hover:text-white flex items-center justify-center" title="Verified">
+          <button className="w-8 h-8 rounded-lg border border-white/[0.08] bg-[#111318] text-neutral-400 hover:text-white flex items-center justify-center" title="Verified">
             <ShieldCheck className="w-4 h-4" />
           </button>
-          <button className="w-8 h-8 rounded-lg border border-[#1a2436] bg-[#0f1520] text-neutral-400 hover:text-white flex items-center justify-center" title="Edit Metadata">
+          <button className="w-8 h-8 rounded-lg border border-white/[0.08] bg-[#111318] text-neutral-400 hover:text-white flex items-center justify-center" title="Edit Metadata">
             <Edit3 className="w-4 h-4" />
           </button>
-          <button className="w-8 h-8 rounded-lg border border-[#1a2436] bg-[#0f1520] text-neutral-400 hover:text-white flex items-center justify-center" title="Official Website">
+          <button className="w-8 h-8 rounded-lg border border-white/[0.08] bg-[#111318] text-neutral-400 hover:text-white flex items-center justify-center" title="Official Website">
             <Globe className="w-4 h-4" />
           </button>
-          <button className="w-8 h-8 rounded-lg border border-[#1a2436] bg-[#0f1520] text-neutral-400 hover:text-white flex items-center justify-center" title="X / Twitter">
+          <button className="w-8 h-8 rounded-lg border border-white/[0.08] bg-[#111318] text-neutral-400 hover:text-white flex items-center justify-center" title="X / Twitter">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           </button>
         </div>
@@ -639,22 +639,22 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
       )}
       <div className="grid min-w-0 grid-cols-1 gap-4 items-start xl:grid-cols-[260px_minmax(0,1fr)_320px]">
         {/* COLUMN 1: TRADES FEED */}
-        <aside className="hidden lg:flex flex-col rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-4 shadow-xl">
+        <aside className="hidden lg:flex flex-col rounded-2xl border border-white/[0.08] bg-[#111318] p-4 shadow-sm">
           <h3 className="text-[14px] font-bold text-white mb-2">Trades</h3>
-          <div className="flex items-center gap-4 border-b border-[#1a2436] pb-2 mb-3">
+          <div className="flex items-center gap-4 border-b border-white/[0.08] pb-2 mb-3">
             <button
               onClick={() => setActiveTab("recents")}
               className={`text-[12.5px] font-semibold relative pb-1 transition ${
-                activeTab === "recents" ? "text-[#7c6cf0]" : "text-neutral-500 hover:text-white"
+                activeTab === "recents" ? "text-emerald-400" : "text-neutral-400 hover:text-white"
               }`}
             >
               Recents
-              {activeTab === "recents" && <span className="absolute bottom-[-9px] left-0 w-full h-0.5 bg-[#7c6cf0]"></span>}
+              {activeTab === "recents" && <span className="absolute bottom-[-9px] left-0 w-full h-0.5 bg-emerald-400"></span>}
             </button>
             <button
               onClick={() => setActiveTab("yours")}
               className={`text-[12.5px] font-semibold transition ${
-                activeTab === "yours" ? "text-[#7c6cf0]" : "text-neutral-500 hover:text-white"
+                activeTab === "yours" ? "text-emerald-400" : "text-neutral-400 hover:text-white"
               }`}
             >
               Yours
@@ -671,10 +671,10 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
               <div key={tr.addr ? `${tr.addr}-${idx}` : idx} className="border-b border-white/[0.03] pb-2.5">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <span className="w-3.5 h-3.5 rounded-full" style={{ background: tr.isBuy ? "#7c6cf0" : "#f43f5e" }}></span>
+                    <span className="w-3.5 h-3.5 rounded-full" style={{ background: tr.isBuy ? "#10b981" : "#f43f5e" }}></span>
                     <span className="text-neutral-400">{tr.addr}</span>
                   </div>
-                  <span className={`font-semibold ${tr.isBuy ? "text-[#7c6cf0]" : "text-rose-500"}`}>
+                  <span className={`font-semibold ${tr.isBuy ? "text-emerald-400" : "text-rose-500"}`}>
                     {tr.isBuy ? "+" : "-"}{Number(tr.amount).toLocaleString()} {token.symbol}
                   </span>
                 </div>
@@ -690,23 +690,23 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
         {/* COLUMN 2: CENTER AREA (CHART, ABOUT, TEAM, ALLOCATION, SUPPLY, FORUM) */}
         <section className="space-y-4">
           {/* 1. Interactive Candlestick Chart */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-5 shadow-xl relative">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm relative">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
               <div className="flex items-baseline gap-2.5">
                 <span
                   className={`text-[28px] font-extrabold font-mono text-white tracking-tight transition-colors duration-300 ${
-                    priceFlash === "up" ? "text-[#7c6cf0]" : priceFlash === "down" ? "text-rose-400" : ""
+                    priceFlash === "up" ? "text-emerald-400" : priceFlash === "down" ? "text-rose-400" : ""
                   }`}
                 >
                   ${(displayCandle ? displayCandle.close : livePrice).toFixed(6)}
                 </span>
-                <span className={`text-[14px] font-bold font-mono ${isCandleGreen ? "text-[#7c6cf0]" : "text-rose-500"}`}>
+                <span className={`text-[14px] font-bold font-mono ${isCandleGreen ? "text-emerald-400" : "text-rose-500"}`}>
                   {isCandleGreen ? "+" : ""}{deltaPct}%
                 </span>
               </div>
 
               {/* Chart Actions: Zoom In, Zoom Out, Reset */}
-              <div className="flex items-center gap-1.5 bg-[#121927] border border-[#1a2436] px-2 py-1 rounded-lg text-[12px]">
+              <div className="flex items-center gap-1.5 bg-[#0e1015] border border-white/[0.08] px-2 py-1 rounded-lg text-[12px]">
                 <button
                   onClick={() => handleZoom("in")}
                   className="p-1 text-neutral-400 hover:text-white rounded hover:bg-white/10"
@@ -732,14 +732,14 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
             </div>
 
             {/* Timeframe & Display Toggles */}
-            <div className="flex flex-wrap items-center justify-between border-y border-[#1a2436] py-2 mb-3 text-[12px]">
+            <div className="flex flex-wrap items-center justify-between border-y border-white/[0.08] py-2 mb-3 text-[12px]">
               <div className="flex items-center gap-1">
                 {["15m", "1h", "4h", "1d"].map((tf) => (
                   <button
                     key={tf}
                     onClick={() => handleTfChange(tf)}
                     className={`px-2.5 py-1 rounded font-semibold transition ${
-                      activeTf === tf ? "bg-white/15 text-white shadow-sm" : "text-neutral-500 hover:text-white"
+                      activeTf === tf ? "bg-white/15 text-white shadow-sm" : "text-neutral-400 hover:text-white"
                     }`}
                   >
                     {tf}
@@ -751,9 +751,9 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
 
               <div className="flex items-center gap-3">
                 <span className="font-semibold text-white">Price / MCAP</span>
-                <div className="inline-flex bg-[#121927] border border-[#1a2436] rounded p-0.5 text-[11px] font-bold">
-                  <span className="px-2 py-0.5 bg-[#202b3d] text-white rounded">USD</span>
-                  <span className="px-2 py-0.5 text-neutral-500 cursor-pointer">VIRTUAL</span>
+                <div className="inline-flex bg-[#0e1015] border border-white/[0.08] rounded p-0.5 text-[11px] font-bold">
+                  <span className="px-2 py-0.5 bg-white/[0.08] text-white rounded">USD</span>
+                  <span className="px-2 py-0.5 text-neutral-400 cursor-pointer hover:text-white">VIRTUAL</span>
                 </div>
               </div>
             </div>
@@ -762,20 +762,20 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
             <div
               ref={chartContainerRef}
               style={{ touchAction: "none", overscrollBehavior: "contain" }}
-              className="relative w-full h-[320px] bg-[#0a0e14] rounded-lg border border-white/[0.03] overflow-hidden select-none cursor-crosshair"
+              className="relative w-full h-[320px] bg-[#090a0f] rounded-lg border border-white/[0.05] overflow-hidden select-none cursor-crosshair"
             >
               {/* Dynamic OHLC Bar on Top */}
               <div className="absolute top-2 left-3 right-3 text-[11px] font-mono text-neutral-400 pointer-events-none z-10 flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <span className="text-white font-bold">{token.symbol}/USD</span> · {activeTf} · GeckoTerminal{" "}
-                  <span className="text-[#7c6cf0]">●</span>
+                  <span className="text-emerald-400">●</span>
                 </div>
                 {displayCandle && (
                   <div className="flex items-center gap-3 text-[10.5px]">
                     <span>O: <strong className="text-white">{displayCandle.open.toFixed(6)}</strong></span>
                     <span>H: <strong className="text-white">{displayCandle.high.toFixed(6)}</strong></span>
                     <span>L: <strong className="text-white">{displayCandle.low.toFixed(6)}</strong></span>
-                    <span>C: <strong className={isCandleGreen ? "text-[#7c6cf0]" : "text-rose-400"}>{displayCandle.close.toFixed(6)}</strong></span>
+                    <span>C: <strong className={isCandleGreen ? "text-emerald-400" : "text-rose-400"}>{displayCandle.close.toFixed(6)}</strong></span>
                     <span>Vol: <strong className="text-white">{displayCandle.volume}K</strong></span>
                   </div>
                 )}
@@ -791,7 +791,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
               />
               {(candlesLoading || candles.length === 0) && (
                 <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <p className="rounded-lg border border-white/10 bg-[#111827]/90 px-4 py-2 text-[12px] text-[#94a3b8]">
+                  <p className="rounded-lg border border-white/10 bg-[#111318]/90 px-4 py-2 text-[12px] text-[#94a3b8]">
                     {candlesLoading ? "Loading candles…" : (candlesError || "No candle data yet for this token.")}
                   </p>
                 </div>
@@ -800,15 +800,15 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
 
             <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 mt-2.5">
               <span>💡 Scroll wheel to zoom in/out · Click & drag to pan history</span>
-              <span>powered by <strong className="text-[#7c6cf0]">Calip · GeckoTerminal</strong></span>
+              <span>powered by <strong className="text-emerald-400">Calip · GeckoTerminal</strong></span>
             </div>
           </div>
 
           {/* 2. About Card */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-5 shadow-xl">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm">
             <div className="flex items-center justify-between mb-2.5">
               <h3 className="text-[15px] font-bold text-white">About</h3>
-              <span className="text-[12px] text-[#7c6cf0] cursor-pointer">See more ▾</span>
+              <span className="text-[12px] text-zinc-400 hover:text-white cursor-pointer">See more ▾</span>
             </div>
             <p className="text-[13px] leading-relaxed text-neutral-300">
               {token.about}
@@ -816,22 +816,22 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
           </div>
 
           {/* 3. Team Card */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-5 shadow-xl">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm">
             <h3 className="text-[15px] font-bold text-white mb-3">Team</h3>
-            <div className="inline-flex items-center gap-2.5 bg-[#121927] border border-[#1a2436] px-3.5 py-2 rounded-lg">
-              <span className="w-6 h-6 rounded bg-blue-600 flex items-center justify-center text-xs">▦</span>
+            <div className="inline-flex items-center gap-2.5 bg-[#0e1015] border border-white/[0.08] px-3.5 py-2 rounded-lg">
+              <span className="w-6 h-6 rounded bg-white/10 border border-white/10 flex items-center justify-center text-xs text-white">▦</span>
               <span className="font-mono text-[13px] text-white">{token.owner}</span>
-              <span className="text-[11px] font-bold text-indigo-400 bg-indigo-950/60 border border-indigo-500/40 px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                 Owner
               </span>
             </div>
           </div>
 
           {/* 4. Allocation Donut Section with Hover Tooltip */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-5 shadow-xl">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[15px] font-bold text-white">Allocation</h3>
-              <span className="text-[11.5px] text-[#7c6cf0] bg-[#7c6cf0]/10 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11.5px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-mono">
                 {supplyCapLabel}
               </span>
             </div>
@@ -903,18 +903,18 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
           </div>
 
           {/* 5. Supply allocation from the backend token supply record */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-5 shadow-xl">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-[15px] font-bold text-white">Supply by category</h3>
               <span className="text-[11px] text-[#5e6f85] font-mono">{supplyCapLabel}</span>
             </div>
 
             {supplyLayers.length === 0 ? (
-              <p className="rounded-lg border border-white/5 bg-[#0a0e14] px-4 py-8 text-center text-[12.5px] text-[#5e6f85]">
+              <p className="rounded-lg border border-white/5 bg-[#0e1015] px-4 py-8 text-center text-[12.5px] text-[#5e6f85]">
                 Supply breakdown isn&apos;t available for this token yet.
               </p>
             ) : (
-              <div className="space-y-4 rounded-lg border border-white/[0.03] bg-[#0a0e14] p-4">
+              <div className="space-y-4 rounded-lg border border-white/[0.04] bg-[#0e1015] p-4">
                 {supplyLayers.map((layer) => {
                   const percentage = supplyCap > 0 ? Math.min(100, (layer.amount / supplyCap) * 100) : 0;
                   return (
@@ -936,22 +936,22 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
           </div>
 
           {/* 6. Forum */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-5 shadow-xl">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm">
             <h3 className="text-[15px] font-bold text-white mb-3">Forum</h3>
-            <div className="rounded-lg bg-gradient-to-b from-[#121a26] to-[#0e141e] border border-[#1a2436] p-5 text-center flex flex-col items-center gap-3 mb-3">
+            <div className="rounded-xl bg-[#0e1015] border border-white/[0.08] p-5 text-center flex flex-col items-center gap-3 mb-3">
               <p className="text-[13px] text-neutral-300 max-w-sm">
                 Hold at least <strong className="text-white">10,000 ${token.symbol}</strong> or <strong className="text-white">1,000 veVIRTUAL</strong> to join the conversation.
               </p>
               <button
                 onClick={() => alert(`Redirecting to swap for $${token.symbol}`)}
-                className="px-6 py-2 rounded-xl bg-[#6366F1] text-white font-extrabold text-[13px] hover:shadow-[0_0_16px_rgba(99,102,241,0.4)] transition active:scale-95"
+                className="cl-btn-primary px-6 py-2 text-[13px] font-semibold"
               >
                 Buy ${token.symbol}
               </button>
             </div>
 
-            <div className="flex items-start gap-3 bg-[#121927] border border-[#1a2436] p-3 rounded-lg">
-              <div className="w-7 h-7 rounded-full bg-[#7c6cf0]/80 flex-shrink-0"></div>
+            <div className="flex items-start gap-3 bg-[#0e1015] border border-white/[0.08] p-3 rounded-xl">
+              <div className="w-7 h-7 rounded-full bg-white/10 border border-white/10 flex-shrink-0 flex items-center justify-center text-[10px] text-white">●</div>
               <div>
                 <div className="text-[12px] font-mono text-neutral-400">
                   <span className="text-white font-semibold">0x6E09...45D7</span> · 2 months
@@ -964,32 +964,32 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
 
         {/* COLUMN 3: RIGHT SIDEBAR */}
         <aside className="space-y-4">
-          {/* Top Route & Connect Wallet Card (Screenshot 2) */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-4 shadow-xl space-y-2.5">
+          {/* Top Route & Connect Wallet Card */}
+          <div className="rounded-2xl border border-white/[0.08] bg-[#111318] p-4 shadow-sm space-y-2.5">
             <div className="flex items-center justify-between text-[12px] text-neutral-400">
               <span className="font-semibold text-neutral-300">Route</span>
               <div className="flex items-center gap-2">
                 <button className="p-1 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition">
                   <Search className="w-3.5 h-3.5" />
                 </button>
-                <button className="px-3 py-0.5 rounded-full border border-[#6366F1]/40 text-[#6366F1] text-[11.5px] font-semibold bg-[rgba(99,102,241,0.1)] hover:bg-[#6366F1] hover:text-white transition">
+                <button className="px-3 py-0.5 rounded-full border border-white/20 text-white text-[11.5px] font-semibold bg-white/5 hover:bg-white/10 transition">
                   Login
                 </button>
               </div>
             </div>
             <button
               onClick={() => alert("Connecting Web3 Wallet...")}
-              className="w-full py-2.5 rounded-xl bg-[#6366F1] text-white font-extrabold text-[13.5px] shadow-[0_0_16px_rgba(99,102,241,0.3)] hover:shadow-[0_0_24px_rgba(99,102,241,0.5)] transition active:scale-[0.99]"
+              className="cl-btn-primary w-full py-2.5 text-[13.5px] font-semibold"
             >
               Connect Wallet
             </button>
           </div>
 
           {/* 1. Market Overview Card */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-5 shadow-xl">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-[14px] font-bold text-white">Market Overview</h3>
-              <span className="text-[11.5px] text-[#7c6cf0] cursor-pointer hover:underline">Mechanics</span>
+              <span className="text-[11.5px] text-emerald-400 cursor-pointer hover:underline">Mechanics</span>
             </div>
             <div className="grid grid-cols-2 gap-3.5 text-[12px]">
               <div>
@@ -1018,19 +1018,19 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
           <TokenTradePanel token={token} startupId={startupId} />
 
           {/* 3. Holders Card */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-5 shadow-xl">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-[14px] font-bold text-white">Holders (1.7K)</h3>
-              <span className="text-[11.5px] text-[#7c6cf0] cursor-pointer hover:underline">View top 500</span>
+              <span className="text-[11.5px] text-emerald-400 cursor-pointer hover:underline">View top 500</span>
             </div>
 
             <div className="flex justify-between text-[11.5px] mb-1.5">
-              <span className="text-[#7c6cf0] font-semibold">● Top 10: 73.5%</span>
+              <span className="text-emerald-400 font-semibold">● Top 10: 73.5%</span>
               <span className="text-neutral-500 font-semibold">● Others: 26.5%</span>
             </div>
 
-            <div className="w-full h-1 bg-[#202b3c] rounded-full overflow-hidden mb-3">
-              <div className="h-full w-[73.5%] bg-[#7c6cf0]"></div>
+            <div className="w-full h-1 bg-white/[0.08] rounded-full overflow-hidden mb-3">
+              <div className="h-full w-[73.5%] bg-emerald-400"></div>
             </div>
 
             <div className="space-y-2 text-[12px] max-h-[220px] overflow-y-auto">
@@ -1039,7 +1039,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
                 { addr: "0xe289...ee8a", badge: "ACF Vault", val: "189.5M GRID", color: "#6366f1" },
                 { addr: "0xa072...0f27", badge: "LP", val: "52.6M GRID", color: "#ec4899" },
                 { addr: "0xefc1...7e5f", badge: "ACF Pool", val: "51.3M GRID", color: "#3b82f6" },
-                { addr: "0x829d...224a", badge: null, val: "44.8M GRID", color: "#7c6cf0" },
+                { addr: "0x829d...224a", badge: null, val: "44.8M GRID", color: "#10b981" },
               ].map((h, i) => (
                 <div key={i} className="flex items-center justify-between py-1 border-b border-white/[0.02]">
                   <div className="flex items-center gap-2">
@@ -1053,15 +1053,15 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
             </div>
           </div>
 
-          {/* 4. Twitter Feed Card (Matching Screenshot 3) */}
-          <div className="rounded-[14px] border border-[#1a2436] bg-[#0f1520] p-5 shadow-xl space-y-3">
+          {/* 4. Twitter Feed Card */}
+          <div className="rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm space-y-3">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-[14px] font-bold text-white">Twitter Feed</h3>
               <div className="flex items-center gap-2">
                 <button className="p-1 rounded-full text-neutral-400 hover:text-white hover:bg-white/5 transition">
                   <Search className="w-3.5 h-3.5" />
                 </button>
-                <button className="px-2.5 py-0.5 rounded-full border border-[#6366F1]/40 text-[#6366F1] text-[11px] font-semibold bg-[rgba(99,102,241,0.1)] hover:bg-[#6366F1] hover:text-white transition">
+                <button className="px-2.5 py-0.5 rounded-full border border-white/20 text-white text-[11px] font-semibold bg-white/5 hover:bg-white/10 transition">
                   Login
                 </button>
               </div>
@@ -1070,7 +1070,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
             <div className="space-y-2.5">
               <div className="flex items-center justify-between text-[12px]">
                 <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded bg-neutral-800 flex items-center justify-center text-[10px]">▦</span>
+                  <span className="w-5 h-5 rounded bg-white/10 border border-white/10 flex items-center justify-center text-[10px] text-white">▦</span>
                   <span className="font-bold text-white">Grid</span>
                   <span className="text-neutral-500">@grid_arena</span>
                 </div>
@@ -1079,7 +1079,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
               <p className="text-[12.5px] text-neutral-300 leading-relaxed">
                 Wall Street gets the day off. Crypto doesn&apos;t. Stocks. Crypto. Prediction Markets. Perps. Markets run on different clocks. Traders shouldn&apos;t need different worlds.
               </p>
-              <div className="rounded border border-[#1a2436] bg-[#0b0e14] p-3 text-center text-[11px] font-extrabold text-[#7c6cf0] tracking-wider shadow-inner">
+              <div className="rounded-xl border border-white/[0.08] bg-[#0e1015] p-3 text-center text-[11px] font-bold text-slate-300 tracking-wider">
                 MARKETS DON&apos;T SHARE A CLOCK.<br />THEY SHOULDN&apos;T NEED DIFFERENT WORLDS.
               </div>
             </div>

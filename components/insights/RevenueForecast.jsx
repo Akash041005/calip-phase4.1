@@ -29,13 +29,13 @@ export default function RevenueForecast({ data }) {
   const yTicks = [0, yMax / 4, yMax / 2, (yMax * 3) / 4, yMax];
 
   return (
-    <div className="h-[375px] w-full flex-1 rounded-[20px] border border-[#e5e7eb] bg-white shadow-[0px_2px_4px_0px_rgba(0,0,0,0.06)] dark:border-[#2a2e3e] dark:bg-[#181c28]">
+    <div className="h-[375px] w-full flex-1 rounded-2xl border border-white/[0.08] bg-[#111318] shadow-sm">
       <div className="flex h-full flex-col pl-[27px] pr-[15px] pt-[26px] pb-[20px]">
         <div className="flex items-center justify-between">
-          <h2 className="text-[16px] font-semibold leading-[20px] text-[#111827] dark:text-white">
+          <h2 className="text-[16px] font-bold text-white">
             Revenue Forecast
           </h2>
-          <span className="text-[12px] text-[#6b7280] dark:text-[#9ca3af]">AI Projection</span>
+          <span className="text-[12px] text-slate-400">AI Projection</span>
         </div>
 
         <div className="mt-[20px] min-h-0 flex-1">
@@ -46,26 +46,26 @@ export default function RevenueForecast({ data }) {
             >
               <defs>
                 <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#4F46E5" stopOpacity={0.05} />
+                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#ffffff" stopOpacity={0.01} />
                 </linearGradient>
               </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke={isDark ? "#242838" : "#EEEEEE"}
+                stroke="rgba(255, 255, 255, 0.05)"
                 vertical={false}
               />
               <XAxis
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: isDark ? "#7c8190" : "#9ca3af", fontSize: 12 }}
+                tick={{ fill: "#94a3b8", fontSize: 12 }}
                 dy={8}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: isDark ? "#7c8190" : "#9ca3af", fontSize: 12 }}
+                tick={{ fill: "#94a3b8", fontSize: 12 }}
                 tickFormatter={formatYAxis}
                 domain={[0, yMax]}
                 ticks={yTicks}
@@ -76,24 +76,24 @@ export default function RevenueForecast({ data }) {
                   `₹ ${Number(value).toLocaleString("en-IN")}`,
                   "Revenue",
                 ]}
-                cursor={{ stroke: isDark ? "#4338ca" : "#c7d2fe", strokeDasharray: "4 4" }}
+                cursor={{ stroke: "rgba(255, 255, 255, 0.2)", strokeDasharray: "4 4" }}
                 contentStyle={{
-                  backgroundColor: isDark ? "#181c28" : "#ffffff",
-                  border: isDark ? "1px solid #2a2e3e" : "1px solid #f0f0f0",
-                  borderRadius: "10px",
-                  boxShadow: isDark ? "0 4px 24px rgba(0, 0, 0, 0.4)" : "0 4px 24px rgba(0, 0, 0, 0.06)",
+                  backgroundColor: "#111318",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  borderRadius: "12px",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
                   padding: "10px 14px",
                   whiteSpace: "nowrap",
                 }}
-                labelStyle={{ color: isDark ? "#9ca3af" : "#6b7280", fontSize: 14 }}
-                itemStyle={{ color: isDark ? "#ffffff" : "#1a1a2e", fontSize: 15 }}
+                labelStyle={{ color: "#94a3b8", fontSize: 13 }}
+                itemStyle={{ color: "#ffffff", fontSize: 14 }}
               />
               <Area
                 type="monotone"
                 dataKey="value"
                 name="Revenue"
-                stroke="#4F46E5"
-                strokeWidth={2}
+                stroke="#ffffff"
+                strokeWidth={1.75}
                 fill="url(#revenueFill)"
               />
             </AreaChart>

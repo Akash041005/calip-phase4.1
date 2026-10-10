@@ -7,20 +7,17 @@ const OPTIONS = [
 
 export default function PricingToggle({ billing, onBillingChange }) {
   return (
-    <div className="relative flex h-[41.58px] w-[226.528px] rounded-[10px] bg-[#f4f5f7] dark:bg-[#1c202e]">
-      <span
-        className={`absolute top-0 h-[41.58px] w-[121.586px] rounded-[10px] bg-white dark:bg-[#2a2e3e] transition-all duration-300 ease-out ${
-          billing === "monthly" ? "left-0" : "left-[104.94px]"
-        }`}
-      />
+    <div className="relative flex h-[42px] w-[220px] rounded-lg border border-white/[0.08] bg-[#0e1015] p-1">
       {OPTIONS.map((option) => (
         <button
           key={option.key}
           type="button"
           onClick={() => onBillingChange(option.key)}
           aria-pressed={billing === option.key}
-          className={`relative z-10 flex flex-1 items-center justify-center text-[14px] leading-none transition-colors duration-300 ${
-            billing === option.key ? "text-black dark:text-white" : "text-[#9ca3af]"
+          className={`relative z-10 flex flex-1 items-center justify-center rounded-md text-[13px] font-semibold transition-all duration-200 ${
+            billing === option.key
+              ? "bg-white text-black shadow-sm"
+              : "text-slate-400 hover:text-white"
           }`}
         >
           {option.label}

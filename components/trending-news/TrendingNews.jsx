@@ -91,19 +91,19 @@ export default function TrendingNews() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080a0f] text-[#f4f5fb]">
+    <div className="min-h-screen bg-[#090a0f] text-[#f4f5fb]">
       <Navbar />
 
       <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(129,116,255,0.1)] border border-[rgba(129,116,255,0.2)] text-[12px] font-medium text-[#8174ff] mb-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#8174ff]" />
-            ECOSYSTEM INTELLIGENCE
-          </div>
+          <p className="cl-kicker-label mb-2">
+            <span className="cl-mint-dot" />
+            Ecosystem Intelligence
+          </p>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             Market Signals & Trends
           </h1>
-          <p className="mt-1 text-sm text-[rgba(226,232,255,0.6)]">
+          <p className="mt-1 text-sm text-slate-400">
             Latest startup rounds, token launches, and on-chain intelligence summaries.
           </p>
         </div>
@@ -123,8 +123,8 @@ export default function TrendingNews() {
 
         {loading ? (
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-            <div className="h-[170px] animate-pulse rounded-2xl bg-[#111723]/60 border border-[rgba(226,232,255,0.06)]" />
-            <div className="h-[170px] animate-pulse rounded-2xl bg-[#111723]/60 border border-[rgba(226,232,255,0.06)]" />
+            <div className="h-[170px] animate-pulse rounded-2xl bg-[#111318] border border-white/[0.08]" />
+            <div className="h-[170px] animate-pulse rounded-2xl bg-[#111318] border border-white/[0.08]" />
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
@@ -135,15 +135,15 @@ export default function TrendingNews() {
         )}
 
         <div className="mt-8 mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-[rgba(226,232,255,0.7)]">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
             Latest Feed
           </h2>
         </div>
 
         {loading ? (
           <div className="space-y-3">
-            <div className="h-[80px] animate-pulse rounded-2xl bg-[#111723]/60 border border-[rgba(226,232,255,0.06)]" />
-            <div className="h-[80px] animate-pulse rounded-2xl bg-[#111723]/60 border border-[rgba(226,232,255,0.06)]" />
+            <div className="h-[80px] animate-pulse rounded-2xl bg-[#111318] border border-white/[0.08]" />
+            <div className="h-[80px] animate-pulse rounded-2xl bg-[#111318] border border-white/[0.08]" />
           </div>
         ) : (
           <div className="space-y-3">

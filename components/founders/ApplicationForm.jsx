@@ -5,13 +5,13 @@ import { CircleCheck } from "lucide-react";
 import { uploadStartup } from "../../lib/startupsUploadApi";
 
 const fieldStyles =
-  "h-[40px] w-full rounded-[10px] border border-[#e5e7eb] bg-[#f4f5f7] px-4 text-[14px] sm:text-[16px] text-[#1a1a2e] placeholder:text-[#9ca3af] outline-none transition-colors focus:border-[#6366f1] focus:bg-white dark:border-[#2a2e3e] dark:bg-[#1c202e] dark:text-white dark:placeholder:text-[#7c8190] dark:focus:bg-[#181c28]";
+  "h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 text-[14px] text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-white/20 focus:bg-[#111318]";
 
 const selectStyles =
-  "h-[40px] w-full rounded-[10px] border border-[#e5e7eb] bg-[#f4f5f7] px-4 text-[14px] sm:text-[16px] text-[#1a1a2e] outline-none transition-colors focus:border-[#6366f1] focus:bg-white appearance-none dark:border-[#2a2e3e] dark:bg-[#1c202e] dark:text-white dark:focus:bg-[#181c28]";
+  "h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 text-[14px] text-white outline-none transition-colors focus:border-white/20 focus:bg-[#111318] appearance-none";
 
 const textAreaStyles =
-  "h-[160px] w-full resize-none rounded-[10px] border border-[#e5e7eb] bg-[#f4f5f7] px-4 py-3 text-[14px] sm:text-[16px] text-[#1a1a2e] placeholder:text-[#9ca3af] outline-none transition-colors focus:border-[#6366f1] focus:bg-white dark:border-[#2a2e3e] dark:bg-[#1c202e] dark:text-white dark:placeholder:text-[#7c8190] dark:focus:bg-[#181c28]";
+  "h-[140px] w-full resize-none rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 py-3 text-[14px] text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-white/20 focus:bg-[#111318]";
 
 const REQUIRED_TEXT_FIELDS = [
   { name: "startupName", label: "Startup Name", placeholder: "Enter your startup name" },
@@ -224,33 +224,35 @@ export default function ApplicationForm() {
       </p>
 
       {submitted ? (
-        <div className="mx-auto mt-[60px] flex max-w-[700px] flex-col items-center rounded-[20px] border border-[#e5e7eb] bg-white px-8 py-[50px] text-center shadow-[0_2px_4px_0px_rgba(0,0,0,0.25)] dark:border-[#2a2e3e] dark:bg-[#181c28] dark:shadow-[0_2px_4px_0px_rgba(0,0,0,0.5)]">
-          <div className="flex h-[64px] w-[64px] items-center justify-center rounded-full bg-[#d1fae5]">
+        <div className="mx-auto mt-[60px] flex max-w-[700px] flex-col items-center rounded-2xl border border-white/[0.08] bg-[#111318] px-8 py-[50px] text-center shadow-sm">
+          <div className="flex h-[64px] w-[64px] items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
             <CircleCheck
-              className="h-[36px] w-[36px] text-[#10b981]"
+              className="h-[36px] w-[36px] text-emerald-400"
               strokeWidth={2}
             />
           </div>
-          <h3 className="mt-[20px] text-[24px] font-semibold text-[#111827] dark:text-white">
+          <h3 className="mt-[20px] text-[24px] font-bold text-white">
             Application submitted
           </h3>
-          <p className="mt-[10px] text-[16px] leading-[22px] text-[#4b5563] dark:text-[#b0b5bf]">
+          <p className="mt-[10px] text-[16px] leading-[22px] text-slate-300">
             Thanks for applying. Our team will review your application within 5
             business days and reach out to you by email.
           </p>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="mt-[28px] inline-flex h-[46px] items-center justify-center rounded-[10px] border border-[#d1d5db] bg-white px-6 text-[16px] font-medium text-[#374151] transition-colors hover:bg-[#f9fafb] dark:border-[#2a2e3e] dark:bg-[#181c28] dark:text-[#b0b5bf] dark:hover:bg-[#1c202e]"
-          >
-            Submit another application
-          </button>
-          <a
-            href="/marketplace"
-            className="mt-[12px] inline-flex h-[46px] items-center justify-center rounded-[10px] bg-[#6366F1] px-6 text-[16px] font-semibold text-white transition-colors hover:bg-[#5558e3]"
-          >
-            Continue to Marketplace
-          </a>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="cl-btn-secondary h-[44px] px-6 text-[14px]"
+            >
+              Submit Another Application
+            </button>
+            <a
+              href="/marketplace"
+              className="cl-btn-primary h-[44px] px-6 text-[14px]"
+            >
+              Continue to Marketplace
+            </a>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit} noValidate className="mt-[60px]">
@@ -411,13 +413,13 @@ export default function ApplicationForm() {
             </p>
           )}
 
-          <div className="mt-[44px] flex justify-center">
+          <div className="mt-10 flex justify-center">
             <button
               type="submit"
               disabled={submitting}
-              className="h-[50px] w-full max-w-[331px] rounded-[10px] bg-[#6366f1] text-[16px] font-semibold text-white transition-colors hover:bg-[#5346ae] disabled:cursor-not-allowed disabled:opacity-60 dark:bg-[#6366f1] dark:hover:bg-[#6366f1]/30"
+              className="cl-btn-primary h-[48px] w-full max-w-[320px] text-[15px] font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {submitting ? "Submitting..." : "Submit Application"}
+              {submitting ? "Submitting Application..." : "Submit Application"}
             </button>
           </div>
         </form>

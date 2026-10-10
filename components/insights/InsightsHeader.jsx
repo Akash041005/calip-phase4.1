@@ -12,11 +12,11 @@ export default function InsightsHeader({ companyName }) {
         </p>
       </div>
 
-      <div className="flex items-center gap-[12px]">
-        <div className="flex h-[34px] min-w-[120px] max-w-[200px] items-center justify-between rounded-[12px] border border-[#e5e7eb] bg-white px-[12px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.06)] dark:border-[#2a2e3e] dark:bg-[#181c28]">
-          <span className="truncate text-[13px] text-[#4b5563] dark:text-[#9ca3af]">{companyName}</span>
+      <div className="flex items-center gap-3">
+        <div className="flex h-[36px] min-w-[120px] max-w-[200px] items-center justify-between rounded-xl border border-white/[0.08] bg-[#111318] px-3">
+          <span className="truncate text-[13px] text-slate-300">{companyName}</span>
           <ChevronDown
-            className="ml-1 h-[12px] w-[12px] shrink-0 text-[#4b5563] dark:text-[#9ca3af]"
+            className="ml-1 h-3.5 w-3.5 shrink-0 text-slate-400"
             strokeWidth={2}
           />
         </div>
@@ -24,10 +24,10 @@ export default function InsightsHeader({ companyName }) {
         <button
           type="button"
           onClick={() => window.print()}
-          className="flex h-[34px] items-center gap-[6px] rounded-[12px] border border-[#e5e7eb] bg-white px-[12px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.06)] transition-colors hover:bg-gray-50 dark:border-[#2a2e3e] dark:bg-[#181c28] dark:hover:bg-[#202535]"
+          className="flex h-[36px] items-center gap-2 rounded-xl border border-white/[0.08] bg-[#111318] px-3.5 text-slate-300 hover:border-white/20 hover:text-white transition-colors"
         >
-          <Upload className="h-[14px] w-[14px] text-[#4b5563] dark:text-[#9ca3af]" strokeWidth={1.75} />
-          <span className="text-[13px] font-medium text-[#4b5563] dark:text-[#9ca3af]">Export Report</span>
+          <Upload className="h-3.5 w-3.5 text-slate-400" strokeWidth={1.75} />
+          <span className="text-[13px] font-medium">Export Report</span>
         </button>
       </div>
     </div>

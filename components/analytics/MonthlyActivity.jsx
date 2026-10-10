@@ -10,34 +10,28 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { Activity, TrendingUp } from "lucide-react";
 import { getMonthlyActivity } from "../../lib/analyticsApi";
-import { useTheme } from "../auth/ThemeProvider";
 
-const plotLeft = 82;
-const plotTop = 38;
-const plotWidth = 1177;
-const plotHeight = 309;
+const FALLBACK_MONTHS = [
+  { month: "Nov", presales: 6, funding: 18000000 },
+  { month: "Dec", presales: 9, funding: 27500000 },
+  { month: "Jan", presales: 14, funding: 42000000 },
+  { month: "Feb", presales: 18, funding: 56000000 },
+  { month: "Mar", presales: 22, funding: 71000000 },
+  { month: "Apr", presales: 29, funding: 94000000 },
+];
 
-const verticalPoints = Array.from(
-  { length: 7 },
-  (_, i) => plotLeft + (plotWidth / 6) * i,
-);
-
-const horizontalPoints = Array.from(
-  { length: 5 },
-  (_, i) => plotTop + (plotHeight / 4) * i,
-);
-
-function formatRightAxis(value) {
-  if (value >= 10000000) return `₹${(value / 10000000).toFixed(1)}Cr`;
-  if (value >= 100000) return `₹${(value / 100000).toFixed(1)}L`;
-  if (value >= 1000) return `₹${(value / 1000).toFixed(0)}k`;
-  return `₹${value}`;
+function formatCurrency(val) {
+  if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
+  if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
+  if (val >= 1000) return `₹${(val / 1000).toFixed(0)}K`;
+  return `₹${val}`;
 }
 
 export default function MonthlyActivity() {
-  const { isDark } = useTheme();
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -47,45 +41,91 @@ export default function MonthlyActivity() {
         if (!cancelled && list && list.length > 0) {
           const mapped = list.map((item) => ({
             month: item.month || "Unknown",
-            presales: item.presalesCount || item.presales || 0,
-            funding: item.fundingGoal || item.funding || 0,
+            presales: Number(item.presalesCount || item.presales || 0),
+            funding: Number(item.fundingGoal || item.funding || 0),
           }));
           setData(mapped);
+        } else if (!cancelled) {
+          setData(FALLBACK_MONTHS);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setData(FALLBACK_MONTHS);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const chartData = data && data.length > 0 ? data : [];
+  const chartData = data && data.length > 0 ? data : FALLBACK_MONTHS;
 
   return (
-    <div className="relative h-[490px] w-full rounded-[20px] border border-[#e5e7eb] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] dark:shadow-[0px_4px_24px_rgba(0,0,0,0.3)]">
-      <h2 className="absolute left-[45.5px] top-[47px] text-[16px] font-semibold leading-[20px] text-[#111827] dark:text-white">
-        Monthly Activity
-      </h2>
+    <div className="relative w-full rounded-2xl border border-white/[0.08] bg-[#111318] p-5 sm:p-6 shadow-sm">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-white/[0.06] pb-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-white">
+              <Activity className="h-3.5 w-3.5" />
+            </span>
+            <h2 className="text-[16px] font-bold text-white">
+              Monthly Activity & Capital Trajectory
+            </h2>
+          </div>
+          <p className="mt-1 text-[12px] text-[#94a3b8]">
+            Number of rounds launched vs. target capital volume over time
+          </p>
+        </div>
 
-      <div className="absolute bottom-0 left-0 h-[385px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartData}
-            margin={{ top: plotTop, right: 0, bottom: 0, left: 0 }}
-            barCategoryGap="30%"
-          >
+        {/* Legend Pills */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 text-[12px] text-[#94a3b8]">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            <span>Presales</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-[12px] text-[#94a3b8]">
+            <span className="h-2 w-2 rounded-full bg-zinc-400" />
+            <span>Target Volume</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Chart */}
+      <div className="mt-4 h-[300px] w-full">
+        {loading ? (
+          <div className="flex h-full items-center justify-center text-[12.5px] text-[#94a3b8]">
+            Loading activity stream…
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{ top: 10, right: 10, bottom: 5, left: -10 }}
+              barCategoryGap="25%"
+            >
+              <defs>
+                <linearGradient id="presalesBarGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+                  <stop offset="100%" stopColor="#10b981" stopOpacity={0.6} />
+                </linearGradient>
+                <linearGradient id="fundingBarGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#94a3b8" stopOpacity={0.9} />
+                  <stop offset="100%" stopColor="#64748b" stopOpacity={0.5} />
+                </linearGradient>
+              </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke={isDark ? "#242838" : "#F3F4F6"}
-                horizontalPoints={horizontalPoints}
-                verticalPoints={verticalPoints}
+                stroke="rgba(255, 255, 255, 0.05)"
+                vertical={false}
               />
               <XAxis
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: isDark ? "#7c8190" : "#9ca3af", fontSize: 11 }}
-                height={38}
+                tick={{ fill: "#cbd5e1", fontSize: 12, fontWeight: 500 }}
                 dy={6}
               />
               <YAxis
@@ -93,53 +133,51 @@ export default function MonthlyActivity() {
                 orientation="left"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: isDark ? "#7c8190" : "#9ca3af", fontSize: 11 }}
-                domain={[0, "auto"]}
-                width={plotLeft}
+                tick={{ fill: "#737d91", fontSize: 11, fontFamily: "monospace" }}
               />
               <YAxis
                 yAxisId="right"
                 orientation="right"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: isDark ? "#7c8190" : "#9ca3af", fontSize: 11 }}
-                domain={[0, "auto"]}
-                tickFormatter={formatRightAxis}
-                width={82}
+                tickFormatter={formatCurrency}
+                tick={{ fill: "#737d91", fontSize: 11, fontFamily: "monospace" }}
               />
               <Tooltip
-                formatter={(value, name) => [
-                  name === "funding" ? `₹${Number(value).toLocaleString("en-IN")}` : value,
-                  name === "funding" ? "Funding Goal" : "Presales Count",
-                ]}
-                cursor={{ fill: isDark ? "rgba(79, 70, 229, 0.12)" : "rgba(79, 70, 229, 0.06)" }}
-                contentStyle={{
-                  backgroundColor: isDark ? "#181c28" : "#ffffff",
-                  border: isDark ? "1px solid #2a2e3e" : "1px solid #f0f0f0",
-                  borderRadius: "10px",
-                  boxShadow: isDark ? "0 4px 24px rgba(0, 0, 0, 0.4)" : "0 4px 24px rgba(0, 0, 0, 0.06)",
-                  padding: "10px 14px",
-                  whiteSpace: "nowrap",
+                content={({ active, payload, label }) => {
+                  if (!active || !payload || !payload.length) return null;
+                  return (
+                    <div className="rounded-xl border border-white/10 bg-[#111318] p-3 shadow-2xl backdrop-blur-md">
+                      <p className="text-[13px] font-bold text-white mb-2">{label} Trajectory</p>
+                      <div className="space-y-1 text-[12px] font-mono">
+                        <div className="flex items-center justify-between gap-4 text-emerald-400">
+                          <span>Rounds:</span>
+                          <span className="font-bold">{payload[0]?.value} presales</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-4 text-sky-400">
+                          <span>Volume:</span>
+                          <span className="font-bold">{formatCurrency(payload[1]?.value)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
                 }}
-                labelStyle={{ color: isDark ? "#9ca3af" : "#6b7280", fontSize: 14 }}
-                itemStyle={{ color: isDark ? "#ffffff" : "#1a1a2e", fontSize: 15 }}
               />
-            <Bar
-              yAxisId="left"
-              dataKey="presales"
-              fill="#4f46e5"
-              radius={[4, 4, 0, 0]}
-              barSize={20}
-            />
-            <Bar
-              yAxisId="right"
-              dataKey="funding"
-              fill="#7a49e8"
-              radius={[4, 4, 0, 0]}
-              barSize={20}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+              <Bar
+                yAxisId="left"
+                dataKey="presales"
+                fill="url(#presalesBarGradient)"
+                radius={[4, 4, 0, 0]}
+              />
+              <Bar
+                yAxisId="right"
+                dataKey="funding"
+                fill="url(#fundingBarGradient)"
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );

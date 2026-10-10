@@ -33,30 +33,30 @@ export default function AIRecommendationsActivated() {
   }, []);
 
   return (
-    <div className="min-h-[260px] w-full rounded-[14px] border border-[#f0f0f0] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-[#242838] dark:bg-[#181c28] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+    <div className="min-h-[260px] w-full rounded-2xl border border-white/[0.08] bg-[#111318] shadow-sm">
       <div className="flex h-full flex-col p-[24px]">
-        <h2 className="text-[18px] font-semibold text-[#1a1a2e] dark:text-white">AI Recommendations</h2>
+        <h2 className="text-[17px] font-semibold text-white">AI Recommendations</h2>
 
         <div className="mt-[8px] grid flex-1 grid-cols-2 gap-[8px] sm:grid-cols-1">
           {items.map((item, index) => (
             <div
               key={`${item.title}-${index}`}
-              className="flex min-h-[118px] flex-col items-start justify-between gap-2 rounded-lg bg-[#f9fafb] dark:bg-[#1c202e] p-3 sm:h-[46px] sm:min-h-0 sm:flex-row sm:items-center sm:gap-3 sm:px-3 sm:py-0"
+              className="flex min-h-[118px] flex-col items-start justify-between gap-2 rounded-xl bg-[#0e1015] border border-white/[0.06] p-3 sm:h-[46px] sm:min-h-0 sm:flex-row sm:items-center sm:gap-3 sm:px-3 sm:py-0"
             >
               <div className="flex w-full min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
-                <div className="flex h-[34px] w-[34px] items-center justify-center rounded-lg bg-[#eef2ff] dark:bg-[#1e1b4b] text-[15px] font-semibold text-[#6366f1] dark:text-[#818cf8]">
+                <div className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-[13px] font-semibold text-white">
                   {item.initial}
                 </div>
                 <div className="w-full min-w-0">
-                  <p className="truncate text-[14px] font-semibold text-[#1a1a2e] dark:text-white">{item.title}</p>
-                  <p className="truncate text-[12px] text-[#9ca3af] dark:text-[#7c8190]">{item.category}</p>
+                  <p className="truncate text-[13px] font-semibold text-white">{item.title}</p>
+                  <p className="truncate text-[11px] text-[#94a3b8]">{item.category}</p>
                 </div>
               </div>
-              <span className="text-[14px] font-semibold text-[#1a1a2e] dark:text-white">{item.score}</span>
+              <span className="text-[13px] font-semibold text-white font-mono">{item.score}</span>
             </div>
           ))}
           {items.length === 0 && (
-            <p className="col-span-2 py-8 text-center text-[13px] text-[#9ca3af] sm:col-span-1">
+            <p className="col-span-2 py-8 text-center text-[13px] text-[#94a3b8] sm:col-span-1">
               No recommendations available
             </p>
           )}

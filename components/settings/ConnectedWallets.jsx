@@ -24,60 +24,64 @@ function WalletRow({ wallet, onCopy, onRemove, onSetPrimary, removing }) {
   };
 
   return (
-    <div className="flex items-center gap-[20px] px-[35px] py-[18px]">
-      <div className="flex h-[59px] w-[58px] shrink-0 items-center justify-center rounded-[20px] border border-[#131622] dark:border-[#2a2e3e] bg-[#6450ea] dark:bg-[#5546d4]">
-        <Wallet className="h-[28px] w-[28px] text-white" strokeWidth={1.5} />
+    <div className="flex items-center gap-4 py-4">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04]">
+        <Wallet className="h-5 w-5 text-white" strokeWidth={1.5} />
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-[16px] font-semibold leading-none text-[#9da3b0] dark:text-[#b0b5bf]">
-          {wallet.name}
-        </p>
-        <span className="mt-[4px] inline-block rounded-[20px] bg-[#6450ea] dark:bg-[#5546d4] px-3 py-1 text-[14px] font-semibold leading-none text-white">
-          {wallet.badge}
-        </span>
-        <p className="mt-[4px] font-mono text-[11px] font-medium leading-none text-[#333D58] dark:text-[#9ca3af]">
+        <div className="flex items-center gap-2">
+          <p className="text-[15px] font-semibold text-white">
+            {wallet.name}
+          </p>
+          <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-400">
+            {wallet.badge}
+          </span>
+        </div>
+        <p className="mt-1 font-mono text-[12px] text-slate-400">
           {wallet.address}
         </p>
       </div>
 
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="flex shrink-0 items-center gap-2">
         {onSetPrimary && (
           <button
             type="button"
             onClick={onSetPrimary}
-            className="flex h-[36px] items-center gap-1 rounded-[10px] border border-[#e5e7eb] dark:border-[#2a2e3e] px-3 text-[13px] font-medium text-[#6366f1] transition-colors hover:bg-[#f3f4f6] dark:hover:bg-[#1c202e]"
+            className="cl-btn-secondary h-8 px-3 text-[12px]"
             aria-label={`Set ${wallet.name} as primary`}
           >
-            <Star className="h-[15px] w-[15px]" strokeWidth={1.5} />
+            <Star className="h-3.5 w-3.5" strokeWidth={1.5} />
             Make primary
           </button>
         )}
         <button
           type="button"
           onClick={handleCopy}
-          className="flex h-[27px] w-[28px] items-center justify-center text-[#6878a0] transition-colors hover:text-[#333D58] dark:hover:text-[#b0b5bf]"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] text-slate-400 transition hover:bg-white/[0.05] hover:text-white"
           aria-label={`Copy ${wallet.name} address`}
         >
           {copied ? (
-            <Check className="h-[24px] w-[24px] text-[#0e8a4d]" strokeWidth={1.5} />
+            <Check className="h-4 w-4 text-emerald-400" strokeWidth={1.5} />
           ) : (
-            <Copy className="h-[24px] w-[24px]" strokeWidth={1.5} />
+            <Copy className="h-4 w-4" strokeWidth={1.5} />
           )}
         </button>
-        <button
-          type="button"
-          onClick={onRemove}
-          disabled={removing || !onRemove}
-          className="flex h-[59px] w-[58px] items-center justify-center rounded-[15px] border border-[#2f2763] dark:border-[#4338ca] bg-[#6450e8] dark:bg-[#5546d4] transition-colors hover:bg-[#5741dc] disabled:cursor-not-allowed disabled:opacity-50"
-          aria-label={`Remove ${wallet.name}`}
-        >
-          {removing ? (
-            <Loader2 className="h-[24px] w-[24px] animate-spin text-white" strokeWidth={1.5} />
-          ) : (
-            <Trash2 className="h-[24px] w-[24px] text-white" strokeWidth={1.5} />
-          )}
-        </button>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            disabled={removing}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] text-slate-400 transition hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400 disabled:opacity-50"
+            aria-label={`Remove ${wallet.name}`}
+          >
+            {removing ? (
+              <Loader2 className="h-4 w-4 animate-spin text-white" strokeWidth={1.5} />
+            ) : (
+              <Trash2 className="h-4 w-4" strokeWidth={1.5} />
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -186,45 +190,43 @@ export default function ConnectedWallets() {
 
   return (
     <SettingsCard>
-      <div className="flex items-center justify-between px-[35px] pt-[15px] pb-[4px]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/[0.08]">
         <div>
-          <h2 className="text-[20px] font-bold leading-none text-black dark:text-white">
+          <h2 className="text-[18px] font-bold text-white">
             Connected Wallets
           </h2>
-          <p className="mt-[6px] text-[14px] leading-none text-[#8791a7] dark:text-[#9ca3af]">
-            Manage wallets linked to your account
+          <p className="mt-1 text-[13px] text-slate-400">
+            Manage wallets and Web3 addresses linked to your account.
           </p>
         </div>
         <button
           type="button"
           onClick={handleAddWallet}
           disabled={busy || !isAuthenticated}
-          className="flex h-[40px] w-[205px] items-center justify-center rounded-[20px] bg-[#6550EB] text-[15px] font-semibold text-white transition-colors hover:bg-[#5741dc] disabled:cursor-not-allowed disabled:opacity-70"
+          className="cl-btn-primary h-9 px-4 text-[13px]"
         >
           {busy ? "Connecting..." : "+ Add Wallet"}
         </button>
       </div>
 
       {actionError && (
-        <p className="px-[35px] pt-[10px] text-[13px] leading-[18px] text-[#dc2626] dark:text-[#fecaca]">
+        <p className="pt-3 text-[13px] text-rose-400">
           {actionError}
         </p>
       )}
 
-      <div className="mx-[35px] h-px bg-[#e5e7eb] dark:bg-[#2a2e3e]" />
-
       {loading ? (
         <div className="flex items-center justify-center py-10">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#6B54F3] border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
         </div>
       ) : displayWallets.length === 0 ? (
-        <p className="px-[35px] py-[18px] text-[14px] leading-none text-[#8791a7] dark:text-[#9ca3af]">
+        <p className="py-6 text-[13.5px] text-slate-400">
           No wallets connected{walletAddress ? ` — current session: ${truncateAddress(walletAddress)}` : " yet"}.
         </p>
       ) : (
         displayWallets.map((wallet, index) => (
           <div key={wallet.id}>
-            {index > 0 && <div className="mx-[35px] h-px bg-[#e5e7eb] dark:bg-[#2a2e3e]" />}
+            {index > 0 && <div className="h-px bg-white/[0.08]" />}
             <WalletRow
               wallet={wallet}
               onCopy={() => handleCopy(wallet)}

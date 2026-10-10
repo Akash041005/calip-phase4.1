@@ -17,7 +17,7 @@ function renderAnswer(answer) {
             if (trimmed.startsWith("•")) {
               return (
                 <div key={lineIdx} className="ml-1 mt-2 flex gap-3">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#6366f1]" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
                   <span>{trimmed.slice(1).trim()}</span>
                 </div>
               );
@@ -47,41 +47,35 @@ export default function FAQAccordion({ items, defaultOpen = 0, className = "" })
   };
 
   return (
-    <div className={`space-y-[12px] ${className}`}>
+    <div className={`space-y-3 ${className}`}>
       {items.map((item, index) => {
         const isOpen = openIndex === index;
         return (
           <div
             key={index}
-            className={`overflow-hidden rounded-[16px] border bg-white transition-colors duration-300 dark:bg-[#181c28] ${
+            className={`overflow-hidden rounded-xl border bg-[#111318] transition-colors duration-200 ${
               isOpen
-                ? "border-[#c7d2fe] shadow-[0_4px_24px_rgba(99,102,241,0.10)] dark:border-[#3730a3]"
-                : "border-[#f0f0f0] dark:border-[#242838]"
+                ? "border-white/20 shadow-md"
+                : "border-white/[0.08] hover:border-white/[0.14]"
             }`}
           >
             <button
               onClick={() => toggle(index)}
-              className="group flex w-full items-center justify-between gap-4 p-[20px] text-left focus:outline-none sm:px-[24px]"
+              className="group flex w-full items-center justify-between gap-4 p-5 text-left focus:outline-none sm:px-6"
               aria-expanded={isOpen}
             >
-              <span
-                className={`text-[15px] font-semibold leading-snug transition-colors duration-200 sm:text-[16px] ${
-                  isOpen
-                    ? "text-[#4338ca] dark:text-[#818cf8]"
-                    : "text-[#1a1a2e] dark:text-white"
-                }`}
-              >
+              <span className="text-[15px] font-semibold text-white leading-snug sm:text-[16px]">
                 {item.question}
               </span>
               <span
-                className={`flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all duration-200 ${
                   isOpen
-                    ? "border-[#6366f1] bg-[#6366f1] text-white rotate-45"
-                    : "border-[#e5e7eb] text-[#6b7280] group-hover:border-[#6366f1] group-hover:text-[#6366f1] dark:border-[#2a2e3e] dark:text-[#9ca3af] dark:group-hover:border-[#818cf8] dark:group-hover:text-[#818cf8]"
+                    ? "border-white bg-white text-black rotate-45"
+                    : "border-white/[0.1] bg-white/[0.03] text-slate-400 group-hover:text-white"
                 }`}
                 aria-hidden="true"
               >
-                <Plus className="h-[16px] w-[16px]" strokeWidth={2} />
+                <Plus className="h-4 w-4" strokeWidth={2} />
               </span>
             </button>
 
@@ -92,11 +86,11 @@ export default function FAQAccordion({ items, defaultOpen = 0, className = "" })
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                   role="region"
                   className="overflow-hidden"
                 >
-                  <div className="px-[20px] pb-[20px] text-[14px] leading-relaxed text-[#374151] dark:text-[#b0b5bf] sm:px-[24px] sm:pb-[24px]">
+                  <div className="px-5 pb-5 text-[14px] leading-relaxed text-slate-400 sm:px-6 sm:pb-6">
                     {renderAnswer(item.answer)}
                   </div>
                 </motion.div>

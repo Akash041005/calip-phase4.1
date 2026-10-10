@@ -155,13 +155,13 @@ export default function TokenTradePanel({ token, startupId: startupIdProp }) {
   }
 
   return (
-    <section className="min-w-0 overflow-hidden rounded-2xl border border-[#1a2436] bg-[#0f1520] p-4 sm:p-5" aria-labelledby="token-trade-heading">
+    <section className="min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111318] p-5 sm:p-6 shadow-sm" aria-labelledby="token-trade-heading">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <h2 id="token-trade-heading" className="truncate text-[16px] font-bold text-white">Trade ${token?.symbol}</h2>
-          <p className="mt-1 text-[11px] text-neutral-500">Orders are tied to this startup token.</p>
+          <p className="mt-1 text-[11px] text-zinc-400">Direct peer-to-peer liquidity and secondary settlement.</p>
         </div>
-        <div className="grid min-w-[150px] grid-cols-2 rounded-xl border border-[#1a2436] bg-[#0a0e14] p-1" role="tablist" aria-label="Trade action">
+        <div className="grid min-w-[150px] grid-cols-2 rounded-lg border border-white/[0.08] bg-[#0e1015] p-1" role="tablist" aria-label="Trade action">
           {["buy", "sell"].map((nextMode) => (
             <button
               key={nextMode}
@@ -169,7 +169,11 @@ export default function TokenTradePanel({ token, startupId: startupIdProp }) {
               role="tab"
               aria-selected={mode === nextMode}
               onClick={() => switchMode(nextMode)}
-              className={`min-h-9 rounded-lg px-3 text-[12px] font-bold capitalize transition ${mode === nextMode ? "bg-[#6366f1] text-white" : "text-neutral-400 hover:text-white"}`}
+              className={`min-h-8 rounded-md px-3 text-[12px] font-semibold capitalize transition ${
+                mode === nextMode
+                  ? "bg-white text-black shadow-sm"
+                  : "text-zinc-400 hover:text-white"
+              }`}
             >
               {nextMode}
             </button>
@@ -177,23 +181,23 @@ export default function TokenTradePanel({ token, startupId: startupIdProp }) {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-4 grid min-w-0 grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-1">
+      <form onSubmit={handleSubmit} className="mt-5 grid min-w-0 grid-cols-1 gap-3.5 md:grid-cols-2 xl:grid-cols-1">
         {mode === "buy" ? (
           <div className="min-w-0">
-            <label htmlFor="trade-listing" className="mb-1.5 block text-[11px] font-semibold text-neutral-400">Active sell listing</label>
+            <label htmlFor="trade-listing" className="mb-1.5 block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Active Sell Listing</label>
             {loading ? (
-              <div className="flex h-11 items-center gap-2 rounded-lg bg-[#121927] px-3 text-[12px] text-neutral-400"><Loader2 className="h-4 w-4 animate-spin" /> Loading listings...</div>
+              <div className="flex h-11 items-center gap-2 rounded-lg bg-[#0e1015] border border-white/[0.08] px-3 text-[12px] text-zinc-400"><Loader2 className="h-4 w-4 animate-spin text-white" /> Loading listings...</div>
             ) : listings.length === 0 ? (
-              <p className="rounded-lg border border-white/5 bg-[#121927] px-3 py-3 text-[12px] leading-relaxed text-neutral-400">No active sell listings are available for this startup.</p>
+              <p className="rounded-lg border border-white/[0.08] bg-[#0e1015] px-3 py-3 text-[12px] leading-relaxed text-zinc-400">No active sell listings are available for this startup.</p>
             ) : (
               <select
                 id="trade-listing"
                 value={selectedListingId}
                 onChange={(event) => { setSelectedListingId(event.target.value); setAmount(""); setError(""); }}
-                className="h-11 w-full min-w-0 rounded-lg border border-[#1a2436] bg-[#121927] px-3 text-[12px] text-white outline-none focus:border-[#6366f1]"
+                className="h-11 w-full min-w-0 rounded-lg border border-white/[0.08] bg-[#0e1015] px-3 text-[12.5px] text-white outline-none focus:border-white/20"
               >
                 {listings.map((listing) => (
-                  <option key={listing._id} value={listing._id}>
+                  <option key={listing._id} value={listing._id} className="bg-[#111318] text-white">
                     {`${Number(listing.pricePerToken).toLocaleString("en-US")} ${listing.currency || "USDT"}`} / token · {Number(listing.availableTokens).toLocaleString("en-IN")} available
                   </option>
                 ))}
@@ -201,16 +205,16 @@ export default function TokenTradePanel({ token, startupId: startupIdProp }) {
             )}
           </div>
         ) : (
-          <div className="min-w-0 rounded-lg border border-white/5 bg-[#121927] px-3 py-2.5">
-            <p className="text-[11px] text-neutral-400">Your available balance</p>
-            <p className="mt-1 break-words font-mono text-[14px] font-bold text-white">
+          <div className="min-w-0 rounded-lg border border-white/[0.08] bg-[#0e1015] px-3.5 py-2.5">
+            <p className="text-[11px] text-zinc-400 uppercase tracking-wider font-semibold">Your Available Balance</p>
+            <p className="mt-1 break-words font-mono text-[15px] font-bold text-white">
               {loading ? "Loading…" : `${availableBalance.toLocaleString("en-IN")} ${token?.symbol}`}
             </p>
           </div>
         )}
 
         <div className="min-w-0">
-          <label htmlFor="trade-amount" className="mb-1.5 block text-[11px] font-semibold text-neutral-400">Token amount</label>
+          <label htmlFor="trade-amount" className="mb-1.5 block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Token Amount</label>
           <input
             id="trade-amount"
             type="number"
@@ -222,13 +226,13 @@ export default function TokenTradePanel({ token, startupId: startupIdProp }) {
             onChange={(event) => { setAmount(event.target.value); setError(""); setNotice(""); }}
             placeholder="0.00"
             disabled={loading || (mode === "buy" ? !selectedListing : availableBalance <= 0)}
-            className="h-11 w-full min-w-0 rounded-lg border border-[#1a2436] bg-[#121927] px-3 font-mono text-[14px] text-white outline-none placeholder:text-neutral-600 focus:border-[#6366f1] disabled:opacity-50"
+            className="h-11 w-full min-w-0 rounded-lg border border-white/[0.08] bg-[#0e1015] px-3 font-mono text-[14px] text-white outline-none placeholder:text-zinc-600 focus:border-white/20 disabled:opacity-50"
           />
         </div>
 
         {mode === "sell" && (
           <div className="min-w-0">
-            <label htmlFor="trade-sell-price" className="mb-1.5 block text-[11px] font-semibold text-neutral-400">Price per token (USDT)</label>
+            <label htmlFor="trade-sell-price" className="mb-1.5 block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Price per Token (USDT)</label>
             <input
               id="trade-sell-price"
               type="number"
@@ -238,14 +242,14 @@ export default function TokenTradePanel({ token, startupId: startupIdProp }) {
               value={sellPrice}
               onChange={(event) => { setSellPrice(event.target.value); setError(""); setNotice(""); }}
               placeholder={Number(token?.price || 0).toFixed(4)}
-              className="h-11 w-full min-w-0 rounded-lg border border-[#1a2436] bg-[#121927] px-3 font-mono text-[14px] text-white outline-none placeholder:text-neutral-600 focus:border-[#6366f1]"
+              className="h-11 w-full min-w-0 rounded-lg border border-white/[0.08] bg-[#0e1015] px-3 font-mono text-[14px] text-white outline-none placeholder:text-zinc-600 focus:border-white/20"
             />
           </div>
         )}
 
-        <div className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-white/5 bg-[#121927] px-3 py-3 md:col-span-2 xl:col-span-1">
-          <span className="shrink-0 text-[12px] text-neutral-400">{mode === "buy" ? "Estimated total" : "Listing value"}</span>
-          <span className="min-w-0 break-all text-right font-mono text-[13px] font-bold text-white">{`${Number.isFinite(total) ? total.toLocaleString("en-US", { maximumFractionDigits: 6 }) : "0.00"} ${currency}`}</span>
+        <div className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-white/[0.08] bg-[#0e1015] px-3.5 py-3 md:col-span-2 xl:col-span-1">
+          <span className="shrink-0 text-[12px] text-zinc-400">{mode === "buy" ? "Estimated Total" : "Listing Value"}</span>
+          <span className="min-w-0 break-all text-right font-mono text-[14px] font-bold text-white">{`${Number.isFinite(total) ? total.toLocaleString("en-US", { maximumFractionDigits: 6 }) : "0.00"} ${currency}`}</span>
         </div>
 
         <div className="min-w-0 md:col-span-2 xl:col-span-1">
@@ -254,13 +258,13 @@ export default function TokenTradePanel({ token, startupId: startupIdProp }) {
           <button
             type="submit"
             disabled={busy || loading || (mode === "buy" ? !selectedListing : availableBalance <= 0)}
-            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#6366f1] px-3 py-2.5 text-center text-[13px] font-extrabold text-white transition hover:bg-[#5558e3] disabled:cursor-not-allowed disabled:opacity-50"
+            className="cl-btn-primary min-h-11 w-full text-[13.5px] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpRight className="h-4 w-4" />}
-            {busy ? "Submitting…" : mode === "buy" ? `Buy ${token?.symbol}` : "Create sell listing"}
+            {busy ? <Loader2 className="h-4 w-4 animate-spin text-black" /> : <ArrowUpRight className="h-4 w-4" />}
+            {busy ? "Submitting…" : mode === "buy" ? `Buy ${token?.symbol}` : "Create Sell Listing"}
           </button>
-          <p className="mt-2 text-[10.5px] leading-relaxed text-neutral-500">
-            {mode === "buy" ? "Purchase from the selected active listing." : "This creates a sell listing; it is not an instant sale."}
+          <p className="mt-2 text-[11px] leading-relaxed text-zinc-500">
+            {mode === "buy" ? "Purchase executes against the selected active listing." : "This creates an on-chain order; execution occurs when matched."}
           </p>
         </div>
       </form>

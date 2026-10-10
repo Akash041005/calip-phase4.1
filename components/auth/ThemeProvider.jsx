@@ -5,7 +5,7 @@ import { useAuth } from "../auth/AuthProvider";
 import { updatePreferences } from "../../lib/usersApi";
 
 const ThemeContext = createContext({
-  isDark: false,
+  isDark: true,
   toggleTheme: () => {},
   setTheme: () => {},
 });
@@ -22,12 +22,12 @@ function subscribeTheme(callback) {
 }
 
 function getThemeSnapshot() {
-  if (typeof document === "undefined") return false;
+  if (typeof document === "undefined") return true;
   return document.documentElement.classList.contains("dark");
 }
 
 function getServerSnapshot() {
-  return false;
+  return true;
 }
 
 export function ThemeProvider({ children }) {
@@ -35,24 +35,14 @@ export function ThemeProvider({ children }) {
   const isDark = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("calip-theme") : null;
-    let shouldBeDark = false;
-    if (stored !== null) {
-      shouldBeDark = stored === "dark";
-    } else if (user?.settings?.darkMode !== undefined) {
-      shouldBeDark = Boolean(user.settings.darkMode);
-    } else if (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      shouldBeDark = true;
-    }
-
     const root = document.documentElement;
-    // Guard DOM write: toggling class unconditionally re-fires the
-    // MutationObserver in subscribeTheme -> extra re-render loop.
-    const isCurrentlyDark = root.classList.contains("dark");
-    if (shouldBeDark !== isCurrentlyDark) {
-      root.classList.toggle("dark", shouldBeDark);
+    if (!root.classList.contains("dark")) {
+      root.classList.add("dark");
     }
-  }, [user?.settings?.darkMode]);
+    try {
+      localStorage.setItem("calip-theme", "dark");
+    } catch {}
+  }, []);
 
   const toggleTheme = useCallback(async () => {
     const next = !document.documentElement.classList.contains("dark");

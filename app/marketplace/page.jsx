@@ -96,37 +96,36 @@ export default function MarketplacePage() {
   }, [tokens]);
 
   const selectClass =
-    "h-[38px] rounded-full border border-white/[0.08] bg-white/[0.04] px-4 text-[13px] font-medium text-[#f4f5fb] outline-none transition hover:border-white/[0.18] focus:border-[#8174ff]/60";
+    "h-[38px] rounded-full border border-white/[0.08] bg-white/[0.04] px-4 text-[13px] font-medium text-[#f4f5fb] outline-none transition hover:border-white/[0.18] focus:border-white/40";
 
   return (
-    <div className="min-h-screen bg-[#080a0f] text-[#f4f5fb]">
+    <div className="min-h-screen bg-[#090a0f] text-[#f4f5fb]">
       <Navbar activePage="marketplace" />
 
       <main className="mx-auto max-w-[1400px] px-4 pb-16 sm:px-6 lg:px-8">
         {/* HERO */}
         <FadeUp>
-          <section className="flex flex-col gap-6 py-10 sm:py-14 lg:flex-row lg:items-end lg:justify-between border-b border-white/[0.06]">
+          <section className="flex flex-col gap-6 py-10 sm:py-14 lg:flex-row lg:items-end lg:justify-between border-b border-white/[0.08]">
             <div className="max-w-2xl">
               <p className="cl-kicker-label">
                 <span className="cl-mint-dot" />
-                Calip Marketplace
+                Markets & Token Discovery
               </p>
               <h1 className="mt-3 text-[32px] font-bold leading-[1.08] tracking-tight text-white sm:text-[44px]">
-                Discover the startups shaping <span className="text-[#bcb5ff]">what&apos;s next.</span>
+                Discover startups shaping <span className="text-zinc-400">the future.</span>
               </h1>
-              <p className="mt-3 max-w-xl text-[14.5px] leading-relaxed text-[#a6adbf]">
-                Explore startup tokens, track real-time performance, and discover what&apos;s
-                happening across the Calip private market ecosystem.
+              <p className="mt-3 max-w-xl text-[14.5px] leading-relaxed text-[#94a3b8]">
+                Explore verified startup performance tokens, track real-time liquidity, and participate in primary market discovery.
               </p>
               <div className="mt-5 flex flex-wrap gap-2.5 font-mono text-[12px]">
-                <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-[#a6adbf]">
+                <span className="rounded-md border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-[#94a3b8]">
                   <strong className="text-white font-sans">{tokens.length}</strong> tokens listed
                 </span>
-                <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-[#a6adbf]">
+                <span className="rounded-md border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-[#94a3b8]">
                   <strong className="text-white font-sans">{Math.max(1, sectors.length - 1)}</strong> sectors
                 </span>
-                <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-[#a6adbf]">
-                  <strong className={avgChange >= 0 ? "text-[#78dfc0]" : "text-rose-400"}>
+                <span className="rounded-md border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-[#94a3b8]">
+                  <strong className={avgChange >= 0 ? "text-emerald-400" : "text-rose-400"}>
                     {avgChange >= 0 ? "+" : ""}{avgChange.toFixed(2)}%
                   </strong>{" "}
                   avg 24h
@@ -136,7 +135,7 @@ export default function MarketplacePage() {
             <button
               type="button"
               onClick={() => router.push("/marketplace/create")}
-              className="cl-btn-primary h-[44px] px-6 text-[13.5px] shrink-0"
+              className="cl-btn-primary h-[42px] px-5 text-[13px] shrink-0"
             >
               <Plus className="h-4 w-4" strokeWidth={2.5} /> Create Token
             </button>
@@ -145,32 +144,32 @@ export default function MarketplacePage() {
 
         {/* TOOLBAR */}
         <FadeUp delay={0.05}>
-          <section aria-label="Discover tokens" className="mt-8 flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-[#111723]/90 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-md">
+          <section aria-label="Discover tokens" className="mt-8 flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-[#111318] p-4 shadow-sm">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#737d91]" />
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search startups or tokens..."
                 aria-label="Search startups or tokens"
-                className="h-[40px] w-full rounded-full border border-white/[0.08] bg-white/[0.04] pl-10 pr-4 text-[13.5px] text-white placeholder-[#737d91] outline-none transition focus:border-[#8174ff]/50 focus:bg-white/[0.06]"
+                className="h-[40px] w-full rounded-lg border border-white/[0.08] bg-[#0e1015] pl-10 pr-4 text-[13.5px] text-white placeholder-zinc-500 outline-none transition focus:border-white/20 focus:bg-[#111318]"
               />
             </div>
             <div className="flex gap-2 overflow-x-auto">
-              <select aria-label="Filter by sector" value={sector} onChange={(e) => setSector(e.target.value)} className={selectClass}>
+              <select aria-label="Filter by sector" value={sector} onChange={(e) => setSector(e.target.value)} className="h-[38px] rounded-lg border border-white/[0.08] bg-[#0e1015] px-3.5 text-[13px] font-medium text-zinc-200 outline-none transition hover:border-white/20 focus:border-white/30">
                 {sectors.map((s) => (
-                  <option key={s} value={s} className="bg-[#0d111b] text-white">{s === "All" ? "All sectors" : s}</option>
+                  <option key={s} value={s} className="bg-[#111318] text-white">{s === "All" ? "All sectors" : s}</option>
                 ))}
               </select>
-              <select aria-label="Filter by stage" value={stage} onChange={(e) => setStage(e.target.value)} className={selectClass}>
+              <select aria-label="Filter by stage" value={stage} onChange={(e) => setStage(e.target.value)} className="h-[38px] rounded-lg border border-white/[0.08] bg-[#0e1015] px-3.5 text-[13px] font-medium text-zinc-200 outline-none transition hover:border-white/20 focus:border-white/30">
                 {stages.map((s) => (
-                  <option key={s} value={s} className="bg-[#0d111b] text-white">{s === "All" ? "All stages" : s}</option>
+                  <option key={s} value={s} className="bg-[#111318] text-white">{s === "All" ? "All stages" : s}</option>
                 ))}
               </select>
-              <select aria-label="Sort tokens" value={sort} onChange={(e) => setSort(e.target.value)} className={`${selectClass} ml-auto`}>
+              <select aria-label="Sort tokens" value={sort} onChange={(e) => setSort(e.target.value)} className="h-[38px] rounded-lg border border-white/[0.08] bg-[#0e1015] px-3.5 text-[13px] font-medium text-zinc-200 outline-none transition hover:border-white/20 focus:border-white/30 ml-auto">
                 {SORTS.map((s) => (
-                  <option key={s.id} value={s.id} className="bg-[#0d111b] text-white">{s.label}</option>
+                  <option key={s.id} value={s.id} className="bg-[#111318] text-white">{s.label}</option>
                 ))}
               </select>
             </div>
@@ -180,7 +179,7 @@ export default function MarketplacePage() {
         {/* GRID */}
         <section className="mt-8" aria-label="Startup tokens">
           {!loading && tokensError && tokens.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-rose-500/40 bg-[#0b0e14] p-10 text-center">
+            <div className="rounded-2xl border border-dashed border-rose-500/30 bg-[#111318] p-10 text-center">
               <p className="mt-2 text-base font-semibold text-white">Couldn&apos;t load tokens</p>
               <p className="mx-auto mt-1 max-w-sm text-[13px] text-[#94a3b8]">
                 {tokensError} Check that the backend is running and NEXT_PUBLIC_API_URL is set.
@@ -189,12 +188,12 @@ export default function MarketplacePage() {
           ) : loading ? (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-[240px] animate-pulse rounded-2xl border border-[#1a2436] bg-[#0f1520]" />
+                <div key={i} className="h-[240px] animate-pulse rounded-2xl border border-white/[0.08] bg-[#111318]" />
               ))}
             </div>
           ) : filtered.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-[#1a2436] bg-[#0b0e14] p-10 text-center">
-              <Store className="mx-auto h-10 w-10 text-neutral-600" strokeWidth={1.5} />
+            <div className="rounded-2xl border border-dashed border-white/[0.08] bg-[#111318] p-10 text-center">
+              <Store className="mx-auto h-10 w-10 text-zinc-600" strokeWidth={1.5} />
               <p className="mt-2 text-base font-semibold text-white">
                 {query || sector !== "All" || stage !== "All" ? "No tokens match your filters" : "No startup tokens yet."}
               </p>
@@ -206,7 +205,7 @@ export default function MarketplacePage() {
               <button
                 type="button"
                 onClick={() => router.push("/marketplace/create")}
-                className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#6366F1] px-5 py-2.5 text-[13px] font-bold text-white transition hover:bg-[#5558e3]"
+                className="cl-btn-primary mt-4 h-[38px] px-4 text-[13px]"
               >
                 <Plus className="h-4 w-4" strokeWidth={2.5} /> Create Token
               </button>
@@ -235,7 +234,7 @@ export default function MarketplacePage() {
 
         {loading && (
           <div className="mt-4 flex items-center justify-center gap-2 py-6 text-[13px] text-[#94a3b8]">
-            <Loader2 className="h-4 w-4 animate-spin text-[#6366f1]" /> Loading marketplace...
+            <Loader2 className="h-4 w-4 animate-spin text-white" /> Loading marketplace...
           </div>
         )}
       </main>

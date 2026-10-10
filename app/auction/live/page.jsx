@@ -30,7 +30,7 @@ export default function AuctionLivePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#080a0f] text-[#f4f5fb]">
+    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
       <Navbar activePage="auction" />
 
       <main className="mx-auto max-w-[1400px] px-4 pb-16 sm:px-6 lg:px-8">

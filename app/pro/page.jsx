@@ -16,7 +16,7 @@ export const metadata = {
 
 export default function ProPage() {
   return (
-    <div className={`${sora.className} min-h-screen bg-[#fafaf8] dark:bg-[#0c0e14]`}>
+    <div className={`${sora.className} min-h-screen bg-[#090a0f] text-white`}>
       <Navbar />
 
       <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 pb-[80px]">

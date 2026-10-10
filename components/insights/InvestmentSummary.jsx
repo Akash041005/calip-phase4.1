@@ -22,34 +22,34 @@ export default function InvestmentSummary({ data }) {
     : [];
 
   return (
-    <div className="w-full rounded-[20px] border border-[#e5e7eb] bg-white p-[25px] sm:p-[28px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.06)] dark:border-[#2a2e3e] dark:bg-[#181c28]">
+    <div className="w-full rounded-2xl border border-white/[0.08] bg-[#111318] p-6 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-[16px] font-semibold leading-[24px] text-[#111827] dark:text-white">
+        <h2 className="text-[16px] font-bold text-white">
           AI Investment Summary
         </h2>
         {base.aiServiceStatus && (
-          <span className="rounded-full bg-[#eef2ff] px-3 py-1 text-[11px] font-medium text-[#6366f1] dark:bg-[#201d3b] dark:text-[#a78bfa]">
+          <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-[11px] font-mono text-emerald-400">
             Status: {base.aiServiceStatus === "pending_integration" ? "Oracle Active" : base.aiServiceStatus}
           </span>
         )}
       </div>
 
-      <div className="mt-[32px] space-y-[24px]">
+      <div className="mt-6 space-y-5">
         {metrics.map((metric, index) => (
           <div key={metric.id} className="space-y-2">
             <div className="flex items-center justify-between text-[13px]">
-              <span className="text-[#4b5563] dark:text-[#9ca3af]">{metric.label}</span>
-              <span className="font-semibold text-[#111827] dark:text-white" style={{ color: metric.scoreColor }}>
+              <span className="text-slate-400">{metric.label}</span>
+              <span className="font-semibold text-emerald-400">
                 {index === 0 && !dims ? `Exceptional · ${aiScore}/100` : metric.score}
               </span>
             </div>
 
-            <div className="h-[8px] w-full overflow-hidden rounded-full bg-[#e5e7eb] dark:bg-[#2a2e3e]">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-white/[0.06]">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{
                   width: `${metric.barPercent}%`,
-                  backgroundColor: metric.barColor,
+                  backgroundColor: "#10b981",
                 }}
               />
             </div>
@@ -57,9 +57,9 @@ export default function InvestmentSummary({ data }) {
         ))}
       </div>
 
-      <div className="mt-[36px] rounded-[16px] bg-[#eef2ff] p-[18px] dark:bg-[#1e2235]">
-        <p className="text-[14px] leading-[22px] text-[#4f46e5] dark:text-[#a5b4fc]">
-          <span className="font-bold mr-1.5">AI Verdict:</span>
+      <div className="mt-7 rounded-xl border border-white/[0.08] bg-[#0e1015] p-4">
+        <p className="text-[14px] leading-relaxed text-slate-300">
+          <span className="font-bold text-white mr-1.5">AI Verdict:</span>
           {verdict}
         </p>
       </div>

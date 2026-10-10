@@ -71,13 +71,13 @@ export default function InsightsPage() {
   }, [id]);
 
   return (
-    <div className="min-h-screen bg-[#070a0f] text-[#f8fafc]">
+    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
       <Navbar activePage="companies" />
 
       <main className="pb-12">
         {loading ? (
           <div className="flex h-[300px] items-center justify-center">
-            <p className="text-[14px] text-[#6366F1] font-mono animate-pulse">Loading Company Overview...</p>
+            <p className="text-[14px] text-emerald-400 font-mono animate-pulse">Loading Company Overview...</p>
           </div>
         ) : (
           <TokenDetailOverview tokenId={id} startupData={data} />

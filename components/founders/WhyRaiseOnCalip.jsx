@@ -8,33 +8,34 @@ const benefitIcons = {
 
 export default function WhyRaiseOnCalip() {
   return (
-    <section className="mt-[80px] sm:mt-[100px] lg:mt-[140px]">
-      <h2 className="text-center text-[32px] font-bold leading-[48px] tracking-[-0.5px] text-[#111827] dark:text-white">
-        Why raise on Calip?
-      </h2>
+    <section className="mt-14 sm:mt-18">
+      <div className="text-center">
+        <h2 className="text-[26px] sm:text-[32px] font-bold tracking-tight text-white">
+          Why raise on Calip?
+        </h2>
+        <p className="mt-1.5 text-[13.5px] text-[#a6adbf]">
+          Traditional venture capital is fragmented and slow. Calip provides a frictionless liquidity highway.
+        </p>
+      </div>
 
-      <div className="mt-[50px] flex flex-wrap justify-center gap-x-[45px] gap-y-[62px]">
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {raiseBenefits.map((benefit) => {
-          const Icon = benefitIcons[benefit.icon];
+          const Icon = benefitIcons[benefit.icon] || Sparkle;
           return (
             <div
               key={benefit.id}
-              className="min-h-[195px] h-auto w-[400px] max-w-full rounded-[20px] border border-[#e5e7eb] bg-white p-[22px] shadow-[0_2px_4px_0px_rgba(0,0,0,0.25)] dark:border-[#2a2e3e] dark:bg-[#181c28] dark:shadow-[0_2px_4px_0px_rgba(0,0,0,0.5)]"
+              className="cl-card-interactive rounded-2xl border border-white/[0.08] bg-[#111318] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.35)] group"
             >
-              <div className="flex items-center gap-[10px]">
-                <div className="relative h-[25px] w-[25px] shrink-0">
-                  <div className="absolute inset-x-0 top-1/2 mx-auto h-[20px] w-[20px] -translate-y-1/2 rounded-[5px] border border-[#e5e7eb] bg-[#f4f5f7] dark:border-[#2a2e3e] dark:bg-[#1c202e]" />
-                  <Icon
-                    className="absolute left-[6px] top-[6px] h-[13px] w-[13px] text-[#6366f1]"
-                    strokeWidth={2}
-                  />
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.08] text-white">
+                  <Icon className="h-4.5 w-4.5" strokeWidth={2} />
                 </div>
-                <h3 className="text-[15px] font-semibold leading-[22.5px] text-[#111827] dark:text-white">
+                <h3 className="text-[15px] font-semibold text-white">
                   {benefit.title}
                 </h3>
               </div>
 
-              <p className="mt-[16px] pl-[35px] text-[14px] leading-[20.8px] text-[#4b5563] dark:text-[#b0b5bf]">
+              <p className="mt-3.5 text-[13px] leading-relaxed text-slate-400">
                 {benefit.description}
               </p>
             </div>

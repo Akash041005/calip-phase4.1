@@ -42,39 +42,39 @@ export default function BuyModal({ listing, onClose, onSubmit }) {
   };
 
   const inputClass =
-    "h-[42px] w-full rounded-[10px] border border-[#e5e7eb] bg-[#f4f5f7] px-4 text-[14px] sm:text-[16px] text-[#1a1a2e] placeholder:text-[#9ca3af] outline-none transition-colors focus:border-[#6366f1] focus:bg-white dark:border-[#2a2e3e] dark:bg-[#1c202e] dark:text-white dark:placeholder:text-[#7c8190] dark:focus:bg-[#181c28]";
+    "h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 text-[14px] text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-white/20 focus:bg-[#111318]";
 
   return (
     <ModalPortal
       isOpen={true}
       onClose={onClose}
-      backdropClassName="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+      backdropClassName="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
       ariaLabel="Buy tokens"
     >
       <div
-        className="w-full max-w-[440px] max-h-[85vh] overflow-y-auto rounded-[16px] border border-[#e5e7eb] bg-white shadow-xl dark:border-[#2a2e3e] dark:bg-[#141620]"
+        className="w-full max-w-[440px] max-h-[85vh] overflow-y-auto rounded-2xl border border-white/[0.08] bg-[#111318] shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-[#e5e7eb] px-[20px] py-[14px] dark:border-[#2a2e3e]">
-          <h3 className="text-[16px] font-semibold text-black dark:text-white">
+        <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
+          <h3 className="text-[16px] font-bold text-white">
             Buy tokens
           </h3>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-[26px] w-[26px] items-center justify-center rounded-[6px] text-[#6b7280] transition-colors hover:bg-[#f3f4f6] dark:text-[#9ca3af] dark:hover:bg-[#1e2234]"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
           >
-            <X className="h-[15px] w-[15px]" strokeWidth={2} />
+            <X className="h-4 w-4" strokeWidth={2} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-[20px] py-[20px]">
-          <div className="rounded-[12px] bg-[#f9fafb] px-[16px] py-[14px] dark:bg-[#181c28]">
-            <p className="text-[12px] text-[#6b7280] dark:text-[#9ca3af]">
+        <form onSubmit={handleSubmit} className="p-5">
+          <div className="rounded-xl border border-white/[0.08] bg-[#0e1015] p-4">
+            <p className="text-[12px] text-slate-400">
               {startup.startupName || "Startup"}
             </p>
-            <p className="mt-[4px] text-[15px] font-semibold text-[#111827] dark:text-white">
+            <p className="mt-1 text-[16px] font-bold font-mono text-white">
               {Number(pricePerToken).toLocaleString("en-IN", {
                 style: "currency",
                 currency: "INR",
@@ -82,14 +82,14 @@ export default function BuyModal({ listing, onClose, onSubmit }) {
               })}{" "}
               per token
             </p>
-            <p className="mt-[2px] text-[12px] text-[#9ca3af] dark:text-[#7c8190]">
+            <p className="mt-1 text-[12px] font-mono text-slate-400">
               {available.toLocaleString("en-IN")} tokens available
             </p>
           </div>
 
           <label
             htmlFor="buy-amount"
-            className="mb-[8px] mt-[18px] block text-[13px] font-medium text-[#374151] dark:text-[#b0b5bf]"
+            className="mb-1.5 mt-4 block text-[13px] font-medium text-slate-300"
           >
             Token amount
           </label>
@@ -108,26 +108,26 @@ export default function BuyModal({ listing, onClose, onSubmit }) {
             className={inputClass}
           />
 
-          <div className="mt-[16px] flex items-center justify-between rounded-[12px] border border-[#e5e7eb] px-[16px] py-[12px] dark:border-[#2a2e3e]">
-            <span className="text-[13px] text-[#6b7280] dark:text-[#9ca3af]">Total payment</span>
-            <span className="text-[16px] font-bold text-[#111827] dark:text-white">
+          <div className="mt-4 flex items-center justify-between rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 py-3">
+            <span className="text-[13px] text-slate-400">Total payment</span>
+            <span className="text-[16px] font-bold font-mono text-white">
               ₹ {Number(totalPrice || 0).toLocaleString("en-IN")}
             </span>
           </div>
 
           {error && (
-            <p className="mt-[12px] text-[13px] text-[#F0395A]">{error}</p>
+            <p className="mt-3 text-[13px] text-rose-400">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={busy}
-            className="mt-[20px] flex h-[46px] w-full items-center justify-center gap-[8px] rounded-[10px] bg-[#6366f1] text-[15px] font-semibold text-white transition-colors hover:bg-[#5558e3] disabled:cursor-not-allowed disabled:opacity-60"
+            className="cl-btn-primary mt-5 h-[44px] w-full text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-60"
           >
             {busy ? (
-              <Loader2 className="h-[18px] w-[18px] animate-spin" strokeWidth={2} />
+              <Loader2 className="h-4 w-4 animate-spin text-black" strokeWidth={2} />
             ) : (
-              <ShoppingCart className="h-[17px] w-[17px]" strokeWidth={2} />
+              <ShoppingCart className="h-4 w-4" strokeWidth={2} />
             )}
             {busy ? "Processing..." : "Confirm purchase"}
           </button>

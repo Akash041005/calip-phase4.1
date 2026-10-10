@@ -26,8 +26,8 @@ export function CalipLogo() {
           y2="46"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stopColor="#A78BFA" />
-          <stop offset="1" stopColor="#6366F1" />
+          <stop stopColor="#FFFFFF" />
+          <stop offset="1" stopColor="#A1A1AA" />
         </linearGradient>
       </defs>
     </svg>

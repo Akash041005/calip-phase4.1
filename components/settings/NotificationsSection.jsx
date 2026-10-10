@@ -44,30 +44,30 @@ export default function NotificationsSection() {
 
   return (
     <SettingsCard>
-      <div className="px-[35px] pt-[15px] pb-[4px]">
-        <h2 className="text-[20px] font-bold leading-none text-black dark:text-white">
+      <div className="pb-4 border-b border-white/[0.08]">
+        <h2 className="text-[18px] font-bold text-white">
           Notifications
         </h2>
+        <p className="mt-1 text-[13px] text-slate-400">
+          Configure real-time deal alerts and platform notifications.
+        </p>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-10">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#6B54F3] border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
         </div>
       ) : (
-        <div className="flex flex-col">
+        <div className="divide-y divide-white/[0.08]">
           {notificationSettings.map((item) => (
-            <div key={item.key}>
-              <div className="flex items-center justify-between px-[35px] py-[18px]">
-                <p className="text-[14px] leading-none text-[#8791a7] dark:text-[#9ca3af]">
-                  {item.label}
-                </p>
-                <SettingsToggle
-                  checked={!!preferences[item.key]}
-                  onChange={(val) => handleToggle(item.key, val)}
-                />
-              </div>
-              <div className="mx-[35px] h-px bg-[#e5e7eb] dark:bg-[#2a2e3e]" />
+            <div key={item.key} className="flex items-center justify-between py-4">
+              <p className="text-[14px] font-medium text-white">
+                {item.label}
+              </p>
+              <SettingsToggle
+                checked={!!preferences[item.key]}
+                onChange={(val) => handleToggle(item.key, val)}
+              />
             </div>
           ))}
         </div>

@@ -24,13 +24,13 @@ export default function TokenDetail({ token, watched, onToggleWatch }) {
 
       {/* Identity */}
       <FadeUp delay={0.05}>
-        <div className="mt-4 flex min-w-0 flex-col gap-4 rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-4 flex min-w-0 flex-col gap-4 rounded-2xl border border-white/[0.08] bg-[#111318] p-6 sm:flex-row sm:items-center sm:justify-between shadow-sm">
           <div className="flex min-w-0 items-center gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#1a2538] text-[19px] font-extrabold text-[#818cf8]">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.08] text-[18px] font-bold text-white shadow-sm">
               {token.symbol.slice(0, 2)}
             </div>
             <div className="min-w-0">
-              <h1 className="truncate text-[24px] font-extrabold text-white">{token.name}</h1>
+              <h1 className="truncate text-[22px] font-bold text-white">{token.name}</h1>
               <p className="font-mono text-[12.5px] text-[#94a3b8]">
                 ${token.symbol} · {token.sector} · {token.stage} · Created {timeAgo(token.createdAt)}
               </p>
@@ -47,7 +47,7 @@ export default function TokenDetail({ token, watched, onToggleWatch }) {
 
       {/* Performance */}
       <FadeUp delay={0.1}>
-        <div className="mt-6 rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6">
+        <div className="mt-6 rounded-2xl border border-white/[0.08] bg-[#111318] p-6 shadow-sm">
           <h2 className="text-[15px] font-bold text-white">Performance</h2>
           <div className="mt-3 min-w-0 overflow-hidden">
             <TokenPerformanceChart token={token} />
@@ -64,34 +64,34 @@ export default function TokenDetail({ token, watched, onToggleWatch }) {
       {/* About + founder + metrics */}
       <div className="mt-6 grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3">
         <FadeUp delay={0.12} className="lg:col-span-2">
-          <div className="h-full min-w-0 overflow-hidden rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6">
+          <div className="h-full min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111318] p-6 shadow-sm">
             <h2 className="text-[15px] font-bold text-white">About the Startup</h2>
-            <p className="mt-2 text-[13.5px] leading-relaxed text-neutral-300">{token.about}</p>
-            <div className="mt-5 border-t border-white/5 pt-4">
+            <p className="mt-2 text-[13.5px] leading-relaxed text-zinc-300">{token.about}</p>
+            <div className="mt-5 border-t border-white/[0.06] pt-4">
               <h3 className="text-[13px] font-bold text-white">Founder</h3>
-              <p className="mt-1 flex items-center gap-1.5 text-[13px] text-neutral-300">
-                <MapPin className="h-3.5 w-3.5 text-neutral-500" /> {token.founder}
+              <p className="mt-1 flex items-center gap-1.5 text-[13px] text-zinc-300">
+                <MapPin className="h-3.5 w-3.5 text-zinc-500" /> {token.founder}
               </p>
             </div>
           </div>
         </FadeUp>
         <FadeUp delay={0.16}>
-          <div className="flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border border-[#1a2436] bg-[#0f1520] p-6">
+          <div className="flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111318] p-6 shadow-sm">
             <h2 className="text-[15px] font-bold text-white">Startup Metrics</h2>
             {[
               { icon: Users, label: "Holders", value: token.metrics.holders.toLocaleString("en-IN") },
               { icon: Activity, label: "24h Volume", value: `₹${token.metrics.volume24h.toLocaleString("en-IN")}` },
             ].map((m) => (
-              <div key={m.label} className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3">
-                <span className="inline-flex items-center gap-2 text-[12.5px] text-neutral-400">
-                  <m.icon className="h-4 w-4 text-[#818cf8]" /> {m.label}
+              <div key={m.label} className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-[#0e1015] px-4 py-3">
+                <span className="inline-flex items-center gap-2 text-[12.5px] text-zinc-400">
+                  <m.icon className="h-4 w-4 text-zinc-400" /> {m.label}
                 </span>
                 <span className="font-mono text-[13px] font-bold text-white">{m.value}</span>
               </div>
             ))}
             <div className="flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3">
               <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
-              <p className="text-[11.5px] leading-relaxed text-neutral-400">
+              <p className="text-[11.5px] leading-relaxed text-zinc-400">
                 Prototype data for design review. Markets involve risk; nothing here guarantees outcomes.
               </p>
             </div>

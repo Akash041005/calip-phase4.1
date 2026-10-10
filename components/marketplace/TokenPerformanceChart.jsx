@@ -196,7 +196,7 @@ export default function TokenPerformanceChart({ token }) {
                 type="button"
                 onClick={() => setChartType(t.id)}
                 className={`rounded-md px-3 py-1 text-[12px] font-semibold transition ${
-                  chartType === t.id ? "bg-[#6366f1] text-white" : "text-neutral-400 hover:text-white"
+                  chartType === t.id ? "bg-white text-black shadow-sm" : "text-neutral-400 hover:text-white"
                 }`}
               >
                 {t.label}
@@ -236,7 +236,7 @@ export default function TokenPerformanceChart({ token }) {
                   setZoomIdx(0);
                 }}
                 className={`rounded-md px-3 py-1 text-[12px] font-semibold transition ${
-                  range === r.id ? "bg-[#6366f1] text-white" : "text-neutral-400 hover:text-white"
+                  range === r.id ? "bg-white text-black shadow-sm" : "text-neutral-400 hover:text-white"
                 }`}
               >
                 {r.label}
@@ -254,7 +254,7 @@ export default function TokenPerformanceChart({ token }) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchEnd}
-        className="mt-3 overflow-hidden rounded-xl border border-white/5 bg-[#0b0e14] p-3"
+        className="mt-3 overflow-hidden rounded-xl border border-white/[0.08] bg-[#090a0f] p-3"
       >
         <div
           className="relative cursor-crosshair"
@@ -274,7 +274,7 @@ export default function TokenPerformanceChart({ token }) {
             </linearGradient>
           </defs>
           {[0.25, 0.5, 0.75].map((f) => (
-            <line key={f} x1="8" x2={W - 8} y1={H * f} y2={H * f} stroke="#1a2436" strokeWidth="1" strokeDasharray="3 4" />
+            <line key={f} x1="8" x2={W - 8} y1={H * f} y2={H * f} stroke="rgba(255, 255, 255, 0.06)" strokeWidth="1" strokeDasharray="3 4" />
           ))}
           {chartType === "line" ? (
             <>

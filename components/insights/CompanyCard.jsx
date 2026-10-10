@@ -17,34 +17,34 @@ export default function CompanyCard({ data }) {
   const valuation = formatValuation(base.valuation) || "₹15 Cr";
 
   return (
-    <div className="flex flex-col gap-4 rounded-[20px] border border-[#e5e7eb] bg-white p-[20px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.06)] dark:border-[#2a2e3e] dark:bg-[#181c28] sm:flex-row sm:items-center sm:justify-between sm:px-[25px] sm:py-[18px]">
-      <div className="flex items-center gap-[17.5px]">
-        <div className="flex h-[50px] w-[50px] shrink-0 items-center justify-center rounded-[10px] bg-[#e3eaf7] dark:bg-[#1f293d]">
-          <span className="text-[20px] font-semibold leading-[25px] text-[#3b7bf8] dark:text-[#60a5fa]">
+    <div className="flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
+      <div className="flex items-center gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-[#0e1015] text-white">
+          <span className="text-[18px] font-bold">
             {name.charAt(0).toUpperCase()}
           </span>
         </div>
         <div>
-          <h2 className="text-[18px] font-bold leading-[22px] text-[#111827] dark:text-white">
+          <h2 className="text-[18px] font-bold text-white">
             {name}
           </h2>
-          <div className="mt-[4px] flex flex-wrap items-center gap-2 text-[13px] text-[#4b5563] dark:text-[#9ca3af]">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-[13px] text-slate-400">
             <span>{sector}</span>
             <span>•</span>
             <span>{stage}</span>
             <span>•</span>
-            <span className="font-medium text-[#111827] dark:text-white">Valuation: {valuation}</span>
+            <span className="font-medium text-white">Valuation: {valuation}</span>
             <span>•</span>
-            <span className="capitalize text-[#10b981] font-medium">{sentiment} sentiment</span>
+            <span className="capitalize text-emerald-400 font-medium">{sentiment} sentiment</span>
           </div>
         </div>
       </div>
 
-      <div className="flex h-[64px] w-[78px] shrink-0 flex-col items-center justify-center rounded-[10px] bg-[#eef2ff] dark:bg-[#201d3b]">
-        <span className="text-[28px] font-bold leading-none text-[#7a49e8] dark:text-[#a78bfa]">
+      <div className="flex h-16 w-20 shrink-0 flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-[#0e1015]">
+        <span className="text-[26px] font-extrabold font-mono text-white">
           {aiScore}
         </span>
-        <span className="mt-[3px] text-[10px] font-medium leading-[14px] text-[#7a49e8] dark:text-[#a78bfa]">
+        <span className="mt-0.5 text-[10px] font-semibold tracking-wider uppercase text-slate-400">
           AI Score
         </span>
       </div>

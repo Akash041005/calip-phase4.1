@@ -1,82 +1,77 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown, Search, Sun, Moon, User, Settings as SettingsIcon, Menu, X } from "lucide-react";
+import {
+  Sun,
+  Moon,
+  User,
+  Settings as SettingsIcon,
+  Menu,
+  X,
+  BarChart3,
+  TrendingUp,
+  Newspaper,
+  Zap,
+  Store,
+  Gavel,
+  LayoutDashboard,
+  Users,
+  CircleHelp,
+} from "lucide-react";
 import ConnectWalletButton from "../auth/ConnectWalletButton";
 import { useAuth } from "../auth/AuthProvider";
 import NotificationBell from "./NotificationBell";
 import { stopScroll, startScroll } from "../motion/SmoothScrollProvider";
 import { useTheme } from "../auth/ThemeProvider";
 
-const navLinks = [
-  { label: "Dashboard", href: "/dashboard", key: "dashboard" },
-  { label: "Marketplace", href: "/marketplace", key: "marketplace" },
-  { label: "Auction", href: "/auction/live", key: "auction" },
-  { label: "Founders", href: "/founders", key: "founders" },
+// ─── 1. GLOBAL PLATFORM NAVIGATION (Left Side) ──────────────────────────────
+// Common, exploratory, ecosystem-wide pages. No nested hidden dropdowns!
+const globalPlatformNav = [
+  { label: "Dashboard", href: "/dashboard", key: "dashboard", icon: LayoutDashboard },
+  { label: "Marketplace", href: "/marketplace", key: "marketplace", icon: Store },
+  { label: "Auction", href: "/auction/live", key: "auction", icon: Gavel },
+  { label: "Analytics", href: "/analytics", key: "analytics", icon: BarChart3 },
+  { label: "Signals", href: "/trending", key: "trending", icon: Newspaper },
+  { label: "Founders", href: "/founders", key: "founders", icon: Users },
+  { label: "FAQ", href: "/faq", key: "faq", icon: CircleHelp, highlighted: true },
 ];
 
-const toolsLinks = [
-  { label: "Analytics", href: "/analytics" },
-  { label: "Trending News", href: "/trending" },
-  { label: "Performance Summary", href: "/performance-summary" },
-  { label: "My Startups", href: "/my-startups" },
+// ─── 2. USER-SPECIFIC COMMAND ACTIONS (Right Side) ──────────────────────────
+// Actions & pages specific to the user's personal operations and portfolio
+const userPersonalNav = [
+  { label: "Performance", href: "/performance-summary", key: "performance", icon: TrendingUp },
+  { label: "My Startups", href: "/my-startups", key: "my-startups", icon: Zap },
 ];
 
 function resolveActivePage(pathname, propActive) {
-  if (propActive) {
-    return propActive;
-  }
-  if (!pathname || pathname === "/" || pathname.startsWith("/dashboard")) {
-    return "dashboard";
-  }
+  if (propActive) return propActive;
+  if (!pathname || pathname === "/" || pathname.startsWith("/dashboard")) return "dashboard";
   if (pathname.startsWith("/marketplace")) return "marketplace";
   if (pathname.startsWith("/auction")) return "auction";
+  if (pathname.startsWith("/analytics")) return "analytics";
+  if (pathname.startsWith("/trending")) return "trending";
   if (pathname.startsWith("/founders")) return "founders";
-  if (pathname.startsWith("/companies") || pathname.startsWith("/insights")) return "dashboard";
+  if (pathname.startsWith("/faq")) return "faq";
+  if (pathname.startsWith("/performance-summary")) return "performance";
+  if (pathname.startsWith("/my-startups")) return "my-startups";
   if (pathname.startsWith("/profile")) return "profile";
   if (pathname.startsWith("/settings") || pathname.startsWith("/setting")) return "settings";
-  if (pathname.startsWith("/faq")) return "faq";
-  if (
-    pathname.startsWith("/analytics") ||
-    pathname.startsWith("/trending") ||
-    pathname.startsWith("/performance-summary") ||
-    pathname.startsWith("/my-startups")
-  ) {
-    return "tools";
-  }
   return null;
 }
 
 export default function Navbar({ activePage: propActivePage }) {
   const pathname = usePathname();
   const currentActive = resolveActivePage(pathname, propActivePage);
-  const isToolsActive = currentActive === "tools";
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [toolsOpen, setToolsOpen] = useState(false);
-  const [navHidden, setNavHidden] = useState(false);
-  const toolsRef = useRef(null);
   const { isAuthenticated } = useAuth();
   const { isDark, toggleTheme } = useTheme();
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
-
-  useEffect(() => {
-    if (!toolsOpen) return;
-    const handleClickOutside = (e) => {
-      if (toolsRef.current && !toolsRef.current.contains(e.target)) {
-        setToolsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [toolsOpen]);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -92,217 +87,148 @@ export default function Navbar({ activePage: propActivePage }) {
     };
   }, [mobileOpen]);
 
-  // Auto-hide on scroll up, reveal on scroll down.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    let lastY = window.scrollY;
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        ticking = false;
-        const y = window.scrollY;
-        if (mobileOpen) {
-          setNavHidden(false);
-        } else if (y <= 8) {
-          setNavHidden(false);
-        } else if (y < lastY - 4) {
-          setNavHidden(true);
-        } else if (y > lastY + 2) {
-          setNavHidden(false);
-        }
-        lastY = y;
-      });
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [mobileOpen]);
+  const activePillClass =
+    "inline-flex h-[32px] items-center justify-center gap-1.5 rounded-lg bg-white/[0.08] border border-white/[0.12] px-3 text-[12.5px] font-medium text-white transition-colors duration-150 select-none shadow-sm";
 
-  const activeLinkClass =
-    "inline-flex h-[34px] items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#6a60e7]/25 to-[#8174ff]/25 border border-[#8174ff]/50 px-4 text-[13.5px] font-semibold text-white shadow-[0_0_16px_rgba(129,116,255,0.22)] transition-all duration-150 select-none";
+  const inactivePillClass =
+    "inline-flex h-[32px] items-center justify-center gap-1.5 rounded-lg border border-transparent px-3 text-[12.5px] font-medium text-[#94a3b8] hover:text-white hover:bg-white/[0.04] transition-colors duration-150 select-none";
 
-  const inactiveLinkClass =
-    "inline-flex h-[34px] items-center justify-center gap-1.5 rounded-full px-4 text-[13.5px] font-medium text-[#a6adbf] hover:text-white hover:bg-white/[0.05] transition-all duration-150 select-none";
+  const highlightedActivePillClass =
+    "inline-flex h-[32px] items-center justify-center gap-1.5 rounded-lg bg-white border border-white px-3 text-[12.5px] font-bold text-zinc-950 transition-colors duration-150 select-none shadow-md";
+
+  const highlightedInactivePillClass =
+    "inline-flex h-[32px] items-center justify-center gap-1.5 rounded-lg border border-white/20 bg-white/[0.08] px-3 text-[12.5px] font-semibold text-white hover:bg-white/[0.14] hover:border-white/35 transition-colors duration-150 select-none shadow-sm";
+
+  const userPillActiveClass =
+    "inline-flex h-[30px] items-center justify-center gap-1.5 rounded-lg bg-white/[0.08] border border-white/[0.12] px-2.5 text-[12px] font-medium text-white transition-colors duration-150 select-none";
+
+  const userPillInactiveClass =
+    "inline-flex h-[30px] items-center justify-center gap-1.5 rounded-lg border border-transparent px-2.5 text-[12px] font-medium text-[#94a3b8] hover:text-white hover:bg-white/[0.04] transition-colors duration-150 select-none";
+
+  const iconBtnClass =
+    "flex h-[32px] w-[32px] items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-[#94a3b8] transition-colors duration-150 hover:border-white/[0.16] hover:bg-white/[0.06] hover:text-white";
+
+  const iconBtnActiveClass =
+    "flex h-[32px] w-[32px] items-center justify-center rounded-lg border border-white/[0.16] bg-white/[0.08] text-white transition-colors duration-150";
 
   return (
-    <header className={`sticky top-0 z-40 w-full border-b border-[#e5e7eb] bg-[#fafaf7]/90 dark:border-white/[0.08] dark:bg-[#080a0f]/90 backdrop-blur-md motion-safe:transition-transform motion-safe:duration-300 ${navHidden ? "-translate-y-full" : "translate-y-0"}`}>
-      <div className="mx-auto flex h-[64px] max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/dashboard" aria-label="Calip dashboard" className="flex items-center transition-opacity hover:opacity-90">
-          <Image
-            src="/caliplogo.png"
-            alt="Calip"
-            width={88}
-            height={34}
-            priority
-            className="h-[32px] w-auto object-contain"
-          />
-        </Link>
+    <header
+      className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-[#090a0f]/95 backdrop-blur-md font-sans text-white"
+    >
+      <div className="mx-auto flex h-[58px] max-w-[1440px] items-center justify-between px-3 sm:px-5 lg:px-7">
+        {/* ─── LEFT SIDE: LOGO + COMMON GLOBAL PLATFORM NAV ──────────────── */}
+        <div className="flex items-center gap-4 lg:gap-5">
+          {/* Brand Logo (Larger & Clearer) */}
+          <Link
+            href="/dashboard"
+            aria-label="Calip home"
+            className="flex items-center transition-opacity hover:opacity-90 shrink-0"
+          >
+            <Image
+              src="/caliplogo.png"
+              alt="Calip"
+              width={112}
+              height={38}
+              priority
+              className="h-[34px] sm:h-[36px] w-auto object-contain"
+            />
+          </Link>
 
-        <nav className="hidden items-center justify-center gap-2 lg:flex">
-          {navLinks.map((link) => {
-            const isActive = link.key === currentActive;
-            return (
-              <Link
-                key={link.key}
-                href={link.href}
-                className={isActive ? activeLinkClass : inactiveLinkClass}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+          {/* Thin Divider */}
+          <div className="hidden lg:block h-5 w-px bg-white/[0.08]" />
 
-          <div ref={toolsRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setToolsOpen((o) => !o)}
-              className={isToolsActive ? activeLinkClass : inactiveLinkClass}
-              aria-expanded={toolsOpen}
-            >
-              <span>Discover Tools</span>
-              <ChevronDown
-                className={`h-[11px] w-[11px] transition-transform duration-150 ${toolsOpen ? "rotate-180" : ""} ${
-                  isToolsActive ? "text-white" : "text-[#737d91]"
-                }`}
-                strokeWidth={2}
-              />
-            </button>
-
-            <AnimatePresence>
-              {toolsOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 6 }}
-                  transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute left-0 top-[42px] z-[50] w-[220px] overflow-hidden rounded-2xl border border-white/[0.1] bg-[#0d111b]/95 p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl"
+          {/* Global Platform Navigation (All direct, 1-click visible!) */}
+          <nav className="hidden items-center gap-1 xl:gap-1.5 lg:flex" aria-label="Platform navigation">
+            {globalPlatformNav.map((link) => {
+              const isActive = link.key === currentActive;
+              const Icon = link.icon;
+              return (
+                <Link
+                  key={link.key}
+                  href={link.href}
+                  className={
+                    link.highlighted
+                      ? isActive
+                        ? highlightedActivePillClass
+                        : highlightedInactivePillClass
+                      : isActive
+                      ? activePillClass
+                      : inactivePillClass
+                  }
                 >
-                  {toolsLinks.map((tool) => {
-                    const isToolCurrent = pathname === tool.href || pathname?.startsWith(tool.href + "/");
-                    return (
-                      <Link
-                        key={tool.href}
-                        href={tool.href}
-                        onClick={() => setToolsOpen(false)}
-                        className={`flex items-center justify-between rounded-xl px-3.5 py-2 text-[13px] font-medium transition-all ${
-                          isToolCurrent
-                            ? "bg-[#8174ff]/20 font-semibold text-white shadow-[0_0_12px_rgba(129,116,255,0.2)]"
-                            : "text-[#a6adbf] hover:bg-white/[0.05] hover:text-white"
-                        }`}
-                      >
-                        <span>{tool.label}</span>
-                        {isToolCurrent && (
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#8174ff]" />
-                        )}
-                      </Link>
-                    );
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  <Icon
+                    className={`h-3.5 w-3.5 ${
+                      link.highlighted && !isActive ? "text-emerald-400" : "opacity-80"
+                    }`}
+                    strokeWidth={link.highlighted ? 2.2 : 1.8}
+                  />
+                  <span>{link.label}</span>
+                  {link.highlighted && (
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        isActive ? "bg-zinc-950" : "bg-emerald-400"
+                      }`}
+                    />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* ─── RIGHT SIDE: USER-SPECIFIC CONTROLS & ACCOUNT HUB ───────────── */}
+        <div className="flex items-center gap-2">
+          {/* Desktop User Portfolio Pills (Performance, My Startups) */}
+          <div className="hidden 2xl:flex items-center gap-1 mr-1">
+            {userPersonalNav.map((item) => {
+              const isActive = item.key === currentActive;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className={isActive ? userPillActiveClass : userPillInactiveClass}
+                  title={item.label}
+                >
+                  <Icon className="h-3 w-3 opacity-80" strokeWidth={1.8} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
 
-          <Link
-            href="/faq"
-            className={currentActive === "faq" ? activeLinkClass : inactiveLinkClass}
-          >
-            FAQs
-          </Link>
-        </nav>
+          {/* Vertical Separator */}
+          <div className="hidden 2xl:block h-4 w-px bg-white/[0.08] mx-0.5" />
 
-        <div className="flex items-center justify-end gap-[10px] sm:gap-[12px]">
-          {/* Mobile Theme Toggle */}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="flex h-[36px] w-[36px] items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-[#b6bdcc] transition-all hover:border-[#8174ff]/40 hover:text-white hover:bg-white/[0.08] lg:hidden"
-            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {isDark ? (
-              <Sun className="h-[16px] w-[16px] text-[#f59e0b]" strokeWidth={1.8} />
-            ) : (
-              <Moon className="h-[16px] w-[16px] text-[#b6bdcc]" strokeWidth={1.8} />
-            )}
-          </button>
-
-          {/* Mobile Notification Bell */}
+          {/* Notification Bell (Only here, no duplicate!) */}
           {isAuthenticated && (
-            <div className="lg:hidden">
+            <div>
               <NotificationBell />
             </div>
           )}
 
+          {/* Merged Profile & Wallet (Contains Settings, Profile, Theme Toggle & Disconnect) */}
+          <div className="shrink-0">
+            <ConnectWalletButton />
+          </div>
+
+          {/* Mobile Menu Hamburger */}
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
-            className="flex h-[36px] w-[36px] items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-[#b6bdcc] transition-all hover:border-white/[0.2] hover:text-white lg:hidden"
+            className={`${iconBtnClass} lg:hidden ml-1`}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
             {mobileOpen ? (
-              <X className="h-[18px] w-[18px]" strokeWidth={2} />
+              <X className="h-[16px] w-[16px]" strokeWidth={2} />
             ) : (
-              <Menu className="h-[18px] w-[18px]" strokeWidth={2} />
+              <Menu className="h-[16px] w-[16px]" strokeWidth={2} />
             )}
           </button>
-
-          <div className="hidden items-center gap-[10px] lg:flex">
-            <Link
-              href="/"
-              aria-label="Search startups"
-              className="flex h-[36px] w-[36px] items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-[#b6bdcc] transition-all duration-150 hover:border-[#8174ff]/40 hover:bg-white/[0.08] hover:text-white"
-            >
-              <Search className="h-[15px] w-[15px]" strokeWidth={1.7} />
-            </Link>
-
-            {isAuthenticated && <NotificationBell />}
-
-            <ConnectWalletButton />
-
-            {/* Profile -> User Insights */}
-            <Link
-              href="/profile"
-              aria-label="User Insights"
-              title="User Insights"
-              className={`flex h-[36px] w-[36px] items-center justify-center rounded-full border transition-all duration-150 ${
-                currentActive === "profile"
-                  ? "border-[#8174ff]/50 bg-[#8174ff]/20 text-white shadow-[0_0_14px_rgba(129,116,255,0.25)]"
-                  : "border-white/[0.08] bg-white/[0.04] text-[#b6bdcc] hover:border-[#8174ff]/40 hover:bg-white/[0.08] hover:text-white"
-              }`}
-            >
-              <User className="h-[15px] w-[15px]" strokeWidth={1.7} />
-            </Link>
-
-            {/* Dedicated Settings Button */}
-            <Link
-              href="/settings"
-              aria-label="Settings"
-              title="Settings"
-              className={`flex h-[36px] w-[36px] items-center justify-center rounded-full border transition-all duration-150 ${
-                currentActive === "settings"
-                  ? "border-[#8174ff]/50 bg-[#8174ff]/20 text-white shadow-[0_0_14px_rgba(129,116,255,0.25)]"
-                  : "border-white/[0.08] bg-white/[0.04] text-[#b6bdcc] hover:border-[#8174ff]/40 hover:bg-white/[0.08] hover:text-white"
-              }`}
-            >
-              <SettingsIcon className="h-[15px] w-[15px]" strokeWidth={1.7} />
-            </Link>
-
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="flex h-[36px] w-[36px] items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-[#b6bdcc] transition-all duration-150 hover:border-white/[0.2] hover:bg-white/[0.08] hover:text-white"
-              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              {isDark ? (
-                <Sun className="h-[15px] w-[15px] text-[#f59e0b]" strokeWidth={1.7} />
-              ) : (
-                <Moon className="h-[15px] w-[15px] text-[#b6bdcc]" strokeWidth={1.7} />
-              )}
-            </button>
-          </div>
         </div>
       </div>
 
+      {/* ─── MOBILE DRAWER (Organized clearly: Global vs User) ───────────── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -310,117 +236,120 @@ export default function Navbar({ activePage: propActivePage }) {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="max-h-[calc(100vh-64px)] overflow-y-auto border-t border-[#e5e7eb] bg-[#fafaf7] dark:border-white/[0.08] dark:bg-[#080a0f] lg:hidden"
+            className="max-h-[calc(100vh-58px)] overflow-y-auto border-t border-white/[0.08] bg-[#080a0f] lg:hidden"
             data-lenis-prevent
           >
-            <nav className="flex flex-col gap-[6px] px-[16px] py-[14px] sm:px-[24px]">
-              {navLinks.map((link) => {
+            <div className="flex flex-col px-4 py-4 gap-1">
+              {/* Global Platform Section */}
+              <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-widest text-[#64748b]">
+                Global Platform
+              </p>
+              {globalPlatformNav.map((link) => {
                 const isActive = link.key === currentActive;
+                const Icon = link.icon;
                 return (
                   <Link
                     key={link.key}
                     href={link.href}
                     onClick={closeMobile}
-                    className={`flex h-[42px] items-center rounded-[10px] px-[14px] text-[15px] font-medium transition-colors ${
+                    className={`flex h-10 items-center gap-3 rounded-xl px-3 text-[13.5px] font-medium transition-colors ${
                       isActive
-                        ? "bg-[#6366f1] text-[#ffffff] dark:bg-[#1e1b4b] dark:text-[#818cf8]"
-                        : "text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#1a1a2e] dark:text-[#b0b5bf] dark:hover:bg-[#1e2234] dark:hover:text-white"
+                        ? "bg-white/[0.08] border border-white/[0.12] text-white shadow-sm"
+                        : link.highlighted
+                        ? "bg-white/[0.06] border border-white/20 text-white font-semibold"
+                        : "text-[#a6adbf] hover:bg-white/[0.05] hover:text-white"
                     }`}
                   >
-                    {link.label}
+                    <Icon
+                      className={`h-4 w-4 shrink-0 ${
+                        link.highlighted ? "text-emerald-400" : "text-white"
+                      }`}
+                      strokeWidth={1.8}
+                    />
+                    <span>{link.label}</span>
+                    {link.highlighted && (
+                      <span className="ml-auto text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        Help & Docs
+                      </span>
+                    )}
                   </Link>
                 );
               })}
 
-              <div className="my-[6px] border-t border-[#e5e7eb] dark:border-[#2a2e3e]" />
+              <div className="my-2 h-px bg-white/[0.07]" />
 
-              <p className="px-[14px] pt-1 text-[12px] font-semibold uppercase tracking-wider text-[#9ca3af]">
-                Discover Tools
+              {/* User Portfolio Section */}
+              <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-widest text-[#64748b]">
+                Your Portfolio & Tools
               </p>
-
-              {toolsLinks.map((tool) => {
-                const isToolActive = pathname === tool.href || pathname?.startsWith(tool.href + "/");
+              {userPersonalNav.map((link) => {
+                const isActive = link.key === currentActive;
+                const Icon = link.icon;
                 return (
                   <Link
-                    key={tool.href}
-                    href={tool.href}
+                    key={link.key}
+                    href={link.href}
                     onClick={closeMobile}
-                    className={`flex h-[42px] items-center justify-between rounded-[10px] px-[14px] text-[15px] font-medium transition-colors ${
-                      isToolActive
-                        ? "bg-[#6366f1] text-[13px] font-medium hover:text-[#ffffff] dark:bg-[#1e1b4b] dark:text-[#818cf8]"
-                        : "text-[#6b7283] hover:bg-[#f3f4f6] hover:text-[#1a1a2e] dark:text-[#b0b5bf] dark:hover:bg-[#1e2234] dark:hover:text-white"
+                    className={`flex h-10 items-center gap-3 rounded-xl px-3 text-[13.5px] font-medium transition-colors ${
+                      isActive
+                        ? "bg-white/[0.08] border border-white/[0.12] text-white"
+                        : "text-[#a6adbf] hover:bg-white/[0.05] hover:text-white"
                     }`}
                   >
-                    <span>{tool.label}</span>
-                    {isToolActive && <span className="h-2 w-2 rounded-full bg-[#6366f1] dark:bg-[#818cf8]" />}
+                    <Icon className="h-4 w-4 shrink-0 text-emerald-400" strokeWidth={1.8} />
+                    <span>{link.label}</span>
                   </Link>
                 );
               })}
 
-              <div className="my-[6px] border-t border-[#e5e7eb] dark:border-[#2a2e3e]" />
+              <div className="my-2 h-px bg-white/[0.07]" />
 
-              <Link
-                href="/faq"
-                onClick={closeMobile}
-                className={`flex h-[42px] items-center rounded-[10px] px-[14px] text-[15px] font-medium transition-colors ${
-                  currentActive === "faq"
-                    ? "bg-[#6366f1] text-[#ffffff] dark:bg-[#1e1b4b] dark:text-[#818cf8]"
-                    : "text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#1a1a2e] dark:text-[#b0b5bf] dark:hover:bg-[#1e2234] dark:hover:text-white"
-                }`}
-              >
-                FAQs
-              </Link>
-
-              {/* User Insights */}
+              {/* Account Section */}
+              <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-widest text-[#64748b]">
+                Account & Preferences
+              </p>
               <Link
                 href="/profile"
                 onClick={closeMobile}
-                className={`flex h-[42px] items-center gap-[10px] rounded-[10px] px-[14px] text-[15px] font-medium transition-colors ${
+                className={`flex h-10 items-center gap-3 rounded-xl px-3 text-[13.5px] font-medium transition-colors ${
                   currentActive === "profile"
-                    ? "bg-[#6366f1] text-[#ffffff] dark:bg-[#1e1b4b] dark:text-[#818cf8]"
-                    : "text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#1a1a2e] dark:text-[#b0b5bf] dark:hover:bg-[#1e2234] dark:hover:text-white"
+                    ? "bg-white/[0.08] border border-white/[0.12] text-white"
+                    : "text-[#a6adbf] hover:bg-white/[0.05] hover:text-white"
                 }`}
               >
-                <User className="h-[16px] w-[16px]" strokeWidth={1.5} />
-                User Insights
+                <User className="h-4 w-4 shrink-0" strokeWidth={1.8} />
+                <span>Profile & Insights</span>
               </Link>
-
-              {/* Settings */}
               <Link
                 href="/settings"
                 onClick={closeMobile}
-                className={`flex h-[42px] items-center gap-[10px] rounded-[10px] px-[14px] text-[15px] font-medium transition-colors ${
+                className={`flex h-10 items-center gap-3 rounded-xl px-3 text-[13.5px] font-medium transition-colors ${
                   currentActive === "settings"
-                    ? "bg-[#6366f1] text-[#ffffff] dark:bg-[#1e1b4b] dark:text-[#818cf8]"
-                    : "text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#1a1a2e] dark:text-[#b0b5bf] dark:hover:bg-[#1e2234] dark:hover:text-white"
+                    ? "bg-white/[0.08] border border-white/[0.12] text-white"
+                    : "text-[#a6adbf] hover:bg-white/[0.05] hover:text-white"
                 }`}
               >
-                <SettingsIcon className="h-[16px] w-[16px]" strokeWidth={1.5} />
-                Settings
+                <SettingsIcon className="h-4 w-4 shrink-0" strokeWidth={1.8} />
+                <span>Settings</span>
               </Link>
-
               <button
                 type="button"
                 onClick={toggleTheme}
-                className="flex h-[42px] items-center justify-between rounded-[10px] px-[14px] text-[15px] font-medium text-[#4b5563] dark:text-[#b0b5bf] transition-colors hover:bg-[#f3f4f6] hover:text-[#1a1a2e] dark:hover:bg-[#1e2234] dark:hover:text-white"
+                className="flex h-10 items-center justify-between rounded-xl px-3 text-[13.5px] font-medium text-[#a6adbf] hover:bg-white/[0.05] hover:text-white transition-colors"
               >
-                <span className="flex items-center gap-[10px]">
+                <span className="flex items-center gap-3">
                   {isDark ? (
-                    <Sun className="h-[16px] w-[16px] text-[#f59e0b]" strokeWidth={1.8} />
+                    <Sun className="h-4 w-4 text-[#f59e0b]" strokeWidth={1.8} />
                   ) : (
-                    <Moon className="h-[16px] w-[16px] text-[#374151] dark:text-[#b0b5bf]" strokeWidth={1.8} />
+                    <Moon className="h-4 w-4" strokeWidth={1.8} />
                   )}
                   {isDark ? "Dark Theme Active" : "Light Theme Active"}
                 </span>
-                <span className="text-[12px] font-semibold text-[#6366f1] dark:text-[#818cf8]">
+                <span className="text-[11px] font-semibold text-zinc-300">
                   Switch to {isDark ? "Light" : "Dark"}
                 </span>
               </button>
-
-              <div className="py-[8px]">
-                <ConnectWalletButton />
-              </div>
-            </nav>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

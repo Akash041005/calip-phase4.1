@@ -3,27 +3,31 @@ import SettingsCard from "./SettingsCard";
 
 export default function KycBanner() {
   return (
-    <SettingsCard className="border-[#452f0d]">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-[35px] py-[19px]">
-        <div className="flex h-[59px] w-[58px] shrink-0 items-center justify-center rounded-[20px] bg-[#6450ea]">
-          <Shield className="h-[34px] w-[35px] text-white" strokeWidth={2} />
-        </div>
+    <SettingsCard>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-2">
+        <div className="flex items-center gap-4">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04]">
+            <Shield className="h-5 w-5 text-white" strokeWidth={1.5} />
+          </div>
 
-        <div className="min-w-0 flex-1">
-          <p className="text-[14px] sm:text-[16px] font-semibold leading-none text-black">
-            Identity Verification (KYC)
-          </p>
-          <p className="mt-[6px] text-[12px] leading-none text-[#6878a0]">
-            Verify your identity to unlock higher limits
-          </p>
-          <span className="mt-[8px] inline-flex h-[21px] w-[126px] items-center justify-center rounded-[5px] border border-[#3c3184] bg-[#6551ED] text-[9px] font-bold uppercase tracking-wide text-white">
-            Not Verified
-          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <p className="text-[15px] font-semibold text-white">
+                Identity Verification (KYC)
+              </p>
+              <span className="rounded-md border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-400">
+                Not Verified
+              </span>
+            </div>
+            <p className="mt-1 text-[13px] text-slate-400">
+              Verify your identity to unlock institutional limits and direct investment rounds.
+            </p>
+          </div>
         </div>
 
         <button
           type="button"
-          className="flex h-[40px] w-full sm:w-[205px] shrink-0 items-center justify-center rounded-[20px] bg-[#6651F1] text-[12px] sm:text-[13px] font-semibold text-white transition-colors hover:bg-[#5741dc]"
+          className="cl-btn-primary h-9 px-5 text-[13px] w-full sm:w-auto"
         >
           Start Verification
         </button>

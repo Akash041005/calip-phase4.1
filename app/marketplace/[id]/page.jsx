@@ -64,7 +64,7 @@ export default function MarketplaceTokenPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#070a0f] text-[#f8fafc]">
+    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
       <Navbar activePage="marketplace" />
       <main className="pb-12">
         {notFound ? (

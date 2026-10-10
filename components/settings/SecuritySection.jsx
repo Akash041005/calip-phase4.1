@@ -69,40 +69,40 @@ export default function SecuritySection() {
 
   return (
     <SettingsCard>
-      <div className="px-[35px] pt-[15px] pb-[4px]">
-        <h2 className="text-[20px] font-bold leading-none text-black dark:text-white">
+      <div className="pb-4 border-b border-white/[0.08]">
+        <h2 className="text-[18px] font-bold text-white">
           Security
         </h2>
+        <p className="mt-1 text-[13px] text-slate-400">
+          Manage authentication credentials and account safeguards.
+        </p>
       </div>
 
-      {renderedItems.map((item, index) => (
-        <div key={item.id}>
-          {index > 0 && (
-            <div className="mx-[35px] h-px bg-[#e5e7eb] dark:bg-[#2a2e3e]" />
-          )}
-          <div className="flex items-center justify-between px-[35px] py-[18px]">
+      <div className="divide-y divide-white/[0.08]">
+        {renderedItems.map((item) => (
+          <div key={item.id} className="flex items-center justify-between py-4">
             <div className="min-w-0 flex-1">
-              <p className="text-[16px] font-semibold leading-none text-black dark:text-white">
+              <p className="text-[15px] font-semibold text-white">
                 {item.title}
               </p>
-              <p className="mt-[6px] text-[14px] leading-none text-[#8791a7] dark:text-[#9ca3af]">
+              <p className="mt-1 text-[13px] text-slate-400">
                 {item.description}
               </p>
               {item.type === "toggle" && toggleError && (
-                <p className="mt-[6px] text-[12px] leading-none text-[#F0395A]">
+                <p className="mt-1 text-[12px] text-rose-400">
                   {toggleError}
                 </p>
               )}
             </div>
 
             {item.type === "arrow" && (
-              <ChevronRight className="h-[27px] w-[14px] shrink-0 text-[#6878A0]" strokeWidth={3} />
+              <ChevronRight className="h-5 w-5 shrink-0 text-slate-500" strokeWidth={2} />
             )}
 
             {item.type === "toggle" && (
               <div className="flex shrink-0 items-center gap-3">
-                <span className="text-[12px] font-semibold leading-none text-[#7C5CFC]">
-                  {saving ? "Saving…" : displayTwoFactor ? "Enabled" : "Set up →"}
+                <span className="text-[12px] font-semibold text-emerald-400">
+                  {saving ? "Saving…" : displayTwoFactor ? "Enabled" : "Disabled"}
                 </span>
                 <SettingsToggle
                   checked={displayTwoFactor}
@@ -112,8 +112,8 @@ export default function SecuritySection() {
               </div>
             )}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </SettingsCard>
   );
 }

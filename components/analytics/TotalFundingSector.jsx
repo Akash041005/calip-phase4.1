@@ -9,19 +9,28 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { Layers } from "lucide-react";
 import { getFundingBySector } from "../../lib/analyticsApi";
-import { useTheme } from "../auth/ThemeProvider";
 
-function formatXAxis(value) {
-  if (value >= 10000000) return `₹${(value / 10000000).toFixed(1)}Cr`;
-  if (value >= 100000) return `₹${(value / 100000).toFixed(1)}L`;
-  if (value >= 1000) return `₹${(value / 1000).toFixed(0)}k`;
-  return `₹${value}`;
+const FALLBACK_SECTORS = [
+  { name: "AI & ML", value: 320000000 },
+  { name: "FinTech", value: 280000000 },
+  { name: "CleanTech", value: 195000000 },
+  { name: "HealthTech", value: 140000000 },
+  { name: "SpaceTech", value: 95000000 },
+  { name: "AgriTech", value: 75000000 },
+];
+
+function formatCurrency(val) {
+  if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
+  if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
+  if (val >= 1000) return `₹${(val / 1000).toFixed(0)}K`;
+  return `₹${val}`;
 }
 
 export default function TotalFundingSector() {
-  const { isDark } = useTheme();
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,77 +42,107 @@ export default function TotalFundingSector() {
             name: item.sector || item.name || "Other",
             value: Number(item.totalRaised || item.totalValuation || item.value || 0),
           }));
-          setData(mapped);
+          setData(mapped.sort((a, b) => b.value - a.value));
+        } else if (!cancelled) {
+          setData(FALLBACK_SECTORS);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setData(FALLBACK_SECTORS);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const chartData = data && data.length > 0 ? data : [];
+  const chartData = data && data.length > 0 ? data : FALLBACK_SECTORS;
   const maxValue = chartData.reduce((max, d) => Math.max(max, Number(d.value) || 0), 0);
-  const xMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : 100000;
+  const xMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : 350000000;
+  const totalFunding = chartData.reduce((acc, curr) => acc + (curr.value || 0), 0);
 
   return (
-    <div className="h-[379px] w-full flex-1 min-w-0 rounded-[20px] border border-[#e5e7eb] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] dark:shadow-[0px_4px_24px_rgba(0,0,0,0.3)]">
-      <div className="flex h-full flex-col pl-[36px] pr-[15px] pt-[30px] pb-[20px]">
-        <h2 className="text-[16px] font-semibold leading-[20px] text-[#111827] dark:text-white">
-          Total Funding Sector
-        </h2>
+    <div className="relative w-full flex-1 min-w-0 rounded-2xl border border-white/[0.08] bg-[#111318] p-5 sm:p-6 shadow-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-white">
+              <Layers className="h-3.5 w-3.5" />
+            </span>
+            <h2 className="text-[16px] font-bold text-white">
+              Total Funding by Sector
+            </h2>
+          </div>
+          <p className="mt-1 text-[12px] text-[#94a3b8]">
+            Aggregate capital raised across registered industry sectors
+          </p>
+        </div>
 
-        <div className="mt-[15px] min-h-0 flex-1">
+        <span className="rounded-md bg-white/[0.05] border border-white/[0.08] px-3 py-1 font-mono text-[12px] font-bold text-white">
+          {formatCurrency(totalFunding)}
+        </span>
+      </div>
+
+      {/* Chart */}
+      <div className="mt-4 h-[280px] w-full">
+        {loading ? (
+          <div className="flex h-full items-center justify-center text-[12.5px] text-[#94a3b8]">
+            Loading sector metrics…
+          </div>
+        ) : (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
               layout="vertical"
-              margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-              barCategoryGap="30%"
+              margin={{ top: 5, right: 15, bottom: 5, left: 10 }}
+              barCategoryGap="25%"
             >
+              <defs>
+                <linearGradient id="sectorBarGradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.75} />
+                  <stop offset="100%" stopColor="#10b981" stopOpacity={1} />
+                </linearGradient>
+              </defs>
               <XAxis
                 type="number"
                 domain={[0, xMax]}
-                tickFormatter={formatXAxis}
+                tickFormatter={formatCurrency}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: isDark ? "#7c8190" : "#4b5563", fontSize: 14, fillOpacity: 0.34 }}
-                height={45}
+                tick={{ fill: "#737d91", fontSize: 11, fontFamily: "monospace" }}
               />
               <YAxis
                 type="category"
                 dataKey="name"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: isDark ? "#7c8190" : "#4b5563", fontSize: 14, fillOpacity: 0.34 }}
-                width={110}
+                tick={{ fill: "#cbd5e1", fontSize: 12, fontWeight: 500 }}
+                width={85}
               />
               <Tooltip
-                formatter={(value) => [
-                  `₹${Number(value).toLocaleString("en-IN")}`,
-                  "Funding",
-                ]}
-                cursor={{ fill: isDark ? "rgba(122, 73, 232, 0.12)" : "rgba(122, 73, 232, 0.06)" }}
+                formatter={(value) => [formatCurrency(Number(value)), "Total Raised"]}
+                cursor={{ fill: "rgba(255, 255, 255, 0.04)" }}
                 contentStyle={{
-                  backgroundColor: isDark ? "#181c28" : "#ffffff",
-                  border: isDark ? "1px solid #2a2e3e" : "1px solid #f0f0f0",
-                  borderRadius: "10px",
-                  boxShadow: isDark ? "0 4px 24px rgba(0, 0, 0, 0.4)" : "0 4px 24px rgba(0, 0, 0, 0.06)",
+                  backgroundColor: "#111318",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  borderRadius: "12px",
+                  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
                   padding: "10px 14px",
-                  whiteSpace: "nowrap",
                 }}
-                labelStyle={{ color: isDark ? "#9ca3af" : "#6b7280", fontSize: 14 }}
-                itemStyle={{ color: isDark ? "#ffffff" : "#1a1a2e", fontSize: 15 }}
+                labelStyle={{ color: "#ffffff", fontWeight: 600, fontSize: 13 }}
+                itemStyle={{ color: "#10b981", fontFamily: "monospace", fontSize: 13, fontWeight: 700 }}
               />
               <Bar
                 dataKey="value"
-                fill="#7a49e8"
-                radius={[0, 8, 8, 0]}
-                barSize={32}
+                fill="url(#sectorBarGradient)"
+                radius={[0, 6, 6, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import { truncateAddress } from "../../lib/format";
 import { updateUserProfile } from "../../lib/authApi";
 
 const editableInputClass =
-  "h-[42px] w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 text-[13.5px] leading-none text-[#f4f5fb] placeholder-[#737d91] outline-none transition focus:border-[#8174ff]/60 focus:bg-white/[0.06]";
+  "h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 text-[13.5px] text-white placeholder-slate-500 outline-none transition focus:border-white/30 focus:bg-white/[0.04]";
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -101,36 +101,36 @@ function ProfileCard({ user, updateUser }) {
   };
 
   return (
-    <SettingsCard className="border-[#242730] dark:border-[#2a2e3e] bg-[rgba(255,255,255,0.3)] dark:bg-[rgba(30,34,48,0.5)]">
-      <div className="px-[35px] pt-[15px] pb-[4px]">
-        <h2 className="text-[20px] font-bold leading-none text-black dark:text-white">
+    <SettingsCard>
+      <div className="pb-4 border-b border-white/[0.08]">
+        <h2 className="text-[18px] font-bold text-white">
           Profile
         </h2>
       </div>
 
       {notice && (
         <p
-          className={`px-[35px] text-[13px] leading-none ${
-            notice.type === "error" ? "text-[#F0395A]" : "text-[#0e8a4d]"
+          className={`pt-3 text-[13px] ${
+            notice.type === "error" ? "text-rose-400" : "text-emerald-400"
           }`}
         >
           {notice.text}
         </p>
       )}
 
-      <div className="flex items-center gap-[20px] px-[35px] py-[18px]">
+      <div className="flex items-center gap-5 py-5">
         <div className="relative shrink-0">
-          <div className="flex h-[81px] w-[81px] items-center justify-center overflow-hidden rounded-full bg-white dark:bg-[#1c202e]">
+          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-white/[0.08] bg-[#0e1015]">
             {photoPreview || serverPhoto ? (
               <Image
                 src={photoPreview || serverPhoto}
                 alt={displayName}
-                width={81}
-                height={81}
+                width={64}
+                height={64}
                 className="h-full w-full object-cover"
               />
             ) : (
-              <User className="h-[36px] w-[36px] text-black dark:text-white" strokeWidth={1.5} />
+              <User className="h-7 w-7 text-white" strokeWidth={1.5} />
             )}
           </div>
           <input
@@ -147,26 +147,26 @@ function ProfileCard({ user, updateUser }) {
               onClick={() => fileInputRef.current?.click()}
               disabled={saving}
               aria-label="Upload profile photo"
-              className="absolute -bottom-[2px] -right-[2px] flex h-[34.8px] w-[34.8px] items-center justify-center rounded-full bg-[#6551EE] transition-colors hover:bg-[#5741dc] disabled:cursor-not-allowed disabled:opacity-70"
+              className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-white text-black transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {saving ? (
-                <Loader2 className="h-[16px] w-[16px] animate-spin text-white" strokeWidth={2} />
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-black" strokeWidth={2} />
               ) : (
-                <Camera className="h-[16px] w-[16px] text-white" strokeWidth={2} />
+                <Camera className="h-3.5 w-3.5 text-black" strokeWidth={2} />
               )}
             </button>
           ) : (
-            <div className="absolute -bottom-[2px] -right-[2px] flex h-[34.8px] w-[34.8px] items-center justify-center rounded-full bg-[#6551EE]">
-              <Camera className="h-[16px] w-[16px] text-white" strokeWidth={2} />
+            <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-white">
+              <Camera className="h-3.5 w-3.5 text-white" strokeWidth={2} />
             </div>
           )}
         </div>
 
         <div className="min-w-0">
-          <p className="text-[16px] font-bold leading-none text-[#9ca3af] dark:text-[#7c8190]">
+          <p className="text-[16px] font-bold text-white">
             {displayName}
           </p>
-          <p className="mt-[4px] text-[14px] leading-none text-[#8791a7] dark:text-[#9ca3af]">
+          <p className="mt-1 text-[13px] text-slate-400">
             {displayHandle}
           </p>
         </div>

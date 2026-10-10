@@ -77,16 +77,16 @@ export default function Dashboard() {
   const statCards = stats || EMPTY_STATS;
 
   return (
-    <div className="min-h-screen bg-[#fbfbf9]">
+    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
       <Navbar />
 
-      <main className="mx-auto max-w-[1440px] px-[40px] pb-8">
+      <main className="mx-auto max-w-[1440px] px-4 sm:px-8 pb-12">
         <StaggerGroup className="pt-4" stagger={0.06} delay={0.18}>
           <StaggerItem>
-            <h1 className="text-[28px] font-bold leading-none text-[#1a1a2e]">
+            <h1 className="text-[28px] font-extrabold tracking-tight text-white">
               Dashboard
             </h1>
-            <p className="mt-[4px] text-[16px] text-[#6b7280]">
+            <p className="mt-1 text-[15px] text-slate-400">
               Your investment portfolio at a glance
             </p>
           </StaggerItem>

@@ -1,6 +1,7 @@
 import { Sora } from "next/font/google";
 import Navbar from "../../components/dashboard/Navbar";
 import ProfileSection from "../../components/settings/ProfileSection";
+import AppearanceSection from "../../components/settings/AppearanceSection";
 import ConnectedWallets from "../../components/settings/ConnectedWallets";
 import NotificationsSection from "../../components/settings/NotificationsSection";
 import PrivacySection from "../../components/settings/PrivacySection";
@@ -21,7 +22,7 @@ export const metadata = {
 
 export default function SettingsPage() {
   return (
-    <div className="min-h-screen bg-[#080a0f] text-[#f4f5fb]">
+    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
       <Navbar activePage="settings" />
 
       <main className="mx-auto max-w-[1100px] px-4 pb-16 sm:px-6 lg:px-8">
@@ -40,6 +41,7 @@ export default function SettingsPage() {
 
         <div className="mt-8 space-y-6">
           <ProfileSection />
+          <AppearanceSection />
           <ConnectedWallets />
           <NotificationsSection />
           <PrivacySection />

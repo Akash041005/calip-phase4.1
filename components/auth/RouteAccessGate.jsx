@@ -26,9 +26,9 @@ export default function RouteAccessGate({ children }) {
 
   if (!isReady || status !== AUTH_STATUS.AUTHENTICATED || !isAuthenticated) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#070a0f] px-6 text-white" aria-live="polite">
-        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#0f1520] px-5 py-4 text-sm text-slate-300">
-          <Loader2 className="h-4 w-4 animate-spin text-indigo-400" />
+      <main className="flex min-h-screen items-center justify-center bg-[#090a0f] px-6 text-white" aria-live="polite">
+        <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-[#111318] px-5 py-4 text-sm text-slate-300">
+          <Loader2 className="h-4 w-4 animate-spin text-white" />
           <span>{isReady ? "Connect your wallet to enter Calip." : "Checking your secure session..."}</span>
         </div>
       </main>

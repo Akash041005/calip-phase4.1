@@ -59,23 +59,27 @@ export default function PerformanceSummary() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#fbfbf9] dark:bg-[#0c0e14]">
-      <Navbar />
+    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
+      <Navbar activePage="performance" />
 
-      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 pb-8">
-        <div className="pt-4">
-          <h1 className="text-[28px] font-bold leading-none text-[#1a1a2e] dark:text-white">
+      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="pt-6 border-b border-white/[0.08] pb-6">
+          <p className="cl-kicker-label">
+            <span className="cl-mint-dot" />
+            Portfolio Analytics
+          </p>
+          <h1 className="mt-2 text-[26px] sm:text-[32px] font-bold leading-tight text-white">
             Performance Summary
           </h1>
-          <p className="mt-[4px] text-[16px] leading-none text-[#6b7280] dark:text-[#9ca3af]">
-            Your investment history, ROI, and portfolio performance analytics.
+          <p className="mt-1 text-[14px] text-[#94a3b8]">
+            Your investment history, ROI metrics, and on-chain portfolio allocation.
           </p>
         </div>
 
-        <div className="mt-[24px] grid grid-cols-1 gap-[20px] sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-[100px] animate-pulse rounded-[14px] bg-gray-100 dark:bg-[#1c202e]" />
+              <div key={i} className="h-[108px] animate-pulse rounded-2xl bg-[#111318] border border-white/[0.08]" />
             ))
           ) : (
             stats.map((stat) => <StatCard key={stat.label} {...stat} />)

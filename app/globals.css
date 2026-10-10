@@ -3,47 +3,47 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fbfbf9;
-  --foreground: #1a1a2e;
-  --calip-purple: #6366f1;
-  --calip-purple-light: #eef2ff;
-  --calip-purple-muted: #818cf8;
-  --calip-green: #7c6cf0;
-  --calip-gray-label: #9ca3af;
-  --calip-gray-text: #6b7280;
-  --calip-border: #e5e7eb;
-  --calip-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-  --calip-surface: #fafaf7;
-  --calip-card: #ffffff;
-  --calip-card-border: #f0f0f0;
-  --calip-muted: #9ca3af;
-  --calip-secondary: #6b7280;
-  --calip-icon: #374151;
-  --calip-input-bg: #f4f5f7;
-  --calip-divider: #e5e7eb;
-  --calip-nav-text: #4b5563;
-  --calip-hover: #f3f4f6;
+  --background: #090a0f;
+  --foreground: #f8fafc;
+  --calip-purple: #ffffff;
+  --calip-purple-light: rgba(255, 255, 255, 0.08);
+  --calip-purple-muted: #e2e8f0;
+  --calip-green: #10b981;
+  --calip-gray-label: #94a3b8;
+  --calip-gray-text: #94a3b8;
+  --calip-border: rgba(255, 255, 255, 0.08);
+  --calip-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --calip-surface: #0e1015;
+  --calip-card: #111318;
+  --calip-card-border: rgba(255, 255, 255, 0.08);
+  --calip-muted: #94a3b8;
+  --calip-secondary: #64748b;
+  --calip-icon: #94a3b8;
+  --calip-input-bg: #0e1015;
+  --calip-divider: rgba(255, 255, 255, 0.08);
+  --calip-nav-text: #94a3b8;
+  --calip-hover: rgba(255, 255, 255, 0.03);
 }
 
 .dark {
-  --background: #080a0f;
-  --foreground: #f4f5fb;
-  --calip-purple: #8174ff;
-  --calip-purple-light: rgba(129, 116, 255, 0.15);
-  --calip-purple-muted: #6a60e7;
-  --calip-green: #78dfc0;
-  --calip-border: rgba(226, 232, 255, 0.08);
-  --calip-card-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(100, 90, 223, 0.06);
-  --calip-surface: #0d111b;
-  --calip-card: #111723;
-  --calip-card-border: rgba(226, 232, 255, 0.08);
-  --calip-muted: #a6adbf;
-  --calip-secondary: #737d91;
-  --calip-icon: #b6bdcc;
-  --calip-input-bg: rgba(13, 17, 27, 0.85);
-  --calip-divider: rgba(226, 232, 255, 0.08);
-  --calip-nav-text: #b6bdcc;
-  --calip-hover: rgba(255, 255, 255, 0.04);
+  --background: #090a0f;
+  --foreground: #f8fafc;
+  --calip-purple: #ffffff;
+  --calip-purple-light: rgba(255, 255, 255, 0.08);
+  --calip-purple-muted: #e2e8f0;
+  --calip-green: #10b981;
+  --calip-border: rgba(255, 255, 255, 0.08);
+  --calip-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --calip-surface: #0e1015;
+  --calip-card: #111318;
+  --calip-card-border: rgba(255, 255, 255, 0.08);
+  --calip-muted: #94a3b8;
+  --calip-secondary: #64748b;
+  --calip-icon: #94a3b8;
+  --calip-input-bg: #0e1015;
+  --calip-divider: rgba(255, 255, 255, 0.08);
+  --calip-nav-text: #94a3b8;
+  --calip-hover: rgba(255, 255, 255, 0.03);
 }
 
 @theme inline {
@@ -65,6 +65,10 @@
   --color-calip-nav-text: var(--calip-nav-text);
   --color-calip-hover: var(--calip-hover);
   --font-sans: var(--font-inter);
+}
+
+html {
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -148,21 +152,22 @@ html.lenis body {
   scrollbar-width: none;
 }
 
-/* Calip Unified Design System Utilities */
+/* Calip Unified Design System Utilities — Big Brand Style */
 .cl-glass-card {
-  background: rgba(17, 23, 35, 0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(226, 232, 255, 0.08);
-  border-radius: 16px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(100, 90, 223, 0.05);
+  background: #111318;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.2s ease;
+}
+.cl-glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .cl-pill-active {
-  background: rgba(118, 108, 255, 0.16);
-  border: 1px solid rgba(169, 159, 255, 0.4);
-  color: #edeaff;
-  box-shadow: 0 0 16px rgba(118, 108, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
 }
 
 .cl-btn-primary {
@@ -170,16 +175,15 @@ html.lenis body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: 999px;
-  background: linear-gradient(110deg, #6a60e7, #8174ff);
-  color: #ffffff !important;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #090a0f !important;
   font-weight: 600;
-  box-shadow: 0 10px 26px rgba(85, 76, 215, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease;
 }
 .cl-btn-primary:hover {
-  background: linear-gradient(110deg, #7770f4, #958bff);
-  box-shadow: 0 14px 34px rgba(85, 76, 215, 0.48);
+  background: #f1f5f9;
   transform: translateY(-1px);
 }
 
@@ -188,37 +192,59 @@ html.lenis body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.05);
-  color: #e4e7ef !important;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f8fafc !important;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 .cl-btn-secondary:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
   transform: translateY(-1px);
 }
 
 .cl-kicker-label {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: #bcb5ff;
+  gap: 7px;
+  color: #94a3b8;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .cl-mint-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: #78dfc0;
-  box-shadow: 0 0 12px rgba(120, 223, 192, 0.85);
+  background: #10b981;
   display: inline-block;
 }
+
+/* Universal Smooth Interactive Transitions */
+a,
+button,
+[role="button"],
+input,
+select,
+textarea {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 200ms;
+}
+
+/* Card hover micro-animations */
+.cl-card-interactive {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cl-card-interactive:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+}
+
 
 

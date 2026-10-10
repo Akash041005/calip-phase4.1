@@ -37,65 +37,65 @@ export default function AIRecommendationsTable() {
   }, []);
 
   return (
-    <div className="w-full rounded-[14px] border border-[#f0f0f0] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
-      <div className="px-[36px] pb-[16px] pt-[24px]">
-        <h2 className="text-[18px] font-semibold leading-none text-[#1a1a2e] dark:text-white">
+    <div className="w-full rounded-2xl border border-white/[0.08] bg-[#111318] shadow-sm">
+      <div className="px-6 sm:px-8 pb-6 pt-6">
+        <h2 className="text-[17px] font-semibold leading-none text-white">
           AI Recommendations
         </h2>
 
-        <div className="mt-[24px] overflow-x-auto" data-lenis-prevent>
+        <div className="mt-5 overflow-x-auto" data-lenis-prevent>
           <div className="min-w-[700px]">
-            <div className="grid grid-cols-[50px_1fr_1.2fr_1fr_1fr_1fr_0.8fr] items-center">
+            <div className="grid grid-cols-[50px_1fr_1.2fr_1fr_1fr_1fr_0.8fr] items-center text-[11px] font-semibold uppercase tracking-wider text-[#94a3b8]">
               <div />
-              <span className="text-[13px] leading-none text-[#9ca3af] dark:text-[#7c8190]">Company</span>
-              <span className="text-[13px] leading-none text-[#9ca3af] dark:text-[#7c8190]">Sector</span>
-              <span className="text-[13px] leading-none text-[#9ca3af] dark:text-[#7c8190]">Invested</span>
-              <span className="text-[13px] leading-none text-[#9ca3af] dark:text-[#7c8190]">Current Value</span>
-              <span className="text-[13px] leading-none text-[#9ca3af] dark:text-[#7c8190]">Gain/Loss</span>
-              <span className="text-[13px] leading-none text-[#9ca3af] dark:text-[#7c8190]">ROI</span>
+              <span>Company</span>
+              <span>Sector</span>
+              <span>Invested</span>
+              <span>Current Value</span>
+              <span>Gain/Loss</span>
+              <span>ROI</span>
             </div>
 
-            <div className="mt-[8px] border-t border-[#e5e7eb] dark:border-[#2a2e3e]" />
+            <div className="mt-3 border-t border-white/[0.06]" />
 
             {loading ? (
-              <div className="flex h-[120px] items-center justify-center text-[13px] text-[#9ca3af] dark:text-[#7c8190]">
+              <div className="flex h-[120px] items-center justify-center text-[13px] text-[#94a3b8]">
                 Loading...
               </div>
             ) : rows.length === 0 ? (
-              <div className="flex h-[120px] items-center justify-center text-[13px] text-[#9ca3af] dark:text-[#7c8190]">
+              <div className="flex h-[120px] items-center justify-center text-[13px] text-[#94a3b8]">
                 No investment data available
               </div>
             ) : (
               rows.map((row, index) => (
                 <div key={row.initial + index}>
-                  <div className="grid grid-cols-[50px_1fr_1.2fr_1fr_1fr_1fr_0.8fr] h-[44px] items-center">
-                    <div className="flex h-[42px] w-[42px] items-center justify-center rounded-lg bg-[#eef2ff] text-[16px] font-semibold text-[#6366f1] dark:bg-[#1c202e] dark:text-[#818cf8]">
+                  <div className="grid grid-cols-[50px_1fr_1.2fr_1fr_1fr_1fr_0.8fr] h-[48px] items-center">
+                    <div className="flex h-[34px] w-[34px] items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-[14px] font-semibold text-white">
                       {row.initial}
                     </div>
 
-                    <span className="text-[14px] font-semibold text-[#1a1a2e] dark:text-white">
+                    <span className="text-[13.5px] font-semibold text-white">
                       {row.name}
                     </span>
 
-                    <span className="text-[13px] text-[#374151] dark:text-[#b0b5bf]">{row.sector}</span>
+                    <span className="text-[13px] text-[#94a3b8]">{row.sector}</span>
 
-                    <span className="text-[14px] text-[#1a1a2e] dark:text-white">{row.invested}</span>
+                    <span className="text-[13px] text-white font-mono">{row.invested}</span>
 
-                    <span className="text-[14px] text-[#1a1a2e] dark:text-white">
+                    <span className="text-[13px] text-white font-mono">
                       {row.currentValue}
                     </span>
 
                     <span
-                      className={`text-[14px] ${
-                        row.gainPositive ? "text-[#10b981]" : "text-[#ef4444]"
+                      className={`text-[13px] font-mono font-medium ${
+                        row.gainPositive ? "text-emerald-400" : "text-rose-400"
                       }`}
                     >
                       {row.gainLoss}
                     </span>
 
                     <span
-                      className={`text-[14px] ${
-                        row.roiPositive ? "text-[#10b981]" : "text-[#ef4444]"
+                      className={`text-[13px] font-mono font-medium ${
+                        row.roiPositive ? "text-emerald-400" : "text-rose-400"
                       }`}
                     >
                       {row.roi}
@@ -103,7 +103,7 @@ export default function AIRecommendationsTable() {
                   </div>
 
                   {index < rows.length - 1 && (
-                    <div className="mt-[12px] mb-[10px] border-t border-[#e5e7eb] dark:border-[#2a2e3e]" />
+                    <div className="border-t border-white/[0.06]" />
                   )}
                 </div>
               ))
