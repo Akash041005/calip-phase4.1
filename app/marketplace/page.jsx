@@ -96,32 +96,37 @@ export default function MarketplacePage() {
   }, [tokens]);
 
   const selectClass =
-    "h-[40px] rounded-xl border border-[#1a2436] bg-[#0f1520] px-3 text-[13px] font-medium text-neutral-200 outline-none transition focus:border-[#6366f1]";
+    "h-[38px] rounded-full border border-white/[0.08] bg-white/[0.04] px-4 text-[13px] font-medium text-[#f4f5fb] outline-none transition hover:border-white/[0.18] focus:border-[#8174ff]/60";
 
   return (
-    <div className="min-h-screen bg-[#070a0f] text-[#f8fafc]">
+    <div className="min-h-screen bg-[#080a0f] text-[#f4f5fb]">
       <Navbar activePage="marketplace" />
 
-      <main className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-[1400px] px-4 pb-16 sm:px-6 lg:px-8">
         {/* HERO */}
         <FadeUp>
-          <section className="flex flex-col gap-6 py-10 sm:py-14 lg:flex-row lg:items-end lg:justify-between">
+          <section className="flex flex-col gap-6 py-10 sm:py-14 lg:flex-row lg:items-end lg:justify-between border-b border-white/[0.06]">
             <div className="max-w-2xl">
-              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#818cf8]">
+              <p className="cl-kicker-label">
+                <span className="cl-mint-dot" />
                 Calip Marketplace
               </p>
-              <h1 className="mt-3 text-[32px] font-extrabold leading-[1.1] tracking-tight text-white sm:text-[44px]">
-                Discover the startups shaping what&apos;s next.
+              <h1 className="mt-3 text-[32px] font-bold leading-[1.08] tracking-tight text-white sm:text-[44px]">
+                Discover the startups shaping <span className="text-[#bcb5ff]">what&apos;s next.</span>
               </h1>
-              <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-[#94a3b8] sm:text-[15px]">
-                Explore startup tokens, track their performance, and discover what&apos;s
-                happening across the Calip ecosystem.
+              <p className="mt-3 max-w-xl text-[14.5px] leading-relaxed text-[#a6adbf]">
+                Explore startup tokens, track real-time performance, and discover what&apos;s
+                happening across the Calip private market ecosystem.
               </p>
-              <div className="mt-5 flex flex-wrap gap-6 font-mono text-[12px] text-[#5e6f85]">
-                <span><strong className="text-white">{tokens.length}</strong> tokens listed</span>
-                <span><strong className="text-white">{sectors.length - 1}</strong> sectors</span>
-                <span>
-                  <strong className={avgChange >= 0 ? "text-emerald-400" : "text-rose-400"}>
+              <div className="mt-5 flex flex-wrap gap-2.5 font-mono text-[12px]">
+                <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-[#a6adbf]">
+                  <strong className="text-white font-sans">{tokens.length}</strong> tokens listed
+                </span>
+                <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-[#a6adbf]">
+                  <strong className="text-white font-sans">{Math.max(1, sectors.length - 1)}</strong> sectors
+                </span>
+                <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-[#a6adbf]">
+                  <strong className={avgChange >= 0 ? "text-[#78dfc0]" : "text-rose-400"}>
                     {avgChange >= 0 ? "+" : ""}{avgChange.toFixed(2)}%
                   </strong>{" "}
                   avg 24h
@@ -131,7 +136,7 @@ export default function MarketplacePage() {
             <button
               type="button"
               onClick={() => router.push("/marketplace/create")}
-              className="inline-flex h-[46px] shrink-0 items-center gap-2 rounded-xl bg-[#6366F1] px-6 text-[14px] font-bold text-white shadow-[0_4px_24px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5 hover:bg-[#5558e3]"
+              className="cl-btn-primary h-[44px] px-6 text-[13.5px] shrink-0"
             >
               <Plus className="h-4 w-4" strokeWidth={2.5} /> Create Token
             </button>
@@ -140,32 +145,32 @@ export default function MarketplacePage() {
 
         {/* TOOLBAR */}
         <FadeUp delay={0.05}>
-          <section aria-label="Discover tokens" className="flex flex-col gap-3 rounded-2xl border border-[#1a2436] bg-[#0f1520] p-4">
+          <section aria-label="Discover tokens" className="mt-8 flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-[#111723]/90 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-md">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5e6f85]" />
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#737d91]" />
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search startups or tokens..."
                 aria-label="Search startups or tokens"
-                className="h-[42px] w-full rounded-xl border border-[#1a2436] bg-[#0b0e14] pl-10 pr-4 text-[13.5px] text-white placeholder-[#5e6f85] outline-none transition focus:border-[#6366f1]"
+                className="h-[40px] w-full rounded-full border border-white/[0.08] bg-white/[0.04] pl-10 pr-4 text-[13.5px] text-white placeholder-[#737d91] outline-none transition focus:border-[#8174ff]/50 focus:bg-white/[0.06]"
               />
             </div>
             <div className="flex gap-2 overflow-x-auto">
               <select aria-label="Filter by sector" value={sector} onChange={(e) => setSector(e.target.value)} className={selectClass}>
                 {sectors.map((s) => (
-                  <option key={s} value={s}>{s === "All" ? "All sectors" : s}</option>
+                  <option key={s} value={s} className="bg-[#0d111b] text-white">{s === "All" ? "All sectors" : s}</option>
                 ))}
               </select>
               <select aria-label="Filter by stage" value={stage} onChange={(e) => setStage(e.target.value)} className={selectClass}>
                 {stages.map((s) => (
-                  <option key={s} value={s}>{s === "All" ? "All stages" : s}</option>
+                  <option key={s} value={s} className="bg-[#0d111b] text-white">{s === "All" ? "All stages" : s}</option>
                 ))}
               </select>
               <select aria-label="Sort tokens" value={sort} onChange={(e) => setSort(e.target.value)} className={`${selectClass} ml-auto`}>
                 {SORTS.map((s) => (
-                  <option key={s.id} value={s.id}>{s.label}</option>
+                  <option key={s.id} value={s.id} className="bg-[#0d111b] text-white">{s.label}</option>
                 ))}
               </select>
             </div>

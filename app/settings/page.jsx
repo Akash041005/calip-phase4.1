@@ -21,20 +21,24 @@ export const metadata = {
 
 export default function SettingsPage() {
   return (
-    <div className={`${sora.className} min-h-screen bg-[#fbfbf9] dark:bg-[#0c0e14]`}>
+    <div className="min-h-screen bg-[#080a0f] text-[#f4f5fb]">
       <Navbar activePage="settings" />
 
-      <main className="mx-auto max-w-[1440px] px-[40px] pb-[48px]">
-        <div className="pt-[16px]">
-          <h1 className="text-[22px] font-semibold leading-none text-black dark:text-white">
+      <main className="mx-auto max-w-[1100px] px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="pt-8 pb-4 border-b border-white/[0.06]">
+          <p className="cl-kicker-label">
+            <span className="cl-mint-dot" />
+            Account Preferences
+          </p>
+          <h1 className="mt-2 text-[32px] font-bold leading-tight text-white sm:text-[40px]">
             Settings
           </h1>
-          <p className="mt-[8px] text-[14px] leading-none text-[#4b5563] dark:text-[#9ca3af]">
-            Manage your account preferences and get help
+          <p className="mt-2 text-[14.5px] text-[#a6adbf]">
+            Manage your account preferences, profile details, and security settings.
           </p>
         </div>
 
-        <div className="mt-[48px] space-y-[24px]">
+        <div className="mt-8 space-y-6">
           <ProfileSection />
           <ConnectedWallets />
           <NotificationsSection />

@@ -30,39 +30,50 @@ export default function AuctionUpcomingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#fbfbf9] dark:bg-[#0c0e14]">
+    <div className="min-h-screen bg-[#080a0f] text-[#f4f5fb]">
       <Navbar />
 
-      <main className="mx-auto max-w-[1440px] px-[16px] sm:px-[24px] lg:px-[40px] pb-8">
-        <div className="pt-5">
-          <h1 className="text-[28px] font-bold leading-none text-[#1a1a2e] dark:text-white">
-            Auction
+      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 py-6">
+        <div className="mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(129,116,255,0.1)] border border-[rgba(129,116,255,0.2)] text-[12px] font-medium text-[#8174ff] mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#8174ff]" />
+            UPCOMING LAUNCHES
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            Upcoming Startup Auctions
           </h1>
-          <p className="mt-[4px] text-[16px] text-[#6b7280] dark:text-[#9ca3af]">
-            Participate in live auctions and invest in vetted early-stage
-            startups.
+          <p className="mt-1 text-sm text-[rgba(226,232,255,0.6)]">
+            Preview pending auctions and get ready before the on-chain bonding curves open.
           </p>
         </div>
 
-        <div className="mt-[16px]">
+        <div className="mb-6">
           <AuctionFilterTabs activeTab="upcoming" />
         </div>
 
-        <div className="mt-[24px]">
+        <div>
           {loading && (
-            <p className="py-20 text-center text-[#6b7280] dark:text-[#9ca3af]">Loading auctions...</p>
+            <div className="py-24 text-center">
+              <div className="inline-block w-8 h-8 border-2 border-[rgba(129,116,255,0.2)] border-t-[#8174ff] rounded-full animate-spin mb-3" />
+              <p className="text-sm text-[rgba(226,232,255,0.5)]">Loading upcoming auctions...</p>
+            </div>
           )}
 
           {error && (
-            <p className="py-20 text-center text-[#ef4444]">{error}</p>
+            <div className="py-16 text-center">
+              <p className="text-sm text-red-400 bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] rounded-xl py-3 px-6 inline-block">{error}</p>
+            </div>
           )}
 
           {!loading && !error && auctions.length === 0 && (
-            <p className="py-20 text-center text-[#6b7280] dark:text-[#9ca3af]">No auctions found</p>
+            <div className="py-20 text-center rounded-2xl border border-[rgba(226,232,255,0.06)] bg-[#111723]/60">
+              <p className="text-base font-semibold text-white">No upcoming auctions</p>
+              <p className="mt-1 text-sm text-[rgba(226,232,255,0.5)]">Stay tuned for new startup drops and primary presales.</p>
+            </div>
           )}
 
           {!loading && !error && auctions.length > 0 && (
-            <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
               {auctions.map((item) => (
                 <AuctionCard key={item._id} item={item} />
               ))}

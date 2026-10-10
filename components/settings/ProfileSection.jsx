@@ -9,7 +9,7 @@ import { truncateAddress } from "../../lib/format";
 import { updateUserProfile } from "../../lib/authApi";
 
 const editableInputClass =
-  "h-[40px] w-full rounded-[10px] border border-[#242730] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] px-4 text-[14px] leading-none text-[#2b3244] dark:text-[#e4e4e9] outline-none focus:border-[#6550EB]";
+  "h-[42px] w-full rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 text-[13.5px] leading-none text-[#f4f5fb] placeholder-[#737d91] outline-none transition focus:border-[#8174ff]/60 focus:bg-white/[0.06]";
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -176,10 +176,10 @@ function ProfileCard({ user, updateUser }) {
             type="button"
             onClick={handleSave}
             disabled={!dirty || saving}
-            className="ml-auto flex h-[40px] w-[135px] items-center justify-center gap-[6px] rounded-[15px] bg-[#6550EB] text-[15px] font-semibold text-white transition-colors hover:bg-[#5741dc] disabled:cursor-not-allowed disabled:opacity-50"
+            className="ml-auto cl-btn-primary h-[38px] px-6 text-[13.5px] disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {saving && <Loader2 className="h-[16px] w-[16px] animate-spin" strokeWidth={2} />}
-            {saving ? "Saving..." : "Save"}
+            {saving && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />}
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         )}
       </div>

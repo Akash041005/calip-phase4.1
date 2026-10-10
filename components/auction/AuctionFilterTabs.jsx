@@ -8,17 +8,17 @@ const tabs = [
 
 export default function AuctionFilterTabs({ activeTab }) {
   return (
-    <div className="flex items-center gap-[14px]">
+    <div className="inline-flex items-center gap-1 p-1 rounded-full border border-white/[0.08] bg-white/[0.04] backdrop-blur-md">
       {tabs.map((tab) => {
         const isActive = tab.label.toLowerCase() === activeTab.toLowerCase();
         return (
           <Link
             key={tab.label}
             href={tab.href}
-            className={`inline-flex h-[30px] items-center rounded-[6px] px-[12px] text-[13px] font-medium leading-none transition-colors ${
+            className={`inline-flex h-[32px] items-center rounded-full px-4 text-[13px] font-semibold transition-all ${
               isActive
-                ? "bg-[#6366f1] text-white"
-                : "border border-[#d1d5db] bg-white text-[#374151] hover:bg-[#f9fafb] dark:border-[#3a3e4e] dark:bg-[#1c202e] dark:text-[#b0b5bf] dark:hover:bg-[#242838]"
+                ? "bg-gradient-to-r from-[#6a60e7]/30 to-[#8174ff]/30 border border-[#8174ff]/50 text-white shadow-[0_0_14px_rgba(129,116,255,0.22)]"
+                : "text-[#a6adbf] hover:text-white hover:bg-white/[0.05]"
             }`}
           >
             {tab.label}

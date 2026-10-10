@@ -91,54 +91,62 @@ export default function TrendingNews() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfbf9] dark:bg-[#0c0e14]">
+    <div className="min-h-screen bg-[#080a0f] text-[#f4f5fb]">
       <Navbar />
 
-      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 pb-8">
-        <div className="pt-4">
-          <h1 className="text-[28px] font-bold leading-none text-[#1a1a2e] dark:text-white">
-            Trending News
+      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 py-6">
+        <div className="mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(129,116,255,0.1)] border border-[rgba(129,116,255,0.2)] text-[12px] font-medium text-[#8174ff] mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#8174ff]" />
+            ECOSYSTEM INTELLIGENCE
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            Market Signals & Trends
           </h1>
-          <p className="mt-[4px] text-[16px] leading-none text-[#6b7280] dark:text-[#9ca3af]">
-            Latest startup funding, market trends, and AI-generated summaries.
+          <p className="mt-1 text-sm text-[rgba(226,232,255,0.6)]">
+            Latest startup rounds, token launches, and on-chain intelligence summaries.
           </p>
         </div>
 
-        <div className="mt-[24px]">
+        <div className="mb-6">
           <CategoryTabs
             activeCategory={activeCategory}
             onSelectCategory={(cat) => setActiveCategory(cat)}
           />
         </div>
 
-        <h2 className="mt-[28px] text-[18px] font-semibold leading-none text-[#1a1a2e] dark:text-white">
-          {activeCategory === "All" ? "Featured Stories" : `${activeCategory} News`}
-        </h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-[rgba(226,232,255,0.7)]">
+            {activeCategory === "All" ? "Featured Stories" : `${activeCategory} Signals`}
+          </h2>
+        </div>
 
         {loading ? (
-          <div className="mt-[20px] grid grid-cols-1 gap-[20px] xl:grid-cols-2">
-            <div className="h-[200px] animate-pulse rounded-xl bg-gray-100 dark:bg-[#1c202e]" />
-            <div className="h-[200px] animate-pulse rounded-xl bg-gray-100 dark:bg-[#1c202e]" />
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+            <div className="h-[170px] animate-pulse rounded-2xl bg-[#111723]/60 border border-[rgba(226,232,255,0.06)]" />
+            <div className="h-[170px] animate-pulse rounded-2xl bg-[#111723]/60 border border-[rgba(226,232,255,0.06)]" />
           </div>
         ) : (
-          <div className="mt-[20px] grid grid-cols-1 gap-[20px] xl:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
             {resolved.featured.map((article) => (
               <FeaturedCard key={article.id} {...article} />
             ))}
           </div>
         )}
 
-        <h2 className="mt-[24px] text-[18px] font-semibold leading-none text-[#1a1a2e] dark:text-white">
-          Latest
-        </h2>
+        <div className="mt-8 mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-[rgba(226,232,255,0.7)]">
+            Latest Feed
+          </h2>
+        </div>
 
         {loading ? (
-          <div className="mt-[20px] space-y-[20px]">
-            <div className="h-[90px] animate-pulse rounded-xl bg-gray-100 dark:bg-[#1c202e]" />
-            <div className="h-[90px] animate-pulse rounded-xl bg-gray-100 dark:bg-[#1c202e]" />
+          <div className="space-y-3">
+            <div className="h-[80px] animate-pulse rounded-2xl bg-[#111723]/60 border border-[rgba(226,232,255,0.06)]" />
+            <div className="h-[80px] animate-pulse rounded-2xl bg-[#111723]/60 border border-[rgba(226,232,255,0.06)]" />
           </div>
         ) : (
-          <div className="mt-[20px] space-y-[20px]">
+          <div className="space-y-3">
             {resolved.latest.map((article) => (
               <NewsListItem key={article.id} {...article} />
             ))}

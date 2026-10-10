@@ -136,95 +136,100 @@ export default function AuctionCard({ item }) {
 
   return (
     <>
-      <div className="relative flex w-full flex-col rounded-xl border border-[#e5e7eb] bg-white p-0 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-[#242838] dark:bg-[#181c28] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
-        <div className={`absolute right-[14px] top-[14px] inline-flex h-[22px] items-center rounded-[4px] px-2.5 text-[12px] font-medium leading-none ${badge}`}>
-          {status === "live" && "Live"}
-          {status === "upcoming" && "Coming soon"}
-          {status === "closed" && "Closed"}
+      <div className="relative flex w-full flex-col rounded-2xl border border-white/[0.08] bg-[#111723]/90 p-5 shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-md transition-all hover:border-[#8174ff]/35 hover:-translate-y-0.5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#172236] to-[#101928] border border-white/[0.1] text-[16px] font-bold text-[#8174ff] shadow-sm">
+              {logoLetter}
+            </div>
+            <div className="min-w-0">
+              <h3
+                onClick={() => {
+                  const sid = item.startupId?._id || item.startupId?.id;
+                  if (sid) router.push(`/insights/${sid}`);
+                }}
+                title={`Open ${companyName} overview`}
+                className="truncate cursor-pointer text-[15px] font-semibold text-[#f4f5fb] transition-colors hover:text-[#8174ff]"
+              >
+                {companyName}
+              </h3>
+              <span className="text-[12px] text-[#737d91]">
+                {sector}
+              </span>
+            </div>
+          </div>
+
+          <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-[11px] font-semibold ${
+            status === "live"
+              ? "bg-[#78dfc0]/15 border border-[#78dfc0]/40 text-[#78dfc0]"
+              : "border border-white/[0.1] bg-white/[0.04] text-[#a6adbf]"
+          }`}>
+            {status === "live" && <span className="cl-mint-dot !w-1.5 !h-1.5" />}
+            {status === "live" ? "Live" : status === "upcoming" ? "Coming soon" : "Closed"}
+          </div>
         </div>
 
-        <div className="flex items-start gap-4 px-[22px] pt-[16px]">
-          <div className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-[10px] bg-[#f3f4f6] text-[18px] font-bold text-[#6366f1] dark:bg-[#1c202e] dark:text-[#818cf8]">
-            {logoLetter}
-          </div>
-          <div className="min-w-0">
-            <h3
-              onClick={() => {
-                const sid = item.startupId?._id || item.startupId?.id;
-                if (sid) router.push(`/insights/${sid}`);
-              }}
-              title={`Open ${companyName} overview`}
-              className="truncate cursor-pointer text-[16px] font-semibold leading-tight text-[#1a1a2e] transition-colors hover:text-[#6366f1] dark:text-white dark:hover:text-[#818cf8]"
-            >
-              {companyName}
-            </h3>
-            <span className="text-[13px] leading-none text-[#6b7280] dark:text-[#9ca3af]">
-              {sector}
-            </span>
-          </div>
-        </div>
-
-        <p className="mt-[18px] line-clamp-2 px-[24px] text-[13px] leading-[18px] text-[#374151] dark:text-[#b0b5bf]">
+        <p className="mt-3.5 line-clamp-2 text-[13px] leading-relaxed text-[#a6adbf]">
           {description}
         </p>
 
-        <div className="mt-[20px] grid grid-cols-2 gap-x-[5px] gap-y-[4px] px-[22px]">
-          <div className="rounded-lg bg-[#f9fafb] px-4 py-[6px] dark:bg-[#1c202e]">
-            <p className="text-[11px] text-[#9ca3af] dark:text-[#7c8190]">Current Bid</p>
-            <p className="text-[14px] font-semibold text-[#1a1a2e] dark:text-white">
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2">
+            <p className="text-[10.5px] uppercase tracking-wider text-[#737d91] font-semibold">Current Bid</p>
+            <p className="text-[14px] font-semibold text-white mt-0.5">
               {currentBid}
             </p>
           </div>
-          <div className="rounded-lg bg-[#f9fafb] px-4 py-[6px] dark:bg-[#1c202e]">
-            <p className="text-[11px] text-[#9ca3af] dark:text-[#7c8190]">Target</p>
-            <p className="text-[14px] font-semibold text-[#1a1a2e] dark:text-white">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2">
+            <p className="text-[10.5px] uppercase tracking-wider text-[#737d91] font-semibold">Target</p>
+            <p className="text-[14px] font-semibold text-white mt-0.5">
               {targetAmount}
             </p>
           </div>
-          <div className="rounded-lg bg-[#f9fafb] px-4 py-[6px] dark:bg-[#1c202e]">
-            <p className="text-[11px] text-[#9ca3af] dark:text-[#7c8190]">Equity</p>
-            <p className="text-[14px] font-semibold text-[#1a1a2e] dark:text-white">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2">
+            <p className="text-[10.5px] uppercase tracking-wider text-[#737d91] font-semibold">Equity</p>
+            <p className="text-[14px] font-semibold text-white mt-0.5">
               {equityPercent}%
             </p>
           </div>
-          <div className="rounded-lg bg-[#f9fafb] px-4 py-[6px] dark:bg-[#1c202e]">
-            <p className="text-[11px] text-[#9ca3af] dark:text-[#7c8190]">Avg. Bid</p>
-            <p className="text-[14px] font-semibold text-[#1a1a2e] dark:text-white">
+          <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2">
+            <p className="text-[10.5px] uppercase tracking-wider text-[#737d91] font-semibold">Avg. Bid</p>
+            <p className="text-[14px] font-semibold text-white mt-0.5">
               {avgBid}
             </p>
           </div>
         </div>
 
-        <div className="mt-[16px] px-[22px]">
-          <div className="h-[6px] w-full overflow-hidden rounded-full bg-[#e5e7eb] dark:bg-[#2a2e3e]">
+        <div className="mt-4">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.08]">
             <div
-              className="h-full rounded-full bg-[#6366f1]"
+              className="h-full rounded-full bg-gradient-to-r from-[#6a60e7] to-[#78dfc0]"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
         </div>
 
-        <div className="mt-[12px] flex items-center justify-between gap-3 rounded-lg bg-[#f9fafb] px-4 py-[8px] dark:bg-[#1c202e] mx-[22px]">
+        <div className="mt-3.5 flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
           <div className="flex items-center gap-2">
-            <Gavel className="h-[14px] w-[14px] text-[#6366f1] dark:text-[#818cf8]" strokeWidth={2} />
+            <Gavel className="h-3.5 w-3.5 text-[#8174ff]" strokeWidth={2} />
             <div>
-              <p className="text-[11px] text-[#9ca3af] dark:text-[#7c8190]">Last Bid</p>
-              <p className="text-[14px] font-semibold text-[#1a1a2e] dark:text-white">
+              <p className="text-[10.5px] uppercase tracking-wider text-[#737d91] font-semibold">Last Bid</p>
+              <p className="text-[13.5px] font-semibold text-white">
                 {bidsLoading ? "…" : lastBid ? formatINR(lastBid.bidAmount) : "No bids yet"}
               </p>
             </div>
           </div>
           {!bidsLoading && bidTrend.length > 1 && (
-            <TokenSparkline points={bidTrend} positive width={96} height={30} />
+            <TokenSparkline points={bidTrend} positive width={96} height={28} />
           )}
         </div>
 
-        <div className="mt-[16px] flex justify-center px-[22px] pb-[16px]">
+        <div className="mt-4">
           <button
             type="button"
             onClick={() => status === "live" && setModalOpen(true)}
             disabled={status === "closed"}
-            className={`flex h-[34px] w-full items-center justify-center rounded-lg px-6 text-[13px] font-medium transition-colors ${button.className}`}
+            className="cl-btn-primary h-[38px] w-full text-[13.5px]"
           >
             {button.label}
           </button>

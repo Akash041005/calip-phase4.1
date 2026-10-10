@@ -89,7 +89,7 @@ export default function ConnectWalletButton() {
   );
 
   const baseClass =
-    "flex h-[34px] items-center gap-[6px] rounded-[10px] bg-[#6366F1] px-[14px] text-white font-bold text-[13px] transition-all duration-150 shadow-[0_0_12px_rgba(99,102,241,0.25)] hover:shadow-[0_0_20px_rgba(99,102,241,0.45)] disabled:cursor-not-allowed disabled:opacity-80";
+    "flex h-[36px] items-center gap-[7px] rounded-full border border-[rgba(169,159,255,0.35)] bg-[rgba(118,108,255,0.14)] px-[15px] text-[#edeaff] font-semibold text-[13px] transition-all duration-200 shadow-[0_0_16px_rgba(118,108,255,0.18)] hover:border-[#8174ff] hover:bg-[rgba(118,108,255,0.25)] hover:shadow-[0_0_24px_rgba(118,108,255,0.35)] disabled:cursor-not-allowed disabled:opacity-75";
 
   return (
     <div ref={rootRef} className="relative">
@@ -104,9 +104,9 @@ export default function ConnectWalletButton() {
           aria-label={isAuthenticated ? `Connected wallet ${walletAddress}` : "Connect Wallet"}
         >
           {icon}
-          <span className="text-[13px] font-medium leading-none">{label}</span>
+          <span className="text-[13px] font-semibold leading-none">{label}</span>
           {isAuthenticated && (
-            <ChevronDown className="h-[12px] w-[12px]" strokeWidth={2} />
+            <ChevronDown className="h-[12px] w-[12px] opacity-75" strokeWidth={2} />
           )}
         </button>
       ) : (
@@ -123,9 +123,9 @@ export default function ConnectWalletButton() {
           aria-label={isAuthenticated ? `Connected wallet ${walletAddress}` : "Connect Wallet"}
         >
           {icon}
-          <span className="text-[13px] font-medium leading-none">{label}</span>
+          <span className="text-[13px] font-semibold leading-none">{label}</span>
           {isAuthenticated && (
-            <ChevronDown className="h-[12px] w-[12px]" strokeWidth={2} />
+            <ChevronDown className="h-[12px] w-[12px] opacity-75" strokeWidth={2} />
           )}
         </motion.button>
       )}

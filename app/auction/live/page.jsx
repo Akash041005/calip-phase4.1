@@ -30,21 +30,24 @@ export default function AuctionLivePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#fbfbf9] dark:bg-[#0c0e14]">
-      <Navbar />
+    <div className="min-h-screen bg-[#080a0f] text-[#f4f5fb]">
+      <Navbar activePage="auction" />
 
-      <main className="mx-auto max-w-[1440px] px-[16px] sm:px-[24px] lg:px-[40px] pb-8">
-        <div className="pt-5">
-          <h1 className="text-[28px] font-bold leading-none text-[#1a1a2e] dark:text-white">
+      <main className="mx-auto max-w-[1400px] px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="pt-8 pb-4 border-b border-white/[0.06]">
+          <p className="cl-kicker-label">
+            <span className="cl-mint-dot" />
+            Live Auctions
+          </p>
+          <h1 className="mt-2 text-[32px] font-bold leading-tight text-white sm:text-[40px]">
             Auction
           </h1>
-          <p className="mt-[4px] text-[16px] text-[#6b7280] dark:text-[#9ca3af]">
-            Participate in live auctions and invest in vetted early-stage
-            startups.
+          <p className="mt-2 text-[14.5px] text-[#a6adbf]">
+            Participate in live community auctions and invest in vetted early-stage startups.
           </p>
         </div>
 
-        <div className="mt-[16px]">
+        <div className="mt-6">
           <AuctionFilterTabs activeTab="live" />
         </div>
 

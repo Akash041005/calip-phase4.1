@@ -11,9 +11,9 @@ export default function FeaturedCard({
   const colors = badgeColors[badge] || badgeColors.Funding;
 
   return (
-    <div className="relative min-h-[170px] h-auto w-full rounded-[14px] border border-[#f0f0f0] bg-white px-[20px] pt-[16px] pb-[16px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-[#2a2e3e] dark:bg-[#181c28] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+    <div className="relative min-h-[170px] h-auto w-full rounded-2xl border border-[rgba(226,232,255,0.08)] bg-[#111723]/90 p-5 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-[rgba(129,116,255,0.25)] transition-all">
       <div
-        className="inline-flex h-[22px] items-center rounded-md px-[10px] text-[12px] font-medium leading-none"
+        className="inline-flex h-[22px] items-center rounded-full px-2.5 text-[11px] font-semibold uppercase tracking-wider"
         style={{ backgroundColor: colors.bg, color: colors.text }}
       >
         {badge}
@@ -21,26 +21,27 @@ export default function FeaturedCard({
 
       <button
         type="button"
-        className="absolute right-[20px] top-[18px] flex h-[20px] w-[20px] items-center justify-center text-[#374151] transition-colors hover:text-[#111827] dark:text-[#b0b5bf] dark:hover:text-white"
+        className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(226,232,255,0.08)] bg-[#161f30] text-[rgba(226,232,255,0.6)] hover:text-white hover:border-[rgba(129,116,255,0.4)] transition-colors"
         aria-label="Bookmark"
       >
-        <Bookmark className="h-[16px] w-[16px]" strokeWidth={1.5} />
+        <Bookmark className="h-3.5 w-3.5" strokeWidth={1.5} />
       </button>
 
-      <h3 className="mt-[12px] text-[15px] font-semibold leading-tight text-[#1a1a2e] line-clamp-2 dark:text-white">
+      <h3 className="mt-3 text-base font-bold leading-snug text-white line-clamp-2">
         {title}
       </h3>
 
-      <p className="mt-[10px] text-[13px] leading-tight text-[#6b7280] line-clamp-2 dark:text-[#b0b5bf]">
+      <p className="mt-2 text-xs leading-relaxed text-[rgba(226,232,255,0.6)] line-clamp-2">
         {description}
       </p>
 
-      <div className="mt-[12px] flex items-center gap-[16px]">
-        <div className="flex items-center gap-[5px]">
-          <Clock className="h-[13px] w-[13px] text-[#9ca3af] dark:text-[#7c8190]" strokeWidth={1.5} />
-          <span className="text-[12px] leading-none text-[#9ca3af] dark:text-[#7c8190]">{time}</span>
+      <div className="mt-4 flex items-center gap-4 text-xs text-[rgba(226,232,255,0.4)]">
+        <div className="flex items-center gap-1.5">
+          <Clock className="h-3.5 w-3.5 text-[#8174ff]" strokeWidth={1.5} />
+          <span>{time}</span>
         </div>
-        <span className="text-[12px] leading-none text-[#9ca3af] dark:text-[#7c8190]">{readTime}</span>
+        <span>•</span>
+        <span>{readTime}</span>
       </div>
     </div>
   );

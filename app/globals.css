@@ -26,24 +26,24 @@
 }
 
 .dark {
-  --background: #0c0e14;
-  --foreground: #e4e4e9;
-  --calip-purple: #818cf8;
-  --calip-purple-light: #1e1b4b;
-  --calip-purple-muted: #6366f1;
-  --calip-green: #9485f5;
-  --calip-border: #2a2e3e;
-  --calip-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-  --calip-surface: #12141c;
-  --calip-card: #181c28;
-  --calip-card-border: #242838;
-  --calip-muted: #7c8190;
-  --calip-secondary: #9ca3af;
-  --calip-icon: #b0b5bf;
-  --calip-input-bg: #1c202e;
-  --calip-divider: #2a2e3e;
-  --calip-nav-text: #b0b5bf;
-  --calip-hover: #1e2234;
+  --background: #080a0f;
+  --foreground: #f4f5fb;
+  --calip-purple: #8174ff;
+  --calip-purple-light: rgba(129, 116, 255, 0.15);
+  --calip-purple-muted: #6a60e7;
+  --calip-green: #78dfc0;
+  --calip-border: rgba(226, 232, 255, 0.08);
+  --calip-card-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(100, 90, 223, 0.06);
+  --calip-surface: #0d111b;
+  --calip-card: #111723;
+  --calip-card-border: rgba(226, 232, 255, 0.08);
+  --calip-muted: #a6adbf;
+  --calip-secondary: #737d91;
+  --calip-icon: #b6bdcc;
+  --calip-input-bg: rgba(13, 17, 27, 0.85);
+  --calip-divider: rgba(226, 232, 255, 0.08);
+  --calip-nav-text: #b6bdcc;
+  --calip-hover: rgba(255, 255, 255, 0.04);
 }
 
 @theme inline {
@@ -147,4 +147,78 @@ html.lenis body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Calip Unified Design System Utilities */
+.cl-glass-card {
+  background: rgba(17, 23, 35, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(100, 90, 223, 0.05);
+}
+
+.cl-pill-active {
+  background: rgba(118, 108, 255, 0.16);
+  border: 1px solid rgba(169, 159, 255, 0.4);
+  color: #edeaff;
+  box-shadow: 0 0 16px rgba(118, 108, 255, 0.22);
+}
+
+.cl-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  background: linear-gradient(110deg, #6a60e7, #8174ff);
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 10px 26px rgba(85, 76, 215, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+.cl-btn-primary:hover {
+  background: linear-gradient(110deg, #7770f4, #958bff);
+  box-shadow: 0 14px 34px rgba(85, 76, 215, 0.48);
+  transform: translateY(-1px);
+}
+
+.cl-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e4e7ef !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.cl-btn-secondary:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.09);
+  transform: translateY(-1px);
+}
+
+.cl-kicker-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #bcb5ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.cl-mint-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #78dfc0;
+  box-shadow: 0 0 12px rgba(120, 223, 192, 0.85);
+  display: inline-block;
+}
+
 

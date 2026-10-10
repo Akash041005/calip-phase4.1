@@ -11,48 +11,49 @@ export default function NewsListItem({
   const colors = badgeColors[badge] || badgeColors.Funding;
 
   return (
-    <div className="min-h-[108px] h-auto w-full rounded-[14px] border border-[#f0f0f0] bg-white px-[20px] pt-[16px] pb-[16px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-[#2a2e3e] dark:bg-[#181c28] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+    <div className="min-h-[100px] h-auto w-full rounded-2xl border border-[rgba(226,232,255,0.06)] bg-[#111723]/70 p-4 shadow-sm hover:border-[rgba(129,116,255,0.2)] hover:bg-[#111723]/90 transition-all">
       <div className="flex items-start justify-between">
-        <div className="flex flex-wrap items-center gap-[12px] sm:gap-[20px]">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <div
-            className="inline-flex h-[22px] items-center rounded-md px-[10px] text-[12px] font-medium leading-none"
+            className="inline-flex h-[20px] items-center rounded-full px-2.5 text-[10px] font-semibold uppercase tracking-wider"
             style={{ backgroundColor: colors.bg, color: colors.text }}
           >
             {badge}
           </div>
 
-          <div className="flex items-center gap-[5px]">
-            <Clock className="h-[13px] w-[13px] text-[#9ca3af] dark:text-[#7c8190]" strokeWidth={1.5} />
-            <span className="text-[12px] leading-none text-[#9ca3af] dark:text-[#7c8190]">{time}</span>
+          <div className="flex items-center gap-1.5 text-xs text-[rgba(226,232,255,0.4)]">
+            <Clock className="h-3 w-3 text-[#8174ff]" strokeWidth={1.5} />
+            <span>{time}</span>
           </div>
 
-          <span className="text-[12px] leading-none text-[#9ca3af] dark:text-[#7c8190]">{readTime}</span>
+          <span className="text-xs text-[rgba(226,232,255,0.4)]">•</span>
+          <span className="text-xs text-[rgba(226,232,255,0.4)]">{readTime}</span>
         </div>
 
-        <div className="flex items-center gap-[8px]">
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            className="flex h-[22px] w-[22px] items-center justify-center rounded-md bg-[#f3f4f6] text-[#374151] transition-colors hover:bg-[#e5e7eb] dark:bg-[#1c202e] dark:text-[#b0b5bf] dark:hover:bg-[#282d3f]"
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-[rgba(226,232,255,0.08)] bg-[#161f30] text-[rgba(226,232,255,0.5)] hover:text-white hover:border-[rgba(129,116,255,0.3)] transition-colors"
             aria-label="Star article"
           >
-            <Star className="h-[12px] w-[12px]" strokeWidth={1.5} />
+            <Star className="h-3 w-3" strokeWidth={1.5} />
           </button>
 
           <button
             type="button"
-            className="flex h-[22px] w-[22px] items-center justify-center rounded-md bg-[#f3f4f6] text-[#374151] transition-colors hover:bg-[#e5e7eb] dark:bg-[#1c202e] dark:text-[#b0b5bf] dark:hover:bg-[#282d3f]"
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-[rgba(226,232,255,0.08)] bg-[#161f30] text-[rgba(226,232,255,0.5)] hover:text-white hover:border-[rgba(129,116,255,0.3)] transition-colors"
             aria-label="Bookmark article"
           >
-            <Bookmark className="h-[14px] w-[14px]" strokeWidth={1.5} />
+            <Bookmark className="h-3 w-3" strokeWidth={1.5} />
           </button>
         </div>
       </div>
 
-      <h3 className="mt-[12px] text-[15px] font-semibold leading-tight text-[#1a1a2e] truncate dark:text-white">
+      <h3 className="mt-2.5 text-sm font-semibold leading-tight text-white truncate">
         {title}
       </h3>
 
-      <p className="mt-[6px] text-[13px] leading-tight text-[#6b7280] truncate dark:text-[#b0b5bf]">
+      <p className="mt-1 text-xs leading-relaxed text-[rgba(226,232,255,0.6)] truncate">
         {description}
       </p>
     </div>
