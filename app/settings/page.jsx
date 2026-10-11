@@ -1,5 +1,6 @@
 import { Sora } from "next/font/google";
 import Navbar from "../../components/dashboard/Navbar";
+import Footer from "../../components/dashboard/Footer";
 import ProfileSection from "../../components/settings/ProfileSection";
 import AppearanceSection from "../../components/settings/AppearanceSection";
 import ConnectedWallets from "../../components/settings/ConnectedWallets";
@@ -22,19 +23,19 @@ export const metadata = {
 
 export default function SettingsPage() {
   return (
-    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-[#f8fafc] transition-colors">
       <Navbar activePage="settings" />
 
       <main className="mx-auto max-w-[1100px] px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="pt-8 pb-4 border-b border-white/[0.06]">
+        <div className="pt-8 pb-4 border-b border-slate-200 dark:border-white/[0.06] transition-colors">
           <p className="cl-kicker-label">
             <span className="cl-mint-dot" />
             Account Preferences
           </p>
-          <h1 className="mt-2 text-[32px] font-bold leading-tight text-white sm:text-[40px]">
+          <h1 className="mt-2 text-[32px] font-bold leading-tight text-slate-900 dark:text-white sm:text-[40px] transition-colors">
             Settings
           </h1>
-          <p className="mt-2 text-[14.5px] text-[#a6adbf]">
+          <p className="mt-2 text-[14.5px] text-slate-500 dark:text-[#a6adbf] transition-colors">
             Manage your account preferences, profile details, and security settings.
           </p>
         </div>
@@ -50,6 +51,8 @@ export default function SettingsPage() {
           <DeleteAccount />
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

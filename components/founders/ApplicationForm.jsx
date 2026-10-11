@@ -1,17 +1,18 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 import { CircleCheck } from "lucide-react";
 import { uploadStartup } from "../../lib/startupsUploadApi";
 
 const fieldStyles =
-  "h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 text-[14px] text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-white/20 focus:bg-[#111318]";
+  "h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-[14px] text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-slate-400 focus:bg-white dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-white/20 dark:focus:bg-[#111318]";
 
 const selectStyles =
-  "h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 text-[14px] text-white outline-none transition-colors focus:border-white/20 focus:bg-[#111318] appearance-none";
+  "h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-[14px] text-slate-900 outline-none transition-colors focus:border-slate-400 focus:bg-white appearance-none dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white dark:focus:border-white/20 dark:focus:bg-[#111318]";
 
 const textAreaStyles =
-  "h-[140px] w-full resize-none rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 py-3 text-[14px] text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-white/20 focus:bg-[#111318]";
+  "h-[140px] w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-[14px] text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-slate-400 focus:bg-white dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-white/20 dark:focus:bg-[#111318]";
 
 const REQUIRED_TEXT_FIELDS = [
   { name: "startupName", label: "Startup Name", placeholder: "Enter your startup name" },
@@ -224,17 +225,17 @@ export default function ApplicationForm() {
       </p>
 
       {submitted ? (
-        <div className="mx-auto mt-[60px] flex max-w-[700px] flex-col items-center rounded-2xl border border-white/[0.08] bg-[#111318] px-8 py-[50px] text-center shadow-sm">
+        <div className="mx-auto mt-[60px] flex max-w-[700px] flex-col items-center rounded-2xl border border-slate-200 bg-white px-8 py-[50px] text-center shadow-sm dark:border-white/[0.08] dark:bg-[#111318]">
           <div className="flex h-[64px] w-[64px] items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
             <CircleCheck
-              className="h-[36px] w-[36px] text-emerald-400"
+              className="h-[36px] w-[36px] text-emerald-500 dark:text-emerald-400"
               strokeWidth={2}
             />
           </div>
-          <h3 className="mt-[20px] text-[24px] font-bold text-white">
+          <h3 className="mt-[20px] text-[24px] font-bold text-slate-900 dark:text-white">
             Application submitted
           </h3>
-          <p className="mt-[10px] text-[16px] leading-[22px] text-slate-300">
+          <p className="mt-[10px] text-[16px] leading-[22px] text-slate-600 dark:text-slate-300">
             Thanks for applying. Our team will review your application within 5
             business days and reach out to you by email.
           </p>
@@ -246,12 +247,12 @@ export default function ApplicationForm() {
             >
               Submit Another Application
             </button>
-            <a
+            <Link
               href="/marketplace"
               className="cl-btn-primary h-[44px] px-6 text-[14px]"
             >
               Continue to Marketplace
-            </a>
+            </Link>
           </div>
         </div>
       ) : (
@@ -350,7 +351,7 @@ export default function ApplicationForm() {
                 type="file"
                 accept=".jpg,.jpeg,.png,.webp,.pdf"
                 onChange={(e) => setPitchDeckFile(e.target.files?.[0] || null)}
-                className="w-full text-[16px] text-[#1a1a2e] file:mr-4 file:rounded-[10px] file:border-0 file:bg-[#4f46e5] file:px-4 file:py-2 file:text-[14px] file:font-medium file:text-white file:transition-colors hover:file:bg-[#4338ca] dark:text-white"
+                className="w-full text-[14px] text-slate-700 dark:text-zinc-300 file:mr-4 file:rounded-lg file:border-0 file:bg-slate-900 file:px-4 file:py-2.5 file:text-[13px] file:font-semibold file:text-white file:transition-all hover:file:bg-slate-800 dark:file:bg-white dark:file:text-slate-950 dark:hover:file:bg-slate-100 cursor-pointer"
               />
               {pitchDeckFile && (
                 <p className="mt-[6px] text-[14px] text-[#6b7280] dark:text-[#7c8190]">
@@ -373,7 +374,7 @@ export default function ApplicationForm() {
                 type="file"
                 accept=".jpg,.jpeg,.png,.webp,.pdf"
                 onChange={(e) => setLogoFile(e.target.files?.[0] || null)}
-                className="w-full text-[16px] text-[#1a1a2e] file:mr-4 file:rounded-[10px] file:border-0 file:bg-[#4f46e5] file:px-4 file:py-2 file:text-[14px] file:font-medium file:text-white file:transition-colors hover:file:bg-[#4338ca] dark:text-white"
+                className="w-full text-[14px] text-slate-700 dark:text-zinc-300 file:mr-4 file:rounded-lg file:border-0 file:bg-slate-900 file:px-4 file:py-2.5 file:text-[13px] file:font-semibold file:text-white file:transition-all hover:file:bg-slate-800 dark:file:bg-white dark:file:text-slate-950 dark:hover:file:bg-slate-100 cursor-pointer"
               />
               {logoFile && (
                 <p className="mt-[6px] text-[14px] text-[#6b7280] dark:text-[#7c8190]">
@@ -397,7 +398,7 @@ export default function ApplicationForm() {
                 accept=".jpg,.jpeg,.png,.webp,.pdf"
                 multiple
                 onChange={(e) => setMediaFiles(Array.from(e.target.files || []))}
-                className="w-full text-[16px] text-[#1a1a2e] file:mr-4 file:rounded-[10px] file:border-0 file:bg-[#4f46e5] file:px-4 file:py-2 file:text-[14px] file:font-medium file:text-white file:transition-colors hover:file:bg-[#4338ca] dark:text-white"
+                className="w-full text-[14px] text-slate-700 dark:text-zinc-300 file:mr-4 file:rounded-lg file:border-0 file:bg-slate-900 file:px-4 file:py-2.5 file:text-[13px] file:font-semibold file:text-white file:transition-all hover:file:bg-slate-800 dark:file:bg-white dark:file:text-slate-950 dark:hover:file:bg-slate-100 cursor-pointer"
               />
               {mediaFiles.length > 0 && (
                 <p className="mt-[6px] text-[14px] text-[#6b7280] dark:text-[#7c8190]">

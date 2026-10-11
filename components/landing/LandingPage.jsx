@@ -290,9 +290,14 @@ export default function LandingPage() {
     });
   }, [query, sector]);
 
-  // Reset viewport scroll & bottom-state whenever filter/query changes
-  useEffect(() => {
+  const [prevFilter, setPrevFilter] = useState({ sector, query });
+  if (prevFilter.sector !== sector || prevFilter.query !== query) {
+    setPrevFilter({ sector, query });
     setGridAtBottom(false);
+  }
+
+  // Reset viewport scroll whenever filter/query changes
+  useEffect(() => {
     if (gridViewportRef.current) gridViewportRef.current.scrollTop = 0;
   }, [sector, query]);
 

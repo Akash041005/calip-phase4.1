@@ -53,10 +53,10 @@ export default function FAQAccordion({ items, defaultOpen = 0, className = "" })
         return (
           <div
             key={index}
-            className={`overflow-hidden rounded-xl border bg-[#111318] transition-colors duration-200 ${
+            className={`overflow-hidden rounded-xl border bg-white dark:bg-[#111318] transition-colors duration-200 ${
               isOpen
-                ? "border-white/20 shadow-md"
-                : "border-white/[0.08] hover:border-white/[0.14]"
+                ? "border-slate-300 dark:border-white/20 shadow-sm"
+                : "border-slate-200 dark:border-white/[0.08] hover:border-slate-300 dark:hover:border-white/[0.14]"
             }`}
           >
             <button
@@ -64,14 +64,14 @@ export default function FAQAccordion({ items, defaultOpen = 0, className = "" })
               className="group flex w-full items-center justify-between gap-4 p-5 text-left focus:outline-none sm:px-6"
               aria-expanded={isOpen}
             >
-              <span className="text-[15px] font-semibold text-white leading-snug sm:text-[16px]">
+              <span className="text-[15px] font-semibold text-slate-900 dark:text-white leading-snug sm:text-[16px] transition-colors">
                 {item.question}
               </span>
               <span
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all duration-200 ${
                   isOpen
-                    ? "border-white bg-white text-black rotate-45"
-                    : "border-white/[0.1] bg-white/[0.03] text-slate-400 group-hover:text-white"
+                    ? "border-slate-900 bg-slate-900 text-white dark:border-white dark:bg-white dark:text-black rotate-45"
+                    : "border-slate-200 bg-slate-100 text-slate-500 group-hover:text-slate-900 dark:border-white/[0.1] dark:bg-white/[0.03] dark:text-slate-400 dark:group-hover:text-white"
                 }`}
                 aria-hidden="true"
               >
@@ -90,7 +90,7 @@ export default function FAQAccordion({ items, defaultOpen = 0, className = "" })
                   role="region"
                   className="overflow-hidden"
                 >
-                  <div className="px-5 pb-5 text-[14px] leading-relaxed text-slate-400 sm:px-6 sm:pb-6">
+                  <div className="px-5 pb-5 text-[14px] leading-relaxed text-slate-600 dark:text-slate-400 sm:px-6 sm:pb-6 transition-colors">
                     {renderAnswer(item.answer)}
                   </div>
                 </motion.div>

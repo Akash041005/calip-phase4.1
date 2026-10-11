@@ -6,6 +6,8 @@ import MonthlyActivity from "../../components/analytics/MonthlyActivity";
 import AIScoreGrowthBubbleChart from "../../components/analytics/AIScoreGrowthBubbleChart";
 import StartupComparisonTable from "../../components/analytics/StartupComparisonTable";
 
+import Footer from "../../components/dashboard/Footer";
+
 export const metadata = {
   title: "Calip — Analytics & Market Intelligence",
   description:
@@ -14,7 +16,7 @@ export const metadata = {
 
 export default function AnalyticsPage() {
   return (
-    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-[#f8fafc] transition-colors">
       <Navbar activePage="analytics" />
 
       <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 pb-16">
@@ -44,6 +46,8 @@ export default function AnalyticsPage() {
           <StartupComparisonTable />
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

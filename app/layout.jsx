@@ -23,7 +23,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} dark h-full antialiased`} suppressHydrationWarning>
-      <body className="min-h-full bg-[#090a0f] text-[#f8fafc]">
+      <body className="min-h-full bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-[#f8fafc] transition-colors duration-150">
         <AuthProvider>
           <ThemeProvider>
             <RouteAccessGate>

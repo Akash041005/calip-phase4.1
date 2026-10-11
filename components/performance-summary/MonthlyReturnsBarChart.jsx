@@ -66,24 +66,24 @@ export default function MonthlyReturnsBarChart() {
   const ticks = [0, maxValue * 0.25, maxValue * 0.5, maxValue * 0.75, maxValue];
 
   return (
-    <div className="h-[340px] w-full rounded-2xl border border-white/[0.08] bg-[#111318] shadow-sm">
+    <div className="h-[340px] w-full rounded-2xl border border-slate-200/90 bg-white dark:border-white/[0.12] dark:bg-[#151824] shadow-sm transition-colors">
       <div className="flex h-full flex-col p-[24px]">
         <div>
-          <h2 className="text-[17px] font-semibold text-white">
+          <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white transition-colors">
             Monthly Investment Activity
           </h2>
-          <p className="mt-[2px] text-[13px] text-[#94a3b8]">
+          <p className="mt-[2px] text-[13px] text-slate-500 dark:text-[#94a3b8] transition-colors">
             Confirmed participation amounts by month
           </p>
         </div>
 
         <div className="mt-[14px] min-h-0 flex-1">
           {loading ? (
-            <div className="flex h-full items-center justify-center text-[13px] text-[#94a3b8]">
+            <div className="flex h-full items-center justify-center text-[13px] text-slate-400 dark:text-[#94a3b8]">
               Loading...
             </div>
           ) : chartData.length === 0 ? (
-            <div className="flex h-full items-center justify-center px-4 text-center text-[13px] text-[#94a3b8]">
+            <div className="flex h-full items-center justify-center px-4 text-center text-[13px] text-slate-400 dark:text-[#94a3b8]">
               {loadError ? "Investment activity could not be loaded." : "No participation activity is available yet."}
             </div>
           ) : (
@@ -95,7 +95,7 @@ export default function MonthlyReturnsBarChart() {
               >
                 <CartesianGrid
                   strokeDasharray="4 4"
-                  stroke="rgba(255, 255, 255, 0.06)"
+                  stroke={dark ? "rgba(255, 255, 255, 0.06)" : "rgba(100, 116, 139, 0.12)"}
                   vertical={false}
                   horizontal
                 />
@@ -103,13 +103,13 @@ export default function MonthlyReturnsBarChart() {
                   dataKey="month"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#94a3b8", fontSize: 12 }}
+                  tick={{ fill: dark ? "#94a3b8" : "#64748b", fontSize: 12 }}
                   dy={6}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#94a3b8", fontSize: 12 }}
+                  tick={{ fill: dark ? "#94a3b8" : "#64748b", fontSize: 12 }}
                   tickFormatter={formatYAxis}
                   domain={[0, maxValue]}
                   ticks={ticks}
@@ -118,23 +118,23 @@ export default function MonthlyReturnsBarChart() {
                 <Bar
                   dataKey="value"
                   name="Invested Amount"
-                  fill="#ffffff"
+                  fill={dark ? "#ffffff" : "#0f172a"}
                   radius={[4, 4, 0, 0]}
                   barSize={24}
                 />
                 <Tooltip
                   formatter={(value) => `₹ ${Number(value).toLocaleString("en-IN")}`}
-                  cursor={{ fill: "rgba(255, 255, 255, 0.04)" }}
+                  cursor={{ fill: dark ? "rgba(255, 255, 255, 0.04)" : "rgba(100, 116, 139, 0.06)" }}
                   contentStyle={{
-                    backgroundColor: "#111318",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    backgroundColor: dark ? "#151824" : "#ffffff",
+                    border: dark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(226, 232, 240, 1)",
                     borderRadius: "10px",
-                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.6)",
+                    boxShadow: dark ? "0 8px 32px rgba(0, 0, 0, 0.6)" : "0 8px 24px rgba(0, 0, 0, 0.08)",
                     padding: "8px 12px",
                     whiteSpace: "nowrap",
                   }}
-                  labelStyle={{ color: "#94a3b8", fontSize: 13 }}
-                  itemStyle={{ color: "#ffffff", fontSize: 13 }}
+                  labelStyle={{ color: dark ? "#94a3b8" : "#64748b", fontSize: 13 }}
+                  itemStyle={{ color: dark ? "#ffffff" : "#0f172a", fontSize: 13, fontWeight: 600 }}
                 />
               </BarChart>
             </ResponsiveContainer>

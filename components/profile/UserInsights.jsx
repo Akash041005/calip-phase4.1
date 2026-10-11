@@ -19,6 +19,7 @@ import {
   ArrowLeftRight,
 } from "lucide-react";
 import Navbar from "../dashboard/Navbar";
+import Footer from "../dashboard/Footer";
 import MonthlyReturnsBarChart from "../performance-summary/MonthlyReturnsBarChart";
 import AIRecommendationsTable from "../performance-summary/AIRecommendationsTable";
 import { useAuth } from "../auth/AuthProvider";
@@ -118,37 +119,37 @@ export default function UserInsights() {
   const memberSince = profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : "Active Member";
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-[#f8fafc] transition-colors">
       <Navbar activePage="profile" />
 
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 pb-16">
         {/* HEADER / COMMAND CENTER BANNER */}
-        <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111318] p-6 sm:p-8 shadow-[0_4px_24px_rgba(0,0,0,0.35)] mb-8">
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] mb-8 transition-colors">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white flex items-center justify-center font-bold text-2xl flex-shrink-0 transition-colors">
                 {displayName.charAt(0).toUpperCase()}
               </div>
 
               <div>
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors">
                     {displayName}
                   </h1>
-                  <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-white/[0.06] text-white border border-white/[0.08]">
+                  <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200 dark:bg-white/[0.06] dark:text-white dark:border-white/[0.08] transition-colors">
                     USER INSIGHTS
                   </span>
                   {isAuthenticated && (
-                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                       Connected
                     </span>
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-4 mt-2 text-[12.5px] text-slate-400">
+                <div className="flex flex-wrap items-center gap-4 mt-2 text-[12.5px] text-slate-500 dark:text-slate-400">
                   {walletAddress && (
                     <span className="inline-flex items-center gap-1.5 font-mono">
-                      <Wallet className="w-3.5 h-3.5 text-slate-300" />
+                      <Wallet className="w-3.5 h-3.5 text-slate-400 dark:text-slate-300" />
                       {walletAddress.slice(0, 10)}...{walletAddress.slice(-6)}
                     </span>
                   )}
@@ -158,7 +159,7 @@ export default function UserInsights() {
                   </span>
                   {profile?.role && (
                     <span className="inline-flex items-center gap-1.5 capitalize">
-                      <Shield className="w-3.5 h-3.5 text-slate-300" />
+                      <Shield className="w-3.5 h-3.5 text-slate-400 dark:text-slate-300" />
                       {profile.role}
                     </span>
                   )}
@@ -170,7 +171,7 @@ export default function UserInsights() {
             <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={() => setReloadTrigger((k) => k + 1)}
-                className="p-2.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-slate-400 hover:text-white hover:bg-white/[0.08] transition"
+                className="p-2.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/[0.08] transition"
                 title="Refresh Insights"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
@@ -179,43 +180,43 @@ export default function UserInsights() {
           </div>
 
           {/* REAL STATS COUNTERS */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/[0.08]">
-            <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.08]">
-              <div className="text-[12px] font-medium text-slate-400 flex items-center gap-1.5">
-                <Bookmark className="w-3.5 h-3.5 text-slate-300" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-white/[0.08] transition-colors">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 dark:bg-[#0e111c] dark:border-white/[0.08] transition-colors">
+              <div className="text-[12px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <Bookmark className="w-3.5 h-3.5 text-slate-400 dark:text-slate-300" />
                 Watched Companies
               </div>
-              <div className="text-2xl font-extrabold text-white font-mono mt-1">
+              <div className="text-2xl font-extrabold text-slate-900 dark:text-white font-mono mt-1 transition-colors">
                 {watchlist.length}
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.08]">
-              <div className="text-[12px] font-medium text-slate-400 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-slate-300" />
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 dark:bg-[#0e111c] dark:border-white/[0.08] transition-colors">
+              <div className="text-[12px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5 text-slate-400 dark:text-slate-300" />
                 My Startups
               </div>
-              <div className="text-2xl font-extrabold text-white font-mono mt-1">
+              <div className="text-2xl font-extrabold text-slate-900 dark:text-white font-mono mt-1 transition-colors">
                 {myStartups.length}
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.08]">
-              <div className="text-[12px] font-medium text-slate-400 flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-slate-300" />
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 dark:bg-[#0e111c] dark:border-white/[0.08] transition-colors">
+              <div className="text-[12px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5 text-slate-400 dark:text-slate-300" />
                 Active Listings
               </div>
-              <div className="text-2xl font-extrabold text-white font-mono mt-1">
+              <div className="text-2xl font-extrabold text-slate-900 dark:text-white font-mono mt-1 transition-colors">
                 {activeListings.length}
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.08]">
-              <div className="text-[12px] font-medium text-slate-400 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-slate-300" />
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 dark:bg-[#0e111c] dark:border-white/[0.08] transition-colors">
+              <div className="text-[12px] font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-slate-400 dark:text-slate-300" />
                 Market Trades
               </div>
-              <div className="text-2xl font-extrabold text-white font-mono mt-1">
+              <div className="text-2xl font-extrabold text-slate-900 dark:text-white font-mono mt-1 transition-colors">
                 {tradeHistory.length}
               </div>
             </div>
@@ -223,7 +224,7 @@ export default function UserInsights() {
         </div>
 
         {/* TABS NAVIGATION */}
-        <div className="flex items-center gap-2 border-b border-white/[0.08] pb-3 mb-6 overflow-x-auto">
+        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-white/[0.08] pb-3 mb-6 overflow-x-auto transition-colors">
           {[
             { id: "overview", label: "Command Overview", icon: Sparkles },
             { id: "performance", label: "Performance", icon: BarChart3 },
@@ -239,8 +240,8 @@ export default function UserInsights() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold whitespace-nowrap transition ${
                   isActive
-                    ? "bg-white text-black shadow-sm"
-                    : "text-slate-400 hover:text-white hover:bg-white/[0.04]"
+                    ? "bg-slate-900 text-white shadow-sm dark:bg-white dark:text-black"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/[0.04]"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -268,15 +269,15 @@ export default function UserInsights() {
               <div className="grid grid-cols-1 gap-6">
                 {/* WATCHLIST QUICK SUMMARY */}
                 <div className="space-y-6">
-                  <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+                  <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
-                        <Bookmark className="w-4 h-4 text-white" />
-                        <h2 className="text-[15px] font-bold text-white">Your Watched Companies</h2>
+                        <Bookmark className="w-4 h-4 text-slate-700 dark:text-white" />
+                        <h2 className="text-[15px] font-bold text-slate-900 dark:text-white">Your Watched Companies</h2>
                       </div>
                       <button
                         onClick={() => setActiveTab("watchlist")}
-                        className="text-[12px] font-semibold text-emerald-400 hover:underline inline-flex items-center gap-1"
+                        className="text-[12px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1"
                       >
                         View all ({watchlist.length})
                         <ArrowRight className="w-3 h-3" />
@@ -284,9 +285,9 @@ export default function UserInsights() {
                     </div>
 
                     {watchlist.length === 0 ? (
-                      <div className="text-center py-8 border border-dashed border-white/[0.08] rounded-xl bg-white/[0.01]">
-                        <Bookmark className="w-8 h-8 text-slate-500 mx-auto mb-2" />
-                        <p className="text-[13.5px] font-medium text-slate-300">No companies in your watchlist yet</p>
+                      <div className="text-center py-8 border border-dashed border-slate-200 bg-slate-50/50 rounded-xl dark:border-white/[0.08] dark:bg-white/[0.01]">
+                        <Bookmark className="w-8 h-8 text-slate-400 dark:text-slate-500 mx-auto mb-2" />
+                        <p className="text-[13.5px] font-medium text-slate-700 dark:text-slate-300">No companies in your watchlist yet</p>
                         <p className="text-[12px] text-slate-500 mt-1">Discover companies on the Dashboard and click &ldquo;+ Add to Watchlist&rdquo;.</p>
                         <button
                           onClick={() => router.push("/")}
@@ -296,31 +297,31 @@ export default function UserInsights() {
                         </button>
                       </div>
                     ) : (
-                      <div className="divide-y divide-white/[0.04]">
+                      <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                         {watchlist.slice(0, 5).map((item, idx) => {
                           const itemId = item._id || item.id;
                           return (
                             <div
                               key={itemId || `quick-${idx}`}
                               onClick={() => router.push(`/insights/${itemId || item.symbol?.toLowerCase()}`)}
-                              className="py-3 flex items-center justify-between gap-3 hover:bg-white/[0.02] px-2 rounded-lg cursor-pointer transition group"
+                              className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-white/[0.02] px-2 rounded-lg cursor-pointer transition group"
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center font-bold text-[13px] text-white">
+                                <div className="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white flex items-center justify-center font-bold text-[13px]">
                                   {item.symbol
                                     ? item.symbol.slice(0, 2).toUpperCase()
                                     : (item.startupName || item.name || "?").slice(0, 2).toUpperCase()}
                                 </div>
                                 <div>
-                                  <div className="font-semibold text-white text-[13.5px] group-hover:text-emerald-400 transition">
+                                  <div className="font-semibold text-slate-900 dark:text-white text-[13.5px] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
                                     {item.startupName || item.name || "Company"}
                                   </div>
-                                  <div className="text-[11.5px] text-slate-400 flex items-center gap-2">
+                                  <div className="text-[11.5px] text-slate-500 dark:text-slate-400 flex items-center gap-2">
                                     <span>{item.symbol || "AGENT"}</span>
                                     {item.industrySector && (
                                       <>
                                         <span>·</span>
-                                        <span className="text-slate-400">{item.industrySector}</span>
+                                        <span className="text-slate-500 dark:text-slate-400">{item.industrySector}</span>
                                       </>
                                     )}
                                   </div>
@@ -330,8 +331,8 @@ export default function UserInsights() {
                               <div className="flex items-center gap-2">
                                 {item.currentStartupValuation && (
                                   <div className="text-right hidden sm:block">
-                                    <div className="text-[11px] text-slate-500">Valuation</div>
-                                    <div className="text-[12px] font-mono font-semibold text-white">
+                                    <div className="text-[11px] text-slate-400 dark:text-slate-500">Valuation</div>
+                                    <div className="text-[12px] font-mono font-semibold text-slate-900 dark:text-white">
                                       ₹ {Number(item.currentStartupValuation).toLocaleString("en-IN")}
                                     </div>
                                   </div>
@@ -339,7 +340,7 @@ export default function UserInsights() {
                                 <button
                                   onClick={(e) => handleRemoveFromWatchlist(itemId, e)}
                                   disabled={removingWatchlistId === itemId}
-                                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-500/10 transition"
                                   title="Remove from Watchlist"
                                 >
                                   {removingWatchlistId === itemId ? (
@@ -357,15 +358,15 @@ export default function UserInsights() {
                   </div>
 
                   {/* MY STARTUPS SUMMARY */}
-                  <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+                  <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-white" />
-                        <h2 className="text-[15px] font-bold text-white">My Startups</h2>
+                        <Building2 className="w-4 h-4 text-slate-700 dark:text-white" />
+                        <h2 className="text-[15px] font-bold text-slate-900 dark:text-white">My Startups</h2>
                       </div>
                       <button
                         onClick={() => router.push("/my-startups")}
-                        className="text-[12px] font-semibold text-emerald-400 hover:underline inline-flex items-center gap-1"
+                        className="text-[12px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1"
                       >
                         Manage in My Startups
                         <ArrowRight className="w-3 h-3" />
@@ -373,8 +374,8 @@ export default function UserInsights() {
                     </div>
 
                     {myStartups.length === 0 ? (
-                      <div className="text-center py-6 border border-dashed border-white/[0.08] rounded-xl bg-white/[0.01]">
-                        <p className="text-[13px] text-slate-400">You haven&apos;t created or listed any startups yet.</p>
+                      <div className="text-center py-6 border border-dashed border-slate-200 bg-slate-50/50 rounded-xl dark:border-white/[0.08] dark:bg-white/[0.01]">
+                        <p className="text-[13px] text-slate-600 dark:text-slate-400">You haven&apos;t created or listed any startups yet.</p>
                         <button
                           onClick={() => router.push("/founders")}
                           className="cl-btn-secondary mt-3 h-8 px-4 text-[12px]"
@@ -388,13 +389,13 @@ export default function UserInsights() {
                           <div
                             key={st._id || st.id}
                             onClick={() => router.push(`/insights/${st._id || st.id}`)}
-                            className="p-3.5 rounded-xl border border-white/[0.08] bg-[#0e1015] hover:border-white/20 cursor-pointer transition"
+                            className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/80 hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#0e111c] dark:hover:border-white/20 cursor-pointer transition shadow-xs"
                           >
-                            <div className="font-bold text-white text-[13.5px]">{st.startupName || "Startup"}</div>
-                            <div className="text-[11.5px] text-slate-400 mt-0.5">{st.industrySector || "Tech"}</div>
+                            <div className="font-bold text-slate-900 dark:text-white text-[13.5px]">{st.startupName || "Startup"}</div>
+                            <div className="text-[11.5px] text-slate-500 dark:text-slate-400 mt-0.5">{st.industrySector || "Tech"}</div>
                             <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
-                              <span>Status: <strong className="text-emerald-400">{st.status || "Active"}</strong></span>
-                              <span className="text-emerald-400 font-semibold flex items-center gap-1">Details <ArrowRight className="w-3 h-3" /></span>
+                              <span>Status: <strong className="text-emerald-600 dark:text-emerald-400 capitalize">{st.status || "Active"}</strong></span>
+                              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">Details <ArrowRight className="w-3 h-3" /></span>
                             </div>
                           </div>
                         ))}
@@ -416,22 +417,22 @@ export default function UserInsights() {
 
             {/* TAB: WATCHLIST FULL LIST */}
             {activeTab === "watchlist" && (
-              <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.3)] space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-4 transition-colors">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/[0.08]">
                   <div>
-                    <h2 className="text-lg font-bold text-white">All Watched Companies</h2>
-                    <p className="text-[12.5px] text-slate-400">Real-time synchronization with your Calip watchlist.</p>
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">All Watched Companies</h2>
+                    <p className="text-[12.5px] text-slate-500 dark:text-slate-400">Real-time synchronization with your Calip watchlist.</p>
                   </div>
-                  <span className="px-3 py-1 rounded-md text-[12px] font-mono font-bold bg-white/[0.06] text-white border border-white/[0.08]">
+                  <span className="px-3 py-1 rounded-md text-[12px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200 dark:bg-white/[0.06] dark:text-white dark:border-white/[0.08]">
                     {watchlist.length} Watched
                   </span>
                 </div>
 
                 {watchlist.length === 0 ? (
                   <div className="text-center py-16">
-                    <Bookmark className="w-10 h-10 text-slate-500 mx-auto mb-3" />
-                    <p className="text-base font-semibold text-white">Your watchlist is empty</p>
-                    <p className="text-[13px] text-slate-400 mt-1 max-w-sm mx-auto">
+                    <Bookmark className="w-10 h-10 text-slate-400 dark:text-slate-500 mx-auto mb-3" />
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">Your watchlist is empty</p>
+                    <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
                       Search and discover companies on the Dashboard to track them in your command center.
                     </p>
                     <button
@@ -448,11 +449,11 @@ export default function UserInsights() {
                       return (
                         <div
                           key={itemId || `watch-${idx}`}
-                          className="p-4 rounded-xl border border-white/[0.08] bg-[#0e1015] hover:border-white/20 transition group flex flex-col justify-between"
+                          className="p-4 rounded-xl border border-slate-200 bg-slate-50/80 hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#0e111c] dark:hover:border-white/20 transition group flex flex-col justify-between shadow-xs"
                         >
                           <div>
                             <div className="flex items-start justify-between gap-2">
-                              <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center font-extrabold text-white text-[15px]">
+                              <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white flex items-center justify-center font-extrabold text-[15px]">
                                 {item.symbol
                                   ? item.symbol.slice(0, 2).toUpperCase()
                                   : (item.startupName || item.name || "?").slice(0, 2).toUpperCase()}
@@ -460,7 +461,7 @@ export default function UserInsights() {
                               <button
                                 onClick={(e) => handleRemoveFromWatchlist(itemId, e)}
                                 disabled={removingWatchlistId === itemId}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition"
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-500/10 transition"
                                 title="Remove from Watchlist"
                               >
                                 {removingWatchlistId === itemId ? (
@@ -471,24 +472,24 @@ export default function UserInsights() {
                               </button>
                             </div>
 
-                            <h3 className="font-bold text-white text-[15px] mt-3 group-hover:text-emerald-400 transition">
+                            <h3 className="font-bold text-slate-900 dark:text-white text-[15px] mt-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
                               {item.startupName || item.name || "Company"}
                             </h3>
-                            <p className="text-[12px] text-slate-400 font-mono mt-0.5">
+                            <p className="text-[12px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
                               {item.symbol || "AGENT"} · {item.industrySector || "Web3"}
                             </p>
                             {item.startupDescription && (
-                              <p className="text-[12px] text-slate-400 line-clamp-2 mt-2 leading-relaxed">
+                              <p className="text-[12px] text-slate-600 dark:text-slate-400 line-clamp-2 mt-2 leading-relaxed">
                                 {item.startupDescription}
                               </p>
                             )}
                           </div>
 
-                          <div className="mt-4 pt-3 border-t border-white/[0.08] flex items-center justify-between">
+                          <div className="mt-4 pt-3 border-t border-slate-200 dark:border-white/[0.08] flex items-center justify-between">
                             {item.currentStartupValuation ? (
                               <div>
-                                <span className="text-[10.5px] uppercase text-slate-500">Valuation</span>
-                                <div className="text-[12.5px] font-mono font-bold text-white">
+                                <span className="text-[10.5px] uppercase text-slate-400 dark:text-slate-500">Valuation</span>
+                                <div className="text-[12.5px] font-mono font-bold text-slate-900 dark:text-white">
                                   ₹ {Number(item.currentStartupValuation).toLocaleString("en-IN")}
                                 </div>
                               </div>
@@ -514,11 +515,11 @@ export default function UserInsights() {
 
             {/* TAB: MY STARTUPS */}
             {activeTab === "startups" && (
-              <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.3)] space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-4 transition-colors">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/[0.08]">
                   <div>
-                    <h2 className="text-lg font-bold text-white">My Startups</h2>
-                    <p className="text-[12.5px] text-slate-400">Startups created and managed by your account.</p>
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">My Startups</h2>
+                    <p className="text-[12.5px] text-slate-500 dark:text-slate-400">Startups created and managed by your account.</p>
                   </div>
                   <button
                     onClick={() => router.push("/my-startups")}
@@ -529,10 +530,10 @@ export default function UserInsights() {
                 </div>
 
                 {myStartups.length === 0 ? (
-                  <div className="text-center py-16 border border-dashed border-white/[0.08] rounded-xl bg-white/[0.01]">
-                    <Building2 className="w-10 h-10 text-slate-500 mx-auto mb-3" />
-                    <p className="text-base font-semibold text-white">No startups submitted</p>
-                    <p className="text-[13px] text-slate-400 mt-1 max-w-sm mx-auto">
+                  <div className="text-center py-16 border border-dashed border-slate-200 bg-slate-50/50 rounded-xl dark:border-white/[0.08] dark:bg-white/[0.01]">
+                    <Building2 className="w-10 h-10 text-slate-400 dark:text-slate-500 mx-auto mb-3" />
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">No startups submitted</p>
+                    <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
                       Founders can submit applications and manage listings through the Founders portal.
                     </p>
                     <button
@@ -547,33 +548,33 @@ export default function UserInsights() {
                     {myStartups.map((st) => (
                       <div
                         key={st._id || st.id}
-                        className="p-5 rounded-xl border border-white/[0.08] bg-[#0e1015] space-y-3"
+                        className="p-5 rounded-xl border border-slate-200 bg-slate-50/80 shadow-xs dark:border-white/[0.08] dark:bg-[#0e111c] space-y-3"
                       >
                         <div className="flex items-start justify-between">
                           <div>
-                            <h3 className="font-bold text-white text-base">{st.startupName}</h3>
-                            <span className="text-[12px] text-slate-400 font-mono">{st.industrySector || "Tech"}</span>
+                            <h3 className="font-bold text-slate-900 dark:text-white text-base">{st.startupName}</h3>
+                            <span className="text-[12px] text-slate-500 dark:text-slate-400 font-mono">{st.industrySector || "Tech"}</span>
                           </div>
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 capitalize">
                             {st.status || "Active"}
                           </span>
                         </div>
 
                         {st.startupDescription && (
-                          <p className="text-[12.5px] text-slate-300 line-clamp-2 leading-relaxed">
+                          <p className="text-[12.5px] text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
                             {st.startupDescription}
                           </p>
                         )}
 
-                        <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between text-[12px]">
+                        <div className="pt-2 border-t border-slate-200 dark:border-white/[0.08] flex items-center justify-between text-[12px]">
                           {st.currentStartupValuation && (
-                            <span className="text-slate-400">
-                              Valuation: <strong className="text-white font-mono">₹ {Number(st.currentStartupValuation).toLocaleString("en-IN")}</strong>
+                            <span className="text-slate-500 dark:text-slate-400">
+                              Valuation: <strong className="text-slate-900 dark:text-white font-mono">₹ {Number(st.currentStartupValuation).toLocaleString("en-IN")}</strong>
                             </span>
                           )}
                           <button
                             onClick={() => router.push(`/insights/${st._id || st.id}`)}
-                            className="text-emerald-400 font-semibold hover:underline inline-flex items-center gap-1"
+                            className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline inline-flex items-center gap-1"
                           >
                             Open Details <ArrowRight className="w-3 h-3" />
                           </button>
@@ -587,30 +588,30 @@ export default function UserInsights() {
 
             {/* TAB: ACTIVITY */}
             {activeTab === "activity" && (
-              <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.3)] space-y-4">
-                <div className="pb-3 border-b border-white/[0.08]">
-                  <h2 className="text-lg font-bold text-white">Marketplace Activity & Trades</h2>
-                  <p className="text-[12.5px] text-slate-400">Verified backend trade ledger and market actions.</p>
+              <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-4 transition-colors">
+                <div className="pb-3 border-b border-slate-200 dark:border-white/[0.08]">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">Marketplace Activity & Trades</h2>
+                  <p className="text-[12.5px] text-slate-500 dark:text-slate-400">Verified backend trade ledger and market actions.</p>
                 </div>
 
                 {tradeHistory.length === 0 ? (
-                  <div className="text-center py-16 border border-dashed border-white/[0.08] rounded-xl bg-white/[0.01]">
-                    <TrendingUp className="w-10 h-10 text-slate-500 mx-auto mb-3" />
-                    <p className="text-base font-semibold text-white">No trade activity recorded</p>
-                    <p className="text-[13px] text-slate-400 mt-1 max-w-sm mx-auto">
+                  <div className="text-center py-16 border border-dashed border-slate-200 bg-slate-50/50 rounded-xl dark:border-white/[0.08] dark:bg-white/[0.01]">
+                    <TrendingUp className="w-10 h-10 text-slate-400 dark:text-slate-500 mx-auto mb-3" />
+                    <p className="text-base font-semibold text-slate-900 dark:text-white">No trade activity recorded</p>
+                    <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
                       Your completed purchases, orders, and secondary listings will show up here.
                     </p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-white/[0.04]">
+                  <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                     {tradeHistory.map((trade, idx) => (
                       <div key={trade._id || idx} className="py-3.5 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-white/[0.05] text-white border border-white/[0.08] flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 border border-slate-200 dark:bg-white/[0.05] dark:text-white dark:border-white/[0.08] flex items-center justify-center">
                             <ArrowLeftRight className="w-3.5 h-3.5" />
                           </div>
                           <div>
-                            <div className="font-semibold text-white text-[13.5px]">
+                            <div className="font-semibold text-slate-900 dark:text-white text-[13.5px]">
                               {trade.tokenAmount ? `${trade.tokenAmount} Tokens` : "Market Trade"}
                             </div>
                             <div className="text-[11.5px] text-slate-500">
@@ -620,10 +621,10 @@ export default function UserInsights() {
                         </div>
 
                         <div className="text-right">
-                          <div className="font-mono font-bold text-white text-[13px]">
+                          <div className="font-mono font-bold text-slate-900 dark:text-white text-[13px]">
                             {trade.pricePerToken ? `${trade.pricePerToken} per token` : "Executed"}
                           </div>
-                          <span className="text-[11px] text-emerald-400 font-semibold">Completed</span>
+                          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">Completed</span>
                         </div>
                       </div>
                     ))}
@@ -634,6 +635,8 @@ export default function UserInsights() {
           </div>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 }

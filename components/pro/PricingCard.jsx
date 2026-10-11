@@ -49,41 +49,41 @@ export default function PricingCard({ plan, billing, onUpgrade }) {
     <div
       className={`relative flex w-full max-w-[540px] flex-col rounded-2xl p-7 sm:p-9 transition-all ${
         isFree
-          ? "border border-white/[0.08] bg-[#111318]"
-          : "border border-white/20 bg-[#13161f] shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
+          ? "border border-slate-200/90 bg-white shadow-sm dark:border-white/[0.08] dark:bg-[#111318]"
+          : "border border-slate-300 bg-white shadow-md dark:border-white/20 dark:bg-[#13161f] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
       }`}
     >
       {!isFree && (
-        <span className="absolute top-6 right-6 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
+        <span className="absolute top-6 right-6 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
           INSTITUTIONAL
         </span>
       )}
 
-      <span className="text-[12px] font-semibold uppercase tracking-wider text-slate-400">
+      <span className="text-[12px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
         {plan.name}
       </span>
 
       <div className="mt-3 flex items-baseline gap-1">
-        <span className="text-[38px] font-extrabold text-white">
+        <span className="text-[38px] font-extrabold text-slate-900 dark:text-white">
           {price}
         </span>
         {plan.divider && (
-          <span className="text-[32px] font-extrabold text-slate-500">
+          <span className="text-[32px] font-extrabold text-slate-400 dark:text-slate-500">
             {plan.divider}
           </span>
         )}
         {suffix && (
-          <span className="text-[15px] font-medium text-slate-400">
+          <span className="text-[15px] font-medium text-slate-500 dark:text-slate-400">
             {suffix}
           </span>
         )}
       </div>
 
-      <p className="mt-3 text-[13.5px] leading-relaxed text-slate-400">
+      <p className="mt-3 text-[13.5px] leading-relaxed text-slate-600 dark:text-slate-400">
         {plan.description}
       </p>
 
-      <div className="mt-8 flex flex-col gap-4 border-t border-white/[0.08] pt-6">
+      <div className="mt-8 flex flex-col gap-4 border-t border-slate-100 dark:border-white/[0.08] pt-6 transition-colors">
         {plan.features.map((feature) => (
           <div key={feature.id} className="flex items-center gap-3">
             <span className="flex h-5 w-5 shrink-0 items-center justify-center">
@@ -96,8 +96,8 @@ export default function PricingCard({ plan, billing, onUpgrade }) {
             <span
               className={`text-[14px] leading-snug ${
                 feature.included
-                  ? "text-slate-200 font-medium"
-                  : "text-slate-500"
+                  ? "text-slate-800 dark:text-slate-200 font-medium"
+                  : "text-slate-400 dark:text-slate-500"
               }`}
             >
               {feature.label}
@@ -116,7 +116,7 @@ export default function PricingCard({ plan, billing, onUpgrade }) {
             {plan.cta}
           </button>
         ) : (
-          <div className="cl-btn-secondary h-[44px] w-full text-[14px] opacity-75 cursor-default">
+          <div className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 font-semibold h-[44px] w-full text-[14px] cursor-default dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white">
             {plan.cta}
           </div>
         )}

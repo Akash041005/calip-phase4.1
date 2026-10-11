@@ -42,39 +42,39 @@ export default function BuyModal({ listing, onClose, onSubmit }) {
   };
 
   const inputClass =
-    "h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 text-[14px] text-white placeholder:text-zinc-600 outline-none transition-colors focus:border-white/20 focus:bg-[#111318]";
+    "h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-[14px] text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-slate-400 focus:bg-white dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-white/20 dark:focus:bg-[#111318]";
 
   return (
     <ModalPortal
       isOpen={true}
       onClose={onClose}
-      backdropClassName="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+      backdropClassName="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 dark:bg-black/75 backdrop-blur-sm p-4"
       ariaLabel="Buy tokens"
     >
       <div
-        className="w-full max-w-[440px] max-h-[85vh] overflow-y-auto rounded-2xl border border-white/[0.08] bg-[#111318] shadow-2xl"
+        className="w-full max-w-[440px] max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-white/[0.12] dark:bg-[#151824]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4">
-          <h3 className="text-[16px] font-bold text-white">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/[0.08] px-5 py-4">
+          <h3 className="text-[16px] font-bold text-slate-900 dark:text-white transition-colors">
             Buy tokens
           </h3>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 dark:hover:text-white dark:hover:bg-white/5 transition-colors"
           >
             <X className="h-4 w-4" strokeWidth={2} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5">
-          <div className="rounded-xl border border-white/[0.08] bg-[#0e1015] p-4">
-            <p className="text-[12px] text-slate-400">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-white/[0.08] dark:bg-[#0e1015] transition-colors">
+            <p className="text-[12px] text-slate-500 dark:text-slate-400">
               {startup.startupName || "Startup"}
             </p>
-            <p className="mt-1 text-[16px] font-bold font-mono text-white">
+            <p className="mt-1 text-[16px] font-bold font-mono text-slate-900 dark:text-white transition-colors">
               {Number(pricePerToken).toLocaleString("en-IN", {
                 style: "currency",
                 currency: "INR",
@@ -82,14 +82,14 @@ export default function BuyModal({ listing, onClose, onSubmit }) {
               })}{" "}
               per token
             </p>
-            <p className="mt-1 text-[12px] font-mono text-slate-400">
+            <p className="mt-1 text-[12px] font-mono text-slate-500 dark:text-slate-400">
               {available.toLocaleString("en-IN")} tokens available
             </p>
           </div>
 
           <label
             htmlFor="buy-amount"
-            className="mb-1.5 mt-4 block text-[13px] font-medium text-slate-300"
+            className="mb-1.5 mt-4 block text-[13px] font-medium text-slate-700 dark:text-slate-300"
           >
             Token amount
           </label>
@@ -108,15 +108,15 @@ export default function BuyModal({ listing, onClose, onSubmit }) {
             className={inputClass}
           />
 
-          <div className="mt-4 flex items-center justify-between rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 py-3">
-            <span className="text-[13px] text-slate-400">Total payment</span>
-            <span className="text-[16px] font-bold font-mono text-white">
+          <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-white/[0.08] dark:bg-[#0e1015] transition-colors">
+            <span className="text-[13px] text-slate-500 dark:text-slate-400">Total payment</span>
+            <span className="text-[16px] font-bold font-mono text-slate-900 dark:text-white transition-colors">
               ₹ {Number(totalPrice || 0).toLocaleString("en-IN")}
             </span>
           </div>
 
           {error && (
-            <p className="mt-3 text-[13px] text-rose-400">{error}</p>
+            <p className="mt-3 text-[13px] text-rose-500 dark:text-rose-400">{error}</p>
           )}
 
           <button

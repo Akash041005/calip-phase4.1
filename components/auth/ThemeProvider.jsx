@@ -35,12 +35,16 @@ export function ThemeProvider({ children }) {
   const isDark = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerSnapshot);
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (!root.classList.contains("dark")) {
-      root.classList.add("dark");
-    }
     try {
-      localStorage.setItem("calip-theme", "dark");
+      const saved = localStorage.getItem("calip-theme");
+      const root = document.documentElement;
+      if (saved === "light") {
+        root.classList.remove("dark");
+      } else {
+        if (!root.classList.contains("dark")) {
+          root.classList.add("dark");
+        }
+      }
     } catch {}
   }, []);
 

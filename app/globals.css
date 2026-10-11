@@ -3,47 +3,47 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #090a0f;
-  --foreground: #f8fafc;
-  --calip-purple: #ffffff;
-  --calip-purple-light: rgba(255, 255, 255, 0.08);
-  --calip-purple-muted: #e2e8f0;
-  --calip-green: #10b981;
-  --calip-gray-label: #94a3b8;
-  --calip-gray-text: #94a3b8;
-  --calip-border: rgba(255, 255, 255, 0.08);
-  --calip-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
-  --calip-surface: #0e1015;
-  --calip-card: #111318;
-  --calip-card-border: rgba(255, 255, 255, 0.08);
-  --calip-muted: #94a3b8;
-  --calip-secondary: #64748b;
-  --calip-icon: #94a3b8;
-  --calip-input-bg: #0e1015;
-  --calip-divider: rgba(255, 255, 255, 0.08);
-  --calip-nav-text: #94a3b8;
-  --calip-hover: rgba(255, 255, 255, 0.03);
+  --background: #f8fafc;
+  --foreground: #090a0f;
+  --calip-purple: #090a0f;
+  --calip-purple-light: rgba(0, 0, 0, 0.05);
+  --calip-purple-muted: #334155;
+  --calip-green: #059669;
+  --calip-gray-label: #64748b;
+  --calip-gray-text: #475569;
+  --calip-border: rgba(0, 0, 0, 0.08);
+  --calip-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --calip-surface: #f1f5f9;
+  --calip-card: #ffffff;
+  --calip-card-border: rgba(0, 0, 0, 0.08);
+  --calip-muted: #64748b;
+  --calip-secondary: #94a3b8;
+  --calip-icon: #64748b;
+  --calip-input-bg: #ffffff;
+  --calip-divider: rgba(0, 0, 0, 0.08);
+  --calip-nav-text: #475569;
+  --calip-hover: rgba(0, 0, 0, 0.03);
 }
 
 .dark {
-  --background: #090a0f;
+  --background: #08090d;
   --foreground: #f8fafc;
   --calip-purple: #ffffff;
   --calip-purple-light: rgba(255, 255, 255, 0.08);
   --calip-purple-muted: #e2e8f0;
   --calip-green: #10b981;
-  --calip-border: rgba(255, 255, 255, 0.08);
-  --calip-card-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
-  --calip-surface: #0e1015;
-  --calip-card: #111318;
-  --calip-card-border: rgba(255, 255, 255, 0.08);
+  --calip-border: rgba(255, 255, 255, 0.12);
+  --calip-card-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --calip-surface: #0e111c;
+  --calip-card: #151824;
+  --calip-card-border: rgba(255, 255, 255, 0.12);
   --calip-muted: #94a3b8;
   --calip-secondary: #64748b;
   --calip-icon: #94a3b8;
-  --calip-input-bg: #0e1015;
-  --calip-divider: rgba(255, 255, 255, 0.08);
+  --calip-input-bg: #0e111c;
+  --calip-divider: rgba(255, 255, 255, 0.12);
   --calip-nav-text: #94a3b8;
-  --calip-hover: rgba(255, 255, 255, 0.03);
+  --calip-hover: rgba(255, 255, 255, 0.04);
 }
 
 @theme inline {
@@ -154,17 +154,52 @@ html.lenis body {
 
 /* Calip Unified Design System Utilities — Big Brand Style */
 .cl-glass-card {
-  background: #111318;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  transition: border-color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .cl-glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+.dark .cl-glass-card {
+  background: #151824;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+.dark .cl-glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* Global Dark Mode Island & Card Elevation Overrides — Ensures distinct visible separation from deep black canvas */
+.dark [class*="bg-[#111318]"],
+.dark .bg-\[\#111318\] {
+  background-color: #151824 !important;
+}
+.dark [class*="bg-[#0e1015]"],
+.dark .bg-\[\#0e1015\] {
+  background-color: #0e111c !important;
+}
+.dark [class*="border-white/[0.08]"],
+.dark .border-white\/\[0\.08\] {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+.dark [class*="border-white/[0.06]"],
+.dark .border-white\/\[0\.06\] {
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+.dark [class*="border-white/[0.04]"],
+.dark .border-white\/\[0\.04\] {
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .cl-pill-active {
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #0f172a;
+}
+.dark .cl-pill-active {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: #ffffff;
@@ -176,15 +211,29 @@ html.lenis body {
   justify-content: center;
   gap: 8px;
   border-radius: 8px;
-  background: #ffffff;
-  color: #090a0f !important;
+  background: #0f172a;
+  color: #ffffff !important;
   font-weight: 600;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border: 1px solid #0f172a;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
   transition: all 0.15s ease;
 }
 .cl-btn-primary:hover {
-  background: #f1f5f9;
+  background: #1e293b;
+  border-color: #1e293b;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.16);
+}
+.dark .cl-btn-primary {
+  background: #ffffff;
+  color: #090a0f !important;
+  border-color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.dark .cl-btn-primary:hover {
+  background: #f1f5f9;
+  border-color: #f1f5f9;
+  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.12);
 }
 
 .cl-btn-secondary {
@@ -193,13 +242,23 @@ html.lenis body {
   justify-content: center;
   gap: 8px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
-  color: #f8fafc !important;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #ffffff;
+  color: #0f172a !important;
   font-weight: 500;
   transition: all 0.15s ease;
 }
 .cl-btn-secondary:hover {
+  border-color: rgba(15, 23, 42, 0.28);
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+.dark .cl-btn-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #f8fafc !important;
+}
+.dark .cl-btn-secondary:hover {
   border-color: rgba(255, 255, 255, 0.24);
   background: rgba(255, 255, 255, 0.08);
   transform: translateY(-1px);
@@ -242,6 +301,10 @@ textarea {
 }
 .cl-card-interactive:hover {
   transform: translateY(-2px);
+  border-color: rgba(15, 23, 42, 0.18);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+.dark .cl-card-interactive:hover {
   border-color: rgba(255, 255, 255, 0.18);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
 }

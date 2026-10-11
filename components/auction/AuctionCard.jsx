@@ -47,10 +47,14 @@ export default function AuctionCard({ item }) {
   const [errorMsg, setErrorMsg] = useState("");
   const [bids, setBids] = useState([]);
   const [bidsLoading, setBidsLoading] = useState(true);
+  const [prevItemId, setPrevItemId] = useState(item._id);
+  if (item._id !== prevItemId) {
+    setPrevItemId(item._id);
+    setBidsLoading(true);
+  }
 
   useEffect(() => {
     let cancelled = false;
-    setBidsLoading(true);
     getPresaleBids(item._id)
       .then((res) => {
         if (cancelled) return;
@@ -136,10 +140,10 @@ export default function AuctionCard({ item }) {
 
   return (
     <>
-      <div className="relative flex w-full flex-col rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm transition-all hover:border-white/[0.18] hover:-translate-y-0.5">
+      <div className="relative flex w-full flex-col rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all hover:border-slate-300 hover:-translate-y-0.5 dark:border-white/[0.08] dark:bg-[#111318] dark:hover:border-white/[0.18]">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.08] text-[16px] font-bold text-white shadow-sm">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 border border-slate-200 text-[16px] font-bold text-slate-800 shadow-xs dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white">
               {logoLetter}
             </div>
             <div className="min-w-0">
@@ -149,11 +153,11 @@ export default function AuctionCard({ item }) {
                   if (sid) router.push(`/insights/${sid}`);
                 }}
                 title={`Open ${companyName} overview`}
-                className="truncate cursor-pointer text-[15px] font-semibold text-white transition-colors hover:text-zinc-200"
+                className="truncate cursor-pointer text-[15px] font-semibold text-slate-900 transition-colors hover:text-slate-700 dark:text-white dark:hover:text-zinc-200"
               >
                 {companyName}
               </h3>
-              <span className="text-[12px] text-[#94a3b8]">
+              <span className="text-[12px] text-slate-500 dark:text-[#94a3b8]">
                 {sector}
               </span>
             </div>
@@ -161,47 +165,47 @@ export default function AuctionCard({ item }) {
 
           <div className={`inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-[11px] font-semibold ${
             status === "live"
-              ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
-              : "border border-white/[0.08] bg-white/[0.03] text-[#94a3b8]"
+              ? "bg-emerald-50 border border-emerald-500/30 text-emerald-700 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-400"
+              : "border border-slate-200 bg-slate-50 text-slate-600 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-[#94a3b8]"
           }`}>
             {status === "live" && <span className="cl-mint-dot !w-1.5 !h-1.5" />}
             {status === "live" ? "Live" : status === "upcoming" ? "Coming soon" : "Closed"}
           </div>
         </div>
 
-        <p className="mt-3.5 line-clamp-2 text-[13px] leading-relaxed text-[#94a3b8]">
+        <p className="mt-3.5 line-clamp-2 text-[13px] leading-relaxed text-slate-600 dark:text-[#94a3b8]">
           {description}
         </p>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <div className="rounded-xl border border-white/[0.06] bg-[#0e1015] px-3.5 py-2">
-            <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold">Current Bid</p>
-            <p className="text-[14px] font-semibold text-white mt-0.5 font-mono">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 dark:border-white/[0.06] dark:bg-[#0e1015]">
+            <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold">Current Bid</p>
+            <p className="text-[14px] font-semibold text-slate-900 dark:text-white mt-0.5 font-mono">
               {currentBid}
             </p>
           </div>
-          <div className="rounded-xl border border-white/[0.06] bg-[#0e1015] px-3.5 py-2">
-            <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold">Target</p>
-            <p className="text-[14px] font-semibold text-white mt-0.5 font-mono">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 dark:border-white/[0.06] dark:bg-[#0e1015]">
+            <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold">Target</p>
+            <p className="text-[14px] font-semibold text-slate-900 dark:text-white mt-0.5 font-mono">
               {targetAmount}
             </p>
           </div>
-          <div className="rounded-xl border border-white/[0.06] bg-[#0e1015] px-3.5 py-2">
-            <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold">Equity</p>
-            <p className="text-[14px] font-semibold text-white mt-0.5 font-mono">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 dark:border-white/[0.06] dark:bg-[#0e1015]">
+            <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold">Equity</p>
+            <p className="text-[14px] font-semibold text-slate-900 dark:text-white mt-0.5 font-mono">
               {equityPercent}%
             </p>
           </div>
-          <div className="rounded-xl border border-white/[0.06] bg-[#0e1015] px-3.5 py-2">
-            <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold">Avg. Bid</p>
-            <p className="text-[14px] font-semibold text-white mt-0.5 font-mono">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 dark:border-white/[0.06] dark:bg-[#0e1015]">
+            <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold">Avg. Bid</p>
+            <p className="text-[14px] font-semibold text-slate-900 dark:text-white mt-0.5 font-mono">
               {avgBid}
             </p>
           </div>
         </div>
 
         <div className="mt-4">
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.08]">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-white/[0.08]">
             <div
               className="h-full rounded-full bg-emerald-500"
               style={{ width: `${progressPercent}%` }}
@@ -209,12 +213,12 @@ export default function AuctionCard({ item }) {
           </div>
         </div>
 
-        <div className="mt-3.5 flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-[#0e1015] p-3">
+        <div className="mt-3.5 flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/[0.06] dark:bg-[#0e1015]">
           <div className="flex items-center gap-2">
-            <Gavel className="h-3.5 w-3.5 text-zinc-400" strokeWidth={2} />
+            <Gavel className="h-3.5 w-3.5 text-slate-500 dark:text-zinc-400" strokeWidth={2} />
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-semibold">Last Bid</p>
-              <p className="text-[13.5px] font-semibold text-white font-mono">
+              <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold">Last Bid</p>
+              <p className="text-[13.5px] font-semibold text-slate-900 dark:text-white font-mono">
                 {bidsLoading ? "…" : lastBid ? formatINR(lastBid.bidAmount) : "No bids yet"}
               </p>
             </div>

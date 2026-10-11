@@ -13,8 +13,8 @@ export default function InsightsHeader({ companyName }) {
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="flex h-[36px] min-w-[120px] max-w-[200px] items-center justify-between rounded-xl border border-white/[0.08] bg-[#111318] px-3">
-          <span className="truncate text-[13px] text-slate-300">{companyName}</span>
+        <div className="flex h-[36px] min-w-[120px] max-w-[200px] items-center justify-between rounded-xl border border-slate-200 bg-white px-3 text-slate-800 shadow-xs dark:border-white/[0.08] dark:bg-[#111318] dark:text-slate-300 transition-colors">
+          <span className="truncate text-[13px]">{companyName}</span>
           <ChevronDown
             className="ml-1 h-3.5 w-3.5 shrink-0 text-slate-400"
             strokeWidth={2}
@@ -24,9 +24,9 @@ export default function InsightsHeader({ companyName }) {
         <button
           type="button"
           onClick={() => window.print()}
-          className="flex h-[36px] items-center gap-2 rounded-xl border border-white/[0.08] bg-[#111318] px-3.5 text-slate-300 hover:border-white/20 hover:text-white transition-colors"
+          className="flex h-[36px] items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-slate-700 hover:border-slate-300 hover:text-slate-900 shadow-xs dark:border-white/[0.08] dark:bg-[#111318] dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white transition-colors"
         >
-          <Upload className="h-3.5 w-3.5 text-slate-400" strokeWidth={1.75} />
+          <Upload className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" strokeWidth={1.75} />
           <span className="text-[13px] font-medium">Export Report</span>
         </button>
       </div>

@@ -63,31 +63,31 @@ export default function MonthlyActivity() {
   const chartData = data && data.length > 0 ? data : FALLBACK_MONTHS;
 
   return (
-    <div className="relative w-full rounded-2xl border border-white/[0.08] bg-[#111318] p-5 sm:p-6 shadow-sm">
+    <div className="relative w-full rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm dark:border-white/[0.08] dark:bg-[#111318] transition-colors">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-white/[0.06] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 dark:border-white/[0.06] pb-4 transition-colors">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-white">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
               <Activity className="h-3.5 w-3.5" />
             </span>
-            <h2 className="text-[16px] font-bold text-white">
+            <h2 className="text-[16px] font-bold text-slate-900 dark:text-white transition-colors">
               Monthly Activity & Capital Trajectory
             </h2>
           </div>
-          <p className="mt-1 text-[12px] text-[#94a3b8]">
+          <p className="mt-1 text-[12px] text-slate-500 dark:text-[#94a3b8] transition-colors">
             Number of rounds launched vs. target capital volume over time
           </p>
         </div>
 
         {/* Legend Pills */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-[12px] text-[#94a3b8]">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          <div className="flex items-center gap-1.5 text-[12px] text-slate-600 dark:text-[#94a3b8] transition-colors">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
             <span>Presales</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[12px] text-[#94a3b8]">
-            <span className="h-2 w-2 rounded-full bg-zinc-400" />
+          <div className="flex items-center gap-1.5 text-[12px] text-slate-600 dark:text-[#94a3b8] transition-colors">
+            <span className="h-2 w-2 rounded-full bg-slate-400 dark:bg-zinc-400" />
             <span>Target Volume</span>
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function MonthlyActivity() {
       {/* Chart */}
       <div className="mt-4 h-[300px] w-full">
         {loading ? (
-          <div className="flex h-full items-center justify-center text-[12.5px] text-[#94a3b8]">
+          <div className="flex h-full items-center justify-center text-[12.5px] text-slate-400 dark:text-[#94a3b8]">
             Loading activity stream…
           </div>
         ) : (
@@ -118,14 +118,14 @@ export default function MonthlyActivity() {
               </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="rgba(255, 255, 255, 0.05)"
+                stroke="rgba(100, 116, 139, 0.12)"
                 vertical={false}
               />
               <XAxis
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#cbd5e1", fontSize: 12, fontWeight: 500 }}
+                tick={{ fill: "#64748b", fontSize: 12, fontWeight: 500 }}
                 dy={6}
               />
               <YAxis
@@ -133,7 +133,7 @@ export default function MonthlyActivity() {
                 orientation="left"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#737d91", fontSize: 11, fontFamily: "monospace" }}
+                tick={{ fill: "#64748b", fontSize: 11, fontFamily: "monospace" }}
               />
               <YAxis
                 yAxisId="right"
@@ -141,20 +141,20 @@ export default function MonthlyActivity() {
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={formatCurrency}
-                tick={{ fill: "#737d91", fontSize: 11, fontFamily: "monospace" }}
+                tick={{ fill: "#64748b", fontSize: 11, fontFamily: "monospace" }}
               />
               <Tooltip
                 content={({ active, payload, label }) => {
                   if (!active || !payload || !payload.length) return null;
                   return (
-                    <div className="rounded-xl border border-white/10 bg-[#111318] p-3 shadow-2xl backdrop-blur-md">
-                      <p className="text-[13px] font-bold text-white mb-2">{label} Trajectory</p>
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:border-white/10 dark:bg-[#111318] transition-colors">
+                      <p className="text-[13px] font-bold text-slate-900 dark:text-white mb-2">{label} Trajectory</p>
                       <div className="space-y-1 text-[12px] font-mono">
-                        <div className="flex items-center justify-between gap-4 text-emerald-400">
+                        <div className="flex items-center justify-between gap-4 text-emerald-600 dark:text-emerald-400">
                           <span>Rounds:</span>
                           <span className="font-bold">{payload[0]?.value} presales</span>
                         </div>
-                        <div className="flex items-center justify-between gap-4 text-sky-400">
+                        <div className="flex items-center justify-between gap-4 text-sky-600 dark:text-sky-400">
                           <span>Volume:</span>
                           <span className="font-bold">{formatCurrency(payload[1]?.value)}</span>
                         </div>

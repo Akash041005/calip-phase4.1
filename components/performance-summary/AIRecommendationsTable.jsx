@@ -37,15 +37,15 @@ export default function AIRecommendationsTable() {
   }, []);
 
   return (
-    <div className="w-full rounded-2xl border border-white/[0.08] bg-[#111318] shadow-sm">
+    <div className="w-full rounded-2xl border border-slate-200/90 bg-white dark:border-white/[0.12] dark:bg-[#151824] shadow-sm transition-colors">
       <div className="px-6 sm:px-8 pb-6 pt-6">
-        <h2 className="text-[17px] font-semibold leading-none text-white">
+        <h2 className="text-[17px] font-semibold leading-none text-slate-900 dark:text-white transition-colors">
           AI Recommendations
         </h2>
 
         <div className="mt-5 overflow-x-auto" data-lenis-prevent>
           <div className="min-w-[700px]">
-            <div className="grid grid-cols-[50px_1fr_1.2fr_1fr_1fr_1fr_0.8fr] items-center text-[11px] font-semibold uppercase tracking-wider text-[#94a3b8]">
+            <div className="grid grid-cols-[50px_1fr_1.2fr_1fr_1fr_1fr_0.8fr] items-center text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#94a3b8]">
               <div />
               <span>Company</span>
               <span>Sector</span>
@@ -55,39 +55,39 @@ export default function AIRecommendationsTable() {
               <span>ROI</span>
             </div>
 
-            <div className="mt-3 border-t border-white/[0.06]" />
+            <div className="mt-3 border-t border-slate-100 dark:border-white/[0.06]" />
 
             {loading ? (
-              <div className="flex h-[120px] items-center justify-center text-[13px] text-[#94a3b8]">
+              <div className="flex h-[120px] items-center justify-center text-[13px] text-slate-400 dark:text-[#94a3b8]">
                 Loading...
               </div>
             ) : rows.length === 0 ? (
-              <div className="flex h-[120px] items-center justify-center text-[13px] text-[#94a3b8]">
+              <div className="flex h-[120px] items-center justify-center text-[13px] text-slate-400 dark:text-[#94a3b8]">
                 No investment data available
               </div>
             ) : (
               rows.map((row, index) => (
                 <div key={row.initial + index}>
                   <div className="grid grid-cols-[50px_1fr_1.2fr_1fr_1fr_1fr_0.8fr] h-[48px] items-center">
-                    <div className="flex h-[34px] w-[34px] items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-[14px] font-semibold text-white">
+                    <div className="flex h-[34px] w-[34px] items-center justify-center rounded-lg bg-slate-100 border border-slate-200 text-[14px] font-semibold text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
                       {row.initial}
                     </div>
 
-                    <span className="text-[13.5px] font-semibold text-white">
+                    <span className="text-[13.5px] font-semibold text-slate-900 dark:text-white transition-colors">
                       {row.name}
                     </span>
 
-                    <span className="text-[13px] text-[#94a3b8]">{row.sector}</span>
+                    <span className="text-[13px] text-slate-500 dark:text-[#94a3b8]">{row.sector}</span>
 
-                    <span className="text-[13px] text-white font-mono">{row.invested}</span>
+                    <span className="text-[13px] text-slate-800 dark:text-white font-mono">{row.invested}</span>
 
-                    <span className="text-[13px] text-white font-mono">
+                    <span className="text-[13px] text-slate-800 dark:text-white font-mono">
                       {row.currentValue}
                     </span>
 
                     <span
                       className={`text-[13px] font-mono font-medium ${
-                        row.gainPositive ? "text-emerald-400" : "text-rose-400"
+                        row.gainPositive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
                       }`}
                     >
                       {row.gainLoss}
@@ -95,7 +95,7 @@ export default function AIRecommendationsTable() {
 
                     <span
                       className={`text-[13px] font-mono font-medium ${
-                        row.roiPositive ? "text-emerald-400" : "text-rose-400"
+                        row.roiPositive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
                       }`}
                     >
                       {row.roi}
@@ -103,7 +103,7 @@ export default function AIRecommendationsTable() {
                   </div>
 
                   {index < rows.length - 1 && (
-                    <div className="border-t border-white/[0.06]" />
+                    <div className="border-t border-slate-100 dark:border-white/[0.06]" />
                   )}
                 </div>
               ))

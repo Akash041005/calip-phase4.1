@@ -96,22 +96,22 @@ export default function TopTraderTicker() {
   };
 
   return (
-    <div className="relative z-[30] w-full border-b border-white/[0.08] bg-[#0b0d12] text-[#f8fafc] transition-colors">
+    <div className="relative z-[30] w-full border-b border-slate-200/80 bg-slate-100/90 text-slate-800 dark:border-white/[0.08] dark:bg-[#0b0d12] dark:text-[#f8fafc] transition-colors">
       <div className="mx-auto flex h-[34px] max-w-[1440px] items-center px-3 sm:px-4 lg:px-6">
         {/* LEFT SECTION: CLEAN LIVE STATUS INDICATOR */}
         <div className="flex shrink-0 items-center gap-2">
           <div
             title="Live On-Chain Calip Trader Stream"
-            className="flex items-center gap-1.5 rounded bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 text-[10.5px] font-mono text-zinc-400 select-none"
+            className="flex items-center gap-1.5 rounded bg-white border border-slate-200 px-2 py-0.5 text-[10.5px] font-mono text-slate-600 shadow-xs dark:bg-white/[0.04] dark:border-white/[0.08] dark:text-zinc-400 select-none"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-            <span className="text-[10px] uppercase tracking-wider text-zinc-400">
+            <span className="text-[10px] uppercase tracking-wider text-slate-600 dark:text-zinc-400">
               LIVE STREAM
             </span>
           </div>
 
           {/* Thin Divider */}
-          <div className="h-3.5 w-px bg-white/[0.08]" />
+          <div className="h-3.5 w-px bg-slate-200 dark:bg-white/[0.08]" />
         </div>
 
         {/* MIDDLE SECTION: CLEAN SCROLLABLE TRADER TAPE */}
@@ -122,7 +122,7 @@ export default function TopTraderTicker() {
             onClick={() => handleScrollBy(-220)}
             disabled={!canScrollLeft}
             title="Scroll Left"
-            className={`z-20 flex h-[22px] w-[20px] items-center justify-center rounded bg-[#0b0d12] text-[#8892a6] hover:text-white transition-opacity ${
+            className={`z-20 flex h-[22px] w-[20px] items-center justify-center rounded bg-slate-100 text-slate-500 hover:text-slate-900 dark:bg-[#0b0d12] dark:text-[#8892a6] dark:hover:text-white transition-opacity ${
               canScrollLeft ? "opacity-100 cursor-pointer" : "opacity-0 pointer-events-none"
             }`}
           >
@@ -131,7 +131,7 @@ export default function TopTraderTicker() {
 
           {/* Left Fade Gradient Mask */}
           {canScrollLeft && (
-            <div className="pointer-events-none absolute left-5 top-0 bottom-0 z-10 w-4 bg-gradient-to-r from-[#0b0d12] to-transparent" />
+            <div className="pointer-events-none absolute left-5 top-0 bottom-0 z-10 w-4 bg-gradient-to-r from-slate-100 dark:from-[#0b0d12] to-transparent" />
           )}
 
           {/* USER-CONTROLLED SCROLLABLE CONTAINER */}
@@ -153,22 +153,22 @@ export default function TopTraderTicker() {
               traders.map((trader, idx) => (
                 <div
                   key={trader.id || trader.handle || idx}
-                  className="group inline-flex items-center gap-1.5 rounded px-2 py-0.5 transition-colors duration-150 hover:bg-white/[0.04] shrink-0"
+                  className="group inline-flex items-center gap-1.5 rounded px-2 py-0.5 transition-colors duration-150 hover:bg-slate-200/60 dark:hover:bg-white/[0.04] shrink-0"
                 >
                   {/* Subtle Monochrome Avatar */}
                   <div
-                    className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-zinc-800 text-[9px] font-mono text-zinc-300 border border-white/10 shrink-0"
+                    className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-slate-200 text-[9px] font-mono text-slate-700 border border-slate-300 dark:bg-zinc-800 dark:text-zinc-300 dark:border-white/10 shrink-0"
                   >
                     <span>{trader.avatarIcon ? trader.avatarIcon.replace(/[⚡🚀🔥💎]/g, "•") : "•"}</span>
                   </div>
 
                   {/* Trader Handle */}
-                  <span className="text-[11.5px] font-medium text-zinc-300">
+                  <span className="text-[11.5px] font-medium text-slate-700 dark:text-zinc-300">
                     {trader.handle}
                   </span>
 
                   {/* Profit Badge */}
-                  <span className="font-mono text-[11px] font-medium text-emerald-400">
+                  <span className="font-mono text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                     {trader.profit || trader.pnl}
                   </span>
                 </div>
@@ -178,7 +178,7 @@ export default function TopTraderTicker() {
 
           {/* Right Fade Gradient Mask */}
           {canScrollRight && (
-            <div className="pointer-events-none absolute right-5 top-0 bottom-0 z-10 w-4 bg-gradient-to-l from-[#0b0d12] to-transparent" />
+            <div className="pointer-events-none absolute right-5 top-0 bottom-0 z-10 w-4 bg-gradient-to-l from-slate-100 dark:from-[#0b0d12] to-transparent" />
           )}
 
           {/* Right Navigation Chevron */}
@@ -187,7 +187,7 @@ export default function TopTraderTicker() {
             onClick={() => handleScrollBy(220)}
             disabled={!canScrollRight}
             title="Scroll Right"
-            className={`z-20 flex h-[22px] w-[20px] items-center justify-center rounded-r-[4px] bg-[#0b0d12] text-[#8892a6] hover:text-white transition-opacity ${
+            className={`z-20 flex h-[22px] w-[20px] items-center justify-center rounded-r-[4px] bg-slate-100 text-slate-500 hover:text-slate-900 dark:bg-[#0b0d12] dark:text-[#8892a6] dark:hover:text-white transition-opacity ${
               canScrollRight ? "opacity-100 cursor-pointer" : "opacity-0 pointer-events-none"
             }`}
           >

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Navbar from "../../../components/dashboard/Navbar";
+import Footer from "../../../components/dashboard/Footer";
 import TokenDetail from "../../../components/marketplace/TokenDetail";
 import { getTokens } from "../../../lib/tradingApi";
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../../../lib/usersApi";
@@ -64,24 +65,25 @@ export default function MarketplaceTokenPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-[#f8fafc] transition-colors">
       <Navbar activePage="marketplace" />
       <main className="pb-12">
         {notFound ? (
           <div className="mx-auto max-w-5xl px-4 py-20 text-center">
-            <p className="text-base font-semibold text-white">Token not found.</p>
-            <p className="mt-1 text-[13px] text-[#94a3b8]">
+            <p className="text-base font-semibold text-slate-900 dark:text-white">Token not found.</p>
+            <p className="mt-1 text-[13px] text-slate-500 dark:text-[#94a3b8]">
               It may have been removed, or the link is incorrect.
             </p>
           </div>
         ) : !token ? (
           <div className="mx-auto max-w-5xl px-4 py-20 text-center">
-            <p className="text-[13px] text-[#94a3b8]">Loading token…</p>
+            <p className="text-[13px] text-slate-500 dark:text-[#94a3b8]">Loading token…</p>
           </div>
         ) : (
           <TokenDetail token={token} watched={watched} onToggleWatch={handleToggleWatch} />
         )}
       </main>
+      <Footer />
     </div>
   );
 }

@@ -16,8 +16,8 @@ export default function Home() {
 
   if (isReady && isAuthenticated) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#090a0f] text-white" aria-live="polite">
-        <Loader2 className="h-5 w-5 animate-spin text-white" />
+      <main className="flex min-h-screen items-center justify-center bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-white transition-colors" aria-live="polite">
+        <Loader2 className="h-5 w-5 animate-spin text-slate-900 dark:text-white" />
         <span className="sr-only">Opening your Calip workspace</span>
       </main>
     );

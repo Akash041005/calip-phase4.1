@@ -64,24 +64,24 @@ export default function TotalFundingSector() {
   const totalFunding = chartData.reduce((acc, curr) => acc + (curr.value || 0), 0);
 
   return (
-    <div className="relative w-full flex-1 min-w-0 rounded-2xl border border-white/[0.08] bg-[#111318] p-5 sm:p-6 shadow-sm">
+    <div className="relative w-full flex-1 min-w-0 rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm dark:border-white/[0.08] dark:bg-[#111318] transition-colors">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+      <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/[0.06] pb-4 transition-colors">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-white">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
               <Layers className="h-3.5 w-3.5" />
             </span>
-            <h2 className="text-[16px] font-bold text-white">
+            <h2 className="text-[16px] font-bold text-slate-900 dark:text-white transition-colors">
               Total Funding by Sector
             </h2>
           </div>
-          <p className="mt-1 text-[12px] text-[#94a3b8]">
+          <p className="mt-1 text-[12px] text-slate-500 dark:text-[#94a3b8] transition-colors">
             Aggregate capital raised across registered industry sectors
           </p>
         </div>
 
-        <span className="rounded-md bg-white/[0.05] border border-white/[0.08] px-3 py-1 font-mono text-[12px] font-bold text-white">
+        <span className="rounded-md bg-slate-100 border border-slate-200 px-3 py-1 font-mono text-[12px] font-bold text-slate-900 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
           {formatCurrency(totalFunding)}
         </span>
       </div>
@@ -89,7 +89,7 @@ export default function TotalFundingSector() {
       {/* Chart */}
       <div className="mt-4 h-[280px] w-full">
         {loading ? (
-          <div className="flex h-full items-center justify-center text-[12.5px] text-[#94a3b8]">
+          <div className="flex h-full items-center justify-center text-[12.5px] text-slate-400 dark:text-[#94a3b8]">
             Loading sector metrics…
           </div>
         ) : (
@@ -112,28 +112,30 @@ export default function TotalFundingSector() {
                 tickFormatter={formatCurrency}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#737d91", fontSize: 11, fontFamily: "monospace" }}
+                tick={{ fill: "#64748b", fontSize: 11, fontFamily: "monospace" }}
               />
               <YAxis
                 type="category"
                 dataKey="name"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#cbd5e1", fontSize: 12, fontWeight: 500 }}
+                tick={{ fill: "#64748b", fontSize: 12, fontWeight: 500 }}
                 width={85}
               />
               <Tooltip
-                formatter={(value) => [formatCurrency(Number(value)), "Total Raised"]}
-                cursor={{ fill: "rgba(255, 255, 255, 0.04)" }}
-                contentStyle={{
-                  backgroundColor: "#111318",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  borderRadius: "12px",
-                  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
-                  padding: "10px 14px",
+                content={({ active, payload, label }) => {
+                  if (!active || !payload || !payload.length) return null;
+                  return (
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:border-white/10 dark:bg-[#111318] transition-colors">
+                      <p className="text-[12.5px] font-bold text-slate-900 dark:text-white">{label}</p>
+                      <p className="mt-1 font-mono text-[13px] font-bold text-emerald-600 dark:text-emerald-400">
+                        {formatCurrency(Number(payload[0]?.value))}
+                        <span className="ml-1 text-[11px] font-normal text-slate-500 dark:text-slate-400 font-sans">Total Raised</span>
+                      </p>
+                    </div>
+                  );
                 }}
-                labelStyle={{ color: "#ffffff", fontWeight: 600, fontSize: 13 }}
-                itemStyle={{ color: "#10b981", fontFamily: "monospace", fontSize: 13, fontWeight: 700 }}
+                cursor={{ fill: "rgba(100, 116, 139, 0.08)" }}
               />
               <Bar
                 dataKey="value"

@@ -12,9 +12,9 @@ function SectorTooltip({ active, payload }) {
   const item = payload[0];
 
   return (
-    <div className="rounded-xl border border-white/[0.12] bg-[#111318] px-3 py-2 shadow-2xl">
-      <p className="m-0 text-[12px] text-[#94a3b8]">{item.name}</p>
-      <p className="m-0 mt-0.5 text-[14px] font-bold text-white font-mono">
+    <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-2xl dark:border-white/[0.12] dark:bg-[#151824]">
+      <p className="m-0 text-[12px] text-slate-500 dark:text-[#94a3b8]">{item.name}</p>
+      <p className="m-0 mt-0.5 text-[14px] font-bold text-slate-900 dark:text-white font-mono">
         {item.value}%
       </p>
     </div>
@@ -58,9 +58,9 @@ export default function SectorAllocation() {
   const totalSectors = chartData.length;
 
   return (
-    <div className="h-[340px] w-full rounded-2xl border border-white/[0.08] bg-[#111318] shadow-sm">
+    <div className="h-[340px] w-full rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
       <div className="flex h-full flex-col p-[24px]">
-        <h2 className="text-[17px] font-semibold text-white">Sector Allocation</h2>
+        <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white transition-colors">Sector Allocation</h2>
 
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="relative flex flex-1 items-center justify-center">
@@ -85,8 +85,8 @@ export default function SectorAllocation() {
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute flex flex-col items-center">
-              <span className="text-[12px] text-[#94a3b8]">Sectors</span>
-              <span className="text-[22px] font-bold leading-none text-white font-mono">
+              <span className="text-[12px] text-slate-500 dark:text-[#94a3b8]">Sectors</span>
+              <span className="text-[22px] font-bold leading-none text-slate-900 dark:text-white font-mono">
                 {totalSectors}
               </span>
             </div>
@@ -99,11 +99,11 @@ export default function SectorAllocation() {
                   className="h-[10px] w-[10px] shrink-0 rounded-full"
                   style={{ backgroundColor: sector.color }}
                 />
-                <span className="w-[64px] shrink-0 text-[13px] text-[#94a3b8]">
+                <span className="w-[64px] shrink-0 text-[13px] text-slate-600 dark:text-[#94a3b8]">
                   {sector.name}
                 </span>
-                <span className="flex-1 border-b border-dotted border-white/[0.08]" />
-                <span className="w-[28px] text-right text-[13px] font-medium text-white font-mono">
+                <span className="flex-1 border-b border-dotted border-slate-200 dark:border-white/[0.08]" />
+                <span className="w-[28px] text-right text-[13px] font-medium text-slate-900 dark:text-white font-mono">
                   {sector.value}%
                 </span>
               </div>

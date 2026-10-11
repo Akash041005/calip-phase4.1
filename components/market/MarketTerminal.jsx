@@ -91,23 +91,23 @@ const TokenRow = memo(function TokenRow({
   return (
     <tr
       onClick={() => onNavigate(t.id)}
-      className={`hover:bg-white/[0.03] transition-colors cursor-pointer group ${
+      className={`hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors cursor-pointer group ${
         isFlashing ? flashColor : ""
       }`}
     >
       <td className="p-3.5 sm:p-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[11.5px] font-semibold bg-zinc-800 border border-white/10 text-zinc-200">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[11.5px] font-semibold bg-slate-100 border border-slate-200 text-slate-700 dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-200">
             {t.symbol?.slice(0, 2) || t.icon || "◈"}
           </div>
           <div>
-            <div className="font-medium text-white text-[13px] leading-tight group-hover:text-zinc-200 transition">
+            <div className="font-medium text-slate-900 group-hover:text-slate-700 dark:text-white dark:group-hover:text-zinc-200 text-[13px] leading-tight transition">
               {t.name}
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 mt-0.5 font-mono">
-              <span className="font-medium text-zinc-300">{t.symbol}</span>
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5 font-mono">
+              <span className="font-medium text-slate-700 dark:text-zinc-300">{t.symbol}</span>
               <span>·</span>
-              <span className="text-zinc-400 font-sans">{t.tag}</span>
+              <span className="text-slate-500 dark:text-zinc-400 font-sans">{t.tag}</span>
             </div>
           </div>
         </div>
@@ -115,17 +115,21 @@ const TokenRow = memo(function TokenRow({
 
       <td className="p-3.5 sm:p-4">
         <div className={`font-mono font-medium text-[13px] transition-colors ${
-          isFlashing && flashDirection === "up" ? "text-emerald-400" : isFlashing ? "text-rose-400" : "text-white"
+          isFlashing && flashDirection === "up"
+            ? "text-emerald-600 dark:text-emerald-400"
+            : isFlashing
+            ? "text-rose-600 dark:text-rose-400"
+            : "text-slate-900 dark:text-white"
         }`}>
           ${t.price < 0.01 ? t.price.toFixed(6) : t.price.toFixed(4)}
         </div>
-        <div className={`font-mono text-[11px] font-medium ${t.isPositive ? "text-emerald-400" : "text-rose-400"}`}>
+        <div className={`font-mono text-[11px] font-medium ${t.isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
           {t.isPositive ? "+" : ""}{t.change24h.toFixed(2)}%
         </div>
       </td>
 
-      <td className="p-3.5 sm:p-4 font-mono font-medium text-zinc-300 text-[13px]">{t.fdv}</td>
-      <td className="p-3.5 sm:p-4 font-mono font-medium text-zinc-300 text-[13px]">{t.vol}</td>
+      <td className="p-3.5 sm:p-4 font-mono font-medium text-slate-700 dark:text-zinc-300 text-[13px]">{t.fdv}</td>
+      <td className="p-3.5 sm:p-4 font-mono font-medium text-slate-700 dark:text-zinc-300 text-[13px]">{t.vol}</td>
       <td className="p-3.5 sm:p-4">
         <Sparkline
           tokenId={t.id}
@@ -140,25 +144,25 @@ const TokenRow = memo(function TokenRow({
 
       <td className="p-3.5 sm:p-4">
         <div className="w-[110px]">
-          <div className="relative h-1.5 w-full bg-white/[0.08] rounded-full mb-1">
+          <div className="relative h-1.5 w-full bg-slate-200 dark:bg-white/[0.08] rounded-full mb-1">
             <div
-              className="absolute -top-0.5 w-2.5 h-2.5 rounded-full bg-zinc-300"
+              className="absolute -top-0.5 w-2.5 h-2.5 rounded-full bg-slate-700 dark:bg-zinc-300"
               style={{ left: `${needle}%` }}
             />
           </div>
-          <div className="flex justify-between text-[10px] font-mono text-zinc-400">
+          <div className="flex justify-between text-[10px] font-mono text-slate-500 dark:text-zinc-400">
             <span>${t.low24h}</span>
             <span>${t.high24h}</span>
           </div>
         </div>
       </td>
 
-      <td className="p-3.5 sm:p-4 font-mono font-medium text-zinc-300 text-[13px]">{t.liquidity}</td>
-      <td className="p-3.5 sm:p-4 text-zinc-400 text-[12px]">{t.age}</td>
+      <td className="p-3.5 sm:p-4 font-mono font-medium text-slate-700 dark:text-zinc-300 text-[13px]">{t.liquidity}</td>
+      <td className="p-3.5 sm:p-4 text-slate-500 dark:text-zinc-400 text-[12px]">{t.age}</td>
 
       <td className="p-3.5 sm:p-4">
-        <div className="font-mono font-medium text-white text-[13px]">{t.holders}</div>
-        <div className={`text-[10.5px] font-mono ${(t.holdersDelta || "").startsWith("+") ? "text-emerald-400" : "text-rose-400"}`}>
+        <div className="font-mono font-medium text-slate-900 dark:text-white text-[13px]">{t.holders}</div>
+        <div className={`text-[10.5px] font-mono ${(t.holdersDelta || "").startsWith("+") ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
           {(t.holdersDelta || "").startsWith("+") ? (+t.holdersDelta).toFixed(1) + "+" : (t.holdersDelta || "-")}
         </div>
       </td>
@@ -170,8 +174,8 @@ const TokenRow = memo(function TokenRow({
             disabled={isToggling}
             className={`inline-flex items-center justify-center w-7 h-7 rounded-lg border transition-colors ${
               isWatched
-                ? "bg-white/[0.1] border-white/20 text-white"
-                : "bg-white/[0.02] border-white/[0.08] text-zinc-400 hover:text-white hover:bg-white/[0.06]"
+                ? "bg-slate-900 border-slate-900 text-white dark:bg-white/[0.1] dark:border-white/20 dark:text-white"
+                : "bg-slate-100 border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-200/70 dark:bg-white/[0.02] dark:border-white/[0.08] dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/[0.06]"
             }`}
             title={isWatched ? "Remove from Watchlist" : "Add to Watchlist"}
           >
@@ -179,7 +183,7 @@ const TokenRow = memo(function TokenRow({
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
             ) : (
               <Bookmark
-                className={`w-3.5 h-3.5 ${isWatched ? "fill-white text-white" : ""}`}
+                className={`w-3.5 h-3.5 ${isWatched ? "fill-current" : ""}`}
               />
             )}
           </button>
@@ -189,7 +193,7 @@ const TokenRow = memo(function TokenRow({
               e.stopPropagation();
               onNavigate(t.id);
             }}
-            className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.08] text-zinc-300 hover:bg-white/[0.1] hover:text-white transition-colors"
+            className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-200/70 hover:text-slate-900 dark:bg-white/[0.04] dark:border-white/[0.08] dark:text-zinc-300 dark:hover:bg-white/[0.1] dark:hover:text-white transition-colors"
             title="View Token Detail"
           >
             <Zap className="w-3.5 h-3.5" />
@@ -440,19 +444,19 @@ export default function MarketTerminal() {
   const clearSparkHover = useCallback(() => setHoveredSpark(null), []);
 
   return (
-    <div className="w-full text-[#f8fafc]">
+    <div className="w-full text-slate-900 dark:text-[#f8fafc]">
       {/* ZONE 1: TOP 4 OVERVIEW CARDS */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {/* 1. Trending */}
-        <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4.5 hover:border-white/[0.15] transition-colors shadow-sm">
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4.5 hover:border-slate-300 shadow-sm transition-colors dark:border-white/[0.08] dark:bg-[#111318] dark:hover:border-white/[0.15]">
           <div className="flex items-center justify-between mb-3.5">
-            <h3 className="text-[13px] font-semibold text-white flex items-center gap-2">
+            <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Trending
             </h3>
-            <span className="text-[10.5px] font-mono text-zinc-400 uppercase tracking-wider">Top 4</span>
+            <span className="text-[10.5px] font-mono text-slate-500 dark:text-zinc-400 uppercase tracking-wider">Top 4</span>
           </div>
-          <div className="grid grid-cols-3 text-[10px] uppercase tracking-wider text-zinc-400 font-medium border-b border-white/[0.06] pb-2 mb-2.5">
+          <div className="grid grid-cols-3 text-[10px] uppercase tracking-wider text-slate-400 dark:text-zinc-400 font-medium border-b border-slate-100 dark:border-white/[0.06] pb-2 mb-2.5">
             <span>Name</span>
             <span className="text-right">FDV</span>
             <span className="text-right">24H Δ</span>
@@ -462,16 +466,16 @@ export default function MarketTerminal() {
               <div
                 key={t.id}
                 onClick={() => router.push(`/insights/${t.id}`)}
-                className="flex items-center justify-between text-[12.5px] hover:text-white transition-colors cursor-pointer group"
+                className="flex items-center justify-between text-[12.5px] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer group"
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded bg-zinc-800 border border-white/10 flex items-center justify-center text-[10px] font-mono text-zinc-300">
+                  <span className="w-5 h-5 rounded bg-slate-100 border border-slate-200 text-slate-700 dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300 flex items-center justify-center text-[10px] font-mono">
                     {t.symbol?.slice(0, 2)}
                   </span>
-                  <span className="font-medium text-white group-hover:text-zinc-200 transition">{t.symbol}</span>
+                  <span className="font-medium text-slate-900 group-hover:text-slate-700 dark:text-white dark:group-hover:text-zinc-200 transition">{t.symbol}</span>
                 </div>
-                <span className="text-zinc-400 font-mono text-[12px]">{t.fdv}</span>
-                <span className={`font-mono text-[11px] font-medium ${t.isPositive ? "text-emerald-400" : "text-rose-400"}`}>
+                <span className="text-slate-500 dark:text-zinc-400 font-mono text-[12px]">{t.fdv}</span>
+                <span className={`font-mono text-[11px] font-medium ${t.isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                   {t.isPositive ? "+" : ""}{t.change24h.toFixed(2)}%
                 </span>
               </div>
@@ -480,20 +484,20 @@ export default function MarketTerminal() {
         </div>
 
         {/* 2. Just Graduated */}
-        <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4.5 hover:border-white/[0.15] transition-colors shadow-sm">
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4.5 hover:border-slate-300 shadow-sm transition-colors dark:border-white/[0.08] dark:bg-[#111318] dark:hover:border-white/[0.15]">
           <div className="flex items-center justify-between mb-3.5">
-            <h3 className="text-[13px] font-semibold text-white flex items-center gap-2">
+            <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
               Just Graduated
             </h3>
             <span
               onClick={() => router.push("/marketplace")}
-              className="text-[11px] text-zinc-400 flex items-center font-medium hover:text-white hover:underline cursor-pointer"
+              className="text-[11px] text-slate-500 hover:text-slate-900 dark:text-zinc-400 flex items-center font-medium dark:hover:text-white hover:underline cursor-pointer"
             >
               Upcoming &gt;
             </span>
           </div>
-          <div className="grid grid-cols-3 text-[10px] uppercase tracking-wider text-zinc-400 font-medium border-b border-white/[0.06] pb-2 mb-2.5">
+          <div className="grid grid-cols-3 text-[10px] uppercase tracking-wider text-slate-400 dark:text-zinc-400 font-medium border-b border-slate-100 dark:border-white/[0.06] pb-2 mb-2.5">
             <span>Name</span>
             <span className="text-right">FDV</span>
             <span className="text-right">24H Δ</span>
@@ -503,16 +507,16 @@ export default function MarketTerminal() {
               <div
                 key={t.id}
                 onClick={() => router.push(`/insights/${t.id}`)}
-                className="flex items-center justify-between text-[12.5px] hover:text-white transition-colors cursor-pointer group"
+                className="flex items-center justify-between text-[12.5px] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer group"
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded bg-zinc-800 border border-white/10 flex items-center justify-center text-[10px] font-mono text-zinc-300">
+                  <span className="w-5 h-5 rounded bg-slate-100 border border-slate-200 text-slate-700 dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300 flex items-center justify-center text-[10px] font-mono">
                     {t.symbol?.slice(0, 2)}
                   </span>
-                  <span className="font-medium text-white group-hover:text-zinc-200 transition">{t.symbol}</span>
+                  <span className="font-medium text-slate-900 group-hover:text-slate-700 dark:text-white dark:group-hover:text-zinc-200 transition">{t.symbol}</span>
                 </div>
-                <span className="text-zinc-400 font-mono text-[12px]">{t.fdv}</span>
-                <span className={`font-mono text-[11px] font-medium ${t.isPositive ? "text-emerald-400" : "text-rose-400"}`}>
+                <span className="text-slate-500 dark:text-zinc-400 font-mono text-[12px]">{t.fdv}</span>
+                <span className={`font-mono text-[11px] font-medium ${t.isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                   {t.isPositive ? "+" : ""}{t.change24h.toFixed(2)}%
                 </span>
               </div>
@@ -521,15 +525,15 @@ export default function MarketTerminal() {
         </div>
 
         {/* 3. Gainers */}
-        <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4.5 hover:border-white/[0.15] transition-colors shadow-sm">
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4.5 hover:border-slate-300 shadow-sm transition-colors dark:border-white/[0.08] dark:bg-[#111318] dark:hover:border-white/[0.15]">
           <div className="flex items-center justify-between mb-3.5">
-            <h3 className="text-[13px] font-semibold text-white flex items-center gap-2">
+            <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Gainers
             </h3>
-            <span className="text-[10.5px] font-mono font-medium text-emerald-400 uppercase tracking-wider">Top %</span>
+            <span className="text-[10.5px] font-mono font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Top %</span>
           </div>
-          <div className="grid grid-cols-3 text-[10px] uppercase tracking-wider text-zinc-400 font-medium border-b border-white/[0.06] pb-2 mb-2.5">
+          <div className="grid grid-cols-3 text-[10px] uppercase tracking-wider text-slate-400 dark:text-zinc-400 font-medium border-b border-slate-100 dark:border-white/[0.06] pb-2 mb-2.5">
             <span>Name</span>
             <span className="text-right">FDV</span>
             <span className="text-right">24H Δ</span>
@@ -539,49 +543,49 @@ export default function MarketTerminal() {
               <div
                 key={t.id}
                 onClick={() => router.push(`/insights/${t.id}`)}
-                className="flex items-center justify-between text-[12.5px] hover:text-white transition-colors cursor-pointer group"
+                className="flex items-center justify-between text-[12.5px] hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer group"
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded bg-zinc-800 border border-white/10 flex items-center justify-center text-[10px] font-mono text-emerald-400">
+                  <span className="w-5 h-5 rounded bg-slate-100 border border-slate-200 text-emerald-700 dark:bg-zinc-800 dark:border-white/10 dark:text-emerald-400 flex items-center justify-center text-[10px] font-mono">
                     {t.symbol?.slice(0, 2)}
                   </span>
-                  <span className="font-medium text-white group-hover:text-zinc-200 transition">{t.symbol}</span>
+                  <span className="font-medium text-slate-900 group-hover:text-slate-700 dark:text-white dark:group-hover:text-zinc-200 transition">{t.symbol}</span>
                 </div>
-                <span className="text-zinc-400 font-mono text-[12px]">{t.fdv}</span>
-                <span className="font-mono text-[11px] font-medium text-emerald-400">+{t.change24h.toFixed(2)}%</span>
+                <span className="text-slate-500 dark:text-zinc-400 font-mono text-[12px]">{t.fdv}</span>
+                <span className="font-mono text-[11px] font-medium text-emerald-600 dark:text-emerald-400">+{t.change24h.toFixed(2)}%</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* 4. Live Trades */}
-        <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4.5 hover:border-white/[0.15] transition-colors shadow-sm">
+        <div className="rounded-xl border border-slate-200/90 bg-white p-4.5 hover:border-slate-300 shadow-sm transition-colors dark:border-white/[0.08] dark:bg-[#111318] dark:hover:border-white/[0.15]">
           <div className="flex items-center justify-between mb-3.5">
-            <h3 className="text-[13px] font-semibold text-white flex items-center gap-2">
+            <h3 className="text-[13px] font-semibold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               Live Trades
             </h3>
-            <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono font-medium text-zinc-300 bg-white/[0.05] border border-white/[0.08] px-2 py-0.5 rounded">
+            <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono font-medium text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded dark:text-zinc-300 dark:bg-white/[0.05] dark:border-white/[0.08]">
               Real-time
             </span>
           </div>
-          <div className="grid grid-cols-2 text-[10px] uppercase tracking-wider text-zinc-400 font-medium border-b border-white/[0.06] pb-2 mb-2.5">
+          <div className="grid grid-cols-2 text-[10px] uppercase tracking-wider text-slate-400 dark:text-zinc-400 font-medium border-b border-slate-100 dark:border-white/[0.06] pb-2 mb-2.5">
             <span>User</span>
             <span className="text-right">Amount</span>
           </div>
           <div className="space-y-2">
             {liveTrades.length === 0 ? (
-              <p className="py-4 text-center text-[12px] text-zinc-500">
+              <p className="py-4 text-center text-[12px] text-slate-400 dark:text-zinc-500">
                 {tradesError || "Waiting for live trades…"}
               </p>
             ) : (
             liveTrades.slice(0, 4).map((tr) => (
               <div key={tr.id} className="flex items-center justify-between text-[12px]">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
-                  <span className="font-mono text-zinc-400 text-[11.5px]">{tr.user}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-zinc-400"></span>
+                  <span className="font-mono text-slate-600 dark:text-zinc-400 text-[11.5px]">{tr.user}</span>
                 </div>
-                <span className={`font-mono font-medium text-[11.5px] ${tr.isBuy ? "text-emerald-400" : "text-rose-400"}`}>
+                <span className={`font-mono font-medium text-[11.5px] ${tr.isBuy ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                   {tr.amount}
                 </span>
               </div>
@@ -593,15 +597,15 @@ export default function MarketTerminal() {
       {/* ZONE 2: TOOLBAR WITH SEARCH & SEGMENTED TABS */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4.5">
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="inline-flex items-center gap-1 bg-[#111318] border border-white/[0.08] p-1 rounded-lg">
+          <div className="inline-flex items-center gap-1 bg-slate-100/90 border border-slate-200 p-1 rounded-lg dark:bg-[#111318] dark:border-white/[0.08]">
             {["trending", "top", "gainers", "new", "watchlist"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-3.5 py-1.5 rounded-md text-[12px] font-medium capitalize transition-colors ${
                   activeTab === tab
-                    ? "bg-white/[0.1] border border-white/[0.1] text-white shadow-sm"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-white border border-slate-300 text-slate-900 shadow-xs dark:bg-white/[0.1] dark:border-white/[0.1] dark:text-white"
+                    : "text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                 }`}
               >
                 {tab}
@@ -616,12 +620,12 @@ export default function MarketTerminal() {
               placeholder="Search 20+ startups & tokens..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-[34px] w-[240px] rounded-lg border border-white/[0.08] bg-[#111318] px-3.5 text-[12.5px] text-white placeholder-zinc-500 outline-none transition focus:border-white/20"
+              className="h-[34px] w-[240px] rounded-lg border border-slate-200 bg-white px-3.5 text-[12.5px] text-slate-900 placeholder-slate-400 outline-none transition focus:border-slate-400 shadow-xs dark:border-white/[0.08] dark:bg-[#111318] dark:text-white dark:placeholder-zinc-500 dark:focus:border-white/20"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-white text-xs"
               >
                 ✕
               </button>
@@ -630,35 +634,35 @@ export default function MarketTerminal() {
         </div>
 
         <div className="flex items-center gap-2 self-start md:self-auto">
-          <button className="inline-flex h-[34px] items-center gap-1.5 px-3.5 rounded-lg border border-white/[0.08] bg-[#111318] text-[12px] font-medium text-zinc-300 hover:border-white/20 transition-colors">
-            <Clock className="w-3.5 h-3.5 text-zinc-500" />
+          <button className="inline-flex h-[34px] items-center gap-1.5 px-3.5 rounded-lg border border-slate-200 bg-white text-[12px] font-medium text-slate-700 hover:border-slate-300 shadow-xs transition-colors dark:border-white/[0.08] dark:bg-[#111318] dark:text-zinc-300 dark:hover:border-white/20">
+            <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-zinc-500" />
             <span>24H ▾</span>
           </button>
-          <button className="inline-flex h-[34px] items-center gap-1.5 px-3.5 rounded-lg border border-white/[0.08] bg-white/[0.04] text-[12px] font-medium text-zinc-300">
-            <Zap className="w-3.5 h-3.5 text-zinc-400" />
+          <button className="inline-flex h-[34px] items-center gap-1.5 px-3.5 rounded-lg border border-slate-200 bg-slate-100 text-[12px] font-medium text-slate-700 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-zinc-300">
+            <Zap className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />
             <span>{filteredTokens.length} Tokens</span>
           </button>
         </div>
       </div>
 
       {/* ZONE 3: TOKEN MARKET TABLE */}
-      <div className="overflow-x-auto rounded-xl border border-white/[0.08] bg-[#111318] shadow-sm">
+      <div className="overflow-x-auto rounded-xl border border-slate-200/90 bg-white shadow-sm dark:border-white/[0.08] dark:bg-[#111318]">
         <table className="w-full border-collapse text-left text-[13px] min-w-[980px]">
           <thead>
-            <tr className="border-b border-white/[0.06] text-[10.5px] font-medium text-zinc-400 uppercase tracking-wider bg-[#14161d]">
-              <th className="p-4 cursor-pointer hover:text-white" onClick={() => handleSort("name")}>Name</th>
-              <th className="p-4 cursor-pointer hover:text-white" onClick={() => handleSort("price")}>Price / %Δ</th>
-              <th className="p-4 cursor-pointer hover:text-white" onClick={() => handleSort("fdvRaw")}>FDV</th>
-              <th className="p-4 cursor-pointer hover:text-white" onClick={() => handleSort("volRaw")}>Vol</th>
+            <tr className="border-b border-slate-200/80 text-[10.5px] font-medium text-slate-500 uppercase tracking-wider bg-slate-50/90 dark:border-white/[0.06] dark:text-zinc-400 dark:bg-[#14161d]">
+              <th className="p-4 cursor-pointer hover:text-slate-900 dark:hover:text-white" onClick={() => handleSort("name")}>Name</th>
+              <th className="p-4 cursor-pointer hover:text-slate-900 dark:hover:text-white" onClick={() => handleSort("price")}>Price / %Δ</th>
+              <th className="p-4 cursor-pointer hover:text-slate-900 dark:hover:text-white" onClick={() => handleSort("fdvRaw")}>FDV</th>
+              <th className="p-4 cursor-pointer hover:text-slate-900 dark:hover:text-white" onClick={() => handleSort("volRaw")}>Vol</th>
               <th className="p-4">Last 24h</th>
               <th className="p-4">24h Range</th>
-              <th className="p-4 cursor-pointer hover:text-white" onClick={() => handleSort("liquidityRaw")}>Liquidity</th>
+              <th className="p-4 cursor-pointer hover:text-slate-900 dark:hover:text-white" onClick={() => handleSort("liquidityRaw")}>Liquidity</th>
               <th className="p-4">Age</th>
               <th className="p-4">Holders</th>
               <th className="p-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
             {filteredTokens.map((t) => {
               const needle = Math.max(
                 5,
@@ -690,14 +694,14 @@ export default function MarketTerminal() {
             {tokensLoading ? (
               <tr>
                 <td colSpan={10} className="py-14 text-center text-neutral-400">
-                  <Loader2 className="w-5 h-5 animate-spin mx-auto text-white mb-2" />
-                  <p className="text-[13px] text-[#737d91]">Loading tokens from the network…</p>
+                  <Loader2 className="w-5 h-5 animate-spin mx-auto text-slate-700 dark:text-white mb-2" />
+                  <p className="text-[13px] text-slate-500 dark:text-[#737d91]">Loading tokens from the network…</p>
                 </td>
               </tr>
             ) : tokensError && filteredTokens.length === 0 ? (
               <tr>
                 <td colSpan={10} className="py-12 text-center text-neutral-400">
-                  <p className="text-[13px] text-rose-400">{tokensError}</p>
+                  <p className="text-[13px] text-rose-500">{tokensError}</p>
                 </td>
               </tr>
             ) : filteredTokens.length === 0 && (
@@ -705,12 +709,12 @@ export default function MarketTerminal() {
                 <td colSpan={10} className="py-14 text-center text-neutral-400">
                   {activeTab === "watchlist" ? (
                     <div className="flex flex-col items-center gap-2">
-                      <Bookmark className="w-6 h-6 text-zinc-400" />
-                      <p className="font-semibold text-white">Your Watchlist is empty</p>
-                      <p className="text-[12.5px] text-[#737d91]">Bookmark any startup token from the table to track it here.</p>
+                      <Bookmark className="w-6 h-6 text-slate-400 dark:text-zinc-400" />
+                      <p className="font-semibold text-slate-900 dark:text-white">Your Watchlist is empty</p>
+                      <p className="text-[12.5px] text-slate-500 dark:text-[#737d91]">Bookmark any startup token from the table to track it here.</p>
                     </div>
                   ) : (
-                    <p className="text-[13px] text-[#737d91]">No matching tokens found for &ldquo;{searchQuery}&rdquo;</p>
+                    <p className="text-[13px] text-slate-500 dark:text-[#737d91]">No matching tokens found for &ldquo;{searchQuery}&rdquo;</p>
                   )}
                 </td>
               </tr>
@@ -721,12 +725,12 @@ export default function MarketTerminal() {
 
       {/* ZONE 4: PAGINATION */}
       <div className="flex items-center justify-center gap-1.5 mt-6">
-        <button className="h-8 px-3 rounded-full text-[12px] font-semibold text-[#737d91] hover:text-white transition">Prev</button>
-        <button className="w-8 h-8 rounded-full bg-white text-zinc-950 font-bold border border-white text-[12px] shadow-sm">1</button>
-        <button className="w-8 h-8 rounded-full border border-white/[0.08] bg-white/[0.03] text-[#737d91] hover:text-white hover:border-white/20 transition text-[12px]">2</button>
-        <span className="text-[#737d91] text-xs px-1">...</span>
-        <button className="w-8 h-8 rounded-full border border-white/[0.08] bg-white/[0.03] text-[#737d91] hover:text-white hover:border-white/20 transition text-[12px]">10</button>
-        <button className="h-8 px-3 rounded-full text-[12px] font-semibold text-[#737d91] hover:text-white transition">Next</button>
+        <button className="h-8 px-3 rounded-full text-[12px] font-semibold text-slate-500 hover:text-slate-900 dark:text-[#737d91] dark:hover:text-white transition">Prev</button>
+        <button className="w-8 h-8 rounded-full bg-slate-900 text-white font-bold border border-slate-900 dark:bg-white dark:text-zinc-950 dark:border-white text-[12px] shadow-sm">1</button>
+        <button className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:border-slate-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-[#737d91] dark:hover:text-white dark:hover:border-white/20 transition text-[12px] shadow-xs">2</button>
+        <span className="text-slate-400 dark:text-[#737d91] text-xs px-1">...</span>
+        <button className="w-8 h-8 rounded-full border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:border-slate-300 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-[#737d91] dark:hover:text-white dark:hover:border-white/20 transition text-[12px] shadow-xs">10</button>
+        <button className="h-8 px-3 rounded-full text-[12px] font-semibold text-slate-500 hover:text-slate-900 dark:text-[#737d91] dark:hover:text-white transition">Next</button>
       </div>
     </div>
   );

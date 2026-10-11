@@ -80,27 +80,27 @@ export default function ActiveSessions() {
 
   return (
     <SettingsCard>
-      <div className="pb-4 border-b border-white/[0.08]">
-        <h2 className="text-[18px] font-bold text-white">
+      <div className="pb-4 border-b border-slate-200 dark:border-white/[0.08]">
+        <h2 className="text-[18px] font-bold text-slate-900 dark:text-white">
           Active Sessions
         </h2>
-        <p className="mt-1 text-[13px] text-slate-400">
+        <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
           Devices and active sessions currently signed in to your account.
         </p>
       </div>
 
-      <div className="divide-y divide-white/[0.08]">
+      <div className="divide-y divide-slate-200 dark:divide-white/[0.08]">
         {sessionList.map((session) => {
           const Icon = sessionIconMap[session.icon] || Monitor;
 
           return (
             <div key={session.id} className="flex items-center gap-4 py-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04]">
-                <Icon className="h-5 w-5 text-white" strokeWidth={1.5} />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 dark:border-white/[0.08] dark:bg-white/[0.04]">
+                <Icon className="h-5 w-5 text-slate-700 dark:text-white" strokeWidth={1.5} />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="text-[15px] font-semibold text-white">
+                  <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
                     {session.title}
                   </p>
                   {session.badge && (
@@ -109,18 +109,18 @@ export default function ActiveSessions() {
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-[13px] text-slate-400">
+                <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
                   {session.location}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => handleDelete(session.id)}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] text-slate-400 transition hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-400 dark:border-white/[0.08] transition hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400"
                 aria-label={`Sign out ${session.title}`}
               >
                 {removing === session.id ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-white" strokeWidth={1.5} />
+                  <Loader2 className="h-4 w-4 animate-spin text-slate-900 dark:text-white" strokeWidth={1.5} />
                 ) : (
                   <Trash2 className="h-4 w-4" strokeWidth={1.5} />
                 )}

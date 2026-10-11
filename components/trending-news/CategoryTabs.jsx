@@ -12,8 +12,8 @@ export default function CategoryTabs({ activeCategory = "All", onSelectCategory 
             onClick={() => onSelectCategory && onSelectCategory(category)}
             className={`flex h-8 items-center justify-center rounded-lg px-4 text-xs font-semibold tracking-wide transition-all ${
               isActive
-                ? "bg-white text-black shadow-sm"
-                : "bg-white/[0.04] text-slate-400 border border-white/[0.08] hover:text-white hover:bg-white/[0.08]"
+                ? "bg-slate-900 text-white shadow-sm dark:bg-white dark:text-black"
+                : "bg-slate-100 text-slate-600 border border-slate-200 hover:text-slate-900 hover:bg-slate-200/70 dark:bg-white/[0.04] dark:text-slate-400 dark:border-white/[0.08] dark:hover:text-white dark:hover:bg-white/[0.08]"
             }`}
           >
             {category}

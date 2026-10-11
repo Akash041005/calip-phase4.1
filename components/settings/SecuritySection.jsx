@@ -69,23 +69,23 @@ export default function SecuritySection() {
 
   return (
     <SettingsCard>
-      <div className="pb-4 border-b border-white/[0.08]">
-        <h2 className="text-[18px] font-bold text-white">
+      <div className="pb-4 border-b border-slate-200 dark:border-white/[0.08]">
+        <h2 className="text-[18px] font-bold text-slate-900 dark:text-white">
           Security
         </h2>
-        <p className="mt-1 text-[13px] text-slate-400">
+        <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
           Manage authentication credentials and account safeguards.
         </p>
       </div>
 
-      <div className="divide-y divide-white/[0.08]">
+      <div className="divide-y divide-slate-200 dark:divide-white/[0.08]">
         {renderedItems.map((item) => (
           <div key={item.id} className="flex items-center justify-between py-4">
             <div className="min-w-0 flex-1">
-              <p className="text-[15px] font-semibold text-white">
+              <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
                 {item.title}
               </p>
-              <p className="mt-1 text-[13px] text-slate-400">
+              <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
                 {item.description}
               </p>
               {item.type === "toggle" && toggleError && (

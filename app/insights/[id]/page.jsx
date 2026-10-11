@@ -8,6 +8,8 @@ import { getAIInsights } from "../../../lib/insightsApi";
 import { getStartupById } from "../../../lib/startupsApi";
 import { getAnalyticsStartup } from "../../../lib/analyticsApi";
 
+import Footer from "../../../components/dashboard/Footer";
+
 export default function InsightsPage() {
   const params = useParams();
   const id = params?.id;
@@ -71,18 +73,20 @@ export default function InsightsPage() {
   }, [id]);
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-[#f8fafc] transition-colors">
       <Navbar activePage="companies" />
 
-      <main className="pb-12">
+      <main className="pb-16">
         {loading ? (
           <div className="flex h-[300px] items-center justify-center">
-            <p className="text-[14px] text-emerald-400 font-mono animate-pulse">Loading Company Overview...</p>
+            <p className="text-[14px] text-emerald-500 font-mono animate-pulse">Loading Company Overview...</p>
           </div>
         ) : (
           <TokenDetailOverview tokenId={id} startupData={data} />
         )}
       </main>
+
+      <Footer />
     </div>
   );
 }

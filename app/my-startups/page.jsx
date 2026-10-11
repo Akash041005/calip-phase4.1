@@ -6,6 +6,7 @@ import { Rocket, Loader2, Trash2, Plus, Bookmark, Check, ArrowRight } from "luci
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "../../components/dashboard/Navbar";
+import Footer from "../../components/dashboard/Footer";
 import { getMyStartups, deleteStartup } from "../../lib/startupsManageApi";
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../../lib/usersApi";
 
@@ -163,21 +164,21 @@ export default function MyStartupsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-[#f8fafc] transition-colors">
       <Navbar activePage="my-startups" />
 
-      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 py-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8 pb-6 border-b border-white/[0.08]">
+      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 py-8 pb-16">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8 pb-6 border-b border-slate-200 dark:border-white/[0.08] transition-colors">
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors">
                 My Startups
               </h1>
-              <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-white/[0.06] text-white border border-white/[0.08]">
+              <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-800 border border-slate-200 dark:bg-white/[0.06] dark:text-white dark:border-white/[0.08] transition-colors">
                 {startups.length} Registered
               </span>
             </div>
-            <p className="mt-1 text-[13.5px] text-slate-400">
+            <p className="mt-1 text-[13.5px] text-slate-600 dark:text-slate-400 transition-colors">
               Manage your submitted startups, track watchlist status, and review company details.
             </p>
           </div>
@@ -193,15 +194,15 @@ export default function MyStartupsPage() {
 
         <div>
           {loading && (
-            <div className="flex items-center justify-center gap-2 py-20 text-slate-400">
-              <Loader2 className="h-5 w-5 animate-spin text-white" strokeWidth={2} />
+            <div className="flex items-center justify-center gap-2 py-20 text-slate-500 dark:text-slate-400">
+              <Loader2 className="h-5 w-5 animate-spin text-slate-900 dark:text-white" strokeWidth={2} />
               <span className="text-[13.5px] font-mono">Loading your startups & watchlist status...</span>
             </div>
           )}
 
           {error && (
             <div className="py-16 text-center">
-              <p className="text-rose-400 text-[14px]">{error}</p>
+              <p className="text-rose-500 dark:text-rose-400 text-[14px]">{error}</p>
               <button
                 type="button"
                 onClick={reload}
@@ -213,12 +214,12 @@ export default function MyStartupsPage() {
           )}
 
           {!loading && !error && startups.length === 0 && (
-            <div className="flex flex-col items-center gap-3 py-20 text-center rounded-2xl border border-dashed border-white/[0.08] bg-[#111318]">
-              <Rocket className="h-10 w-10 text-slate-500" strokeWidth={1.5} />
-              <p className="text-base font-semibold text-white">
+            <div className="flex flex-col items-center gap-3 py-20 text-center rounded-2xl border border-dashed border-slate-300 bg-white dark:border-white/[0.08] dark:bg-[#111318] transition-colors">
+              <Rocket className="h-10 w-10 text-slate-400 dark:text-slate-500" strokeWidth={1.5} />
+              <p className="text-base font-semibold text-slate-900 dark:text-white">
                 You haven&apos;t submitted any startups yet.
               </p>
-              <p className="text-[13px] text-slate-400 max-w-sm">
+              <p className="text-[13px] text-slate-500 dark:text-slate-400 max-w-sm">
                 Submit your project to Calip to unlock automated capital formation, secondary listings, and investor reach.
               </p>
               <Link
@@ -242,15 +243,15 @@ export default function MyStartupsPage() {
                 return (
                   <div
                     key={startupId}
-                    className="flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition hover:border-white/20 sm:flex-row sm:items-center"
+                    className="flex flex-col gap-4 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm transition hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#111318] dark:hover:border-white/20 sm:flex-row sm:items-center"
                   >
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.08] text-[18px] font-bold text-white">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 border border-slate-200 text-[18px] font-bold text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
                       {startup.startupName?.[0]?.toUpperCase() ?? "?"}
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2.5">
-                        <h3 className="text-base font-bold text-white leading-tight">
+                        <h3 className="text-base font-bold text-slate-900 dark:text-white leading-tight transition-colors">
                           {startup.startupName || "Untitled"}
                         </h3>
                         <span
@@ -260,13 +261,13 @@ export default function MyStartupsPage() {
                           {status.label}
                         </span>
                         {isWatched && (
-                          <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10.5px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                            <Bookmark className="w-3 h-3 fill-emerald-400" />
+                          <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10.5px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            <Bookmark className="w-3 h-3 fill-emerald-600 dark:fill-emerald-400" />
                             In Watchlist
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 text-[12.5px] text-slate-400">
+                      <p className="mt-1 text-[12.5px] text-slate-500 dark:text-slate-400 transition-colors">
                         {startup.industrySector || "Tech"} · {startup.startupStage || startup.stage || "Early Stage"} ·{" "}
                         {startup.fundingStatus || "Bootstrapped"}
                       </p>
@@ -274,19 +275,19 @@ export default function MyStartupsPage() {
 
                     <div className="flex flex-wrap items-center gap-3 self-end sm:self-auto">
                       <div className="hidden text-right lg:block">
-                        <p className="text-[10.5px] uppercase tracking-wider text-slate-500">
+                        <p className="text-[10.5px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
                           Submissions
                         </p>
-                        <p className="text-[12.5px] font-mono font-semibold text-slate-300">
+                        <p className="text-[12.5px] font-mono font-semibold text-slate-700 dark:text-slate-300">
                           {formatViews(startup.views)}
                         </p>
                       </div>
 
                       <div className="hidden text-right lg:block">
-                        <p className="text-[10.5px] uppercase tracking-wider text-slate-500">
+                        <p className="text-[10.5px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
                           Submitted
                         </p>
-                        <p className="text-[12.5px] font-mono font-semibold text-slate-300">
+                        <p className="text-[12.5px] font-mono font-semibold text-slate-700 dark:text-slate-300">
                           {formatDate(startup.createdAt)}
                         </p>
                       </div>
@@ -298,8 +299,8 @@ export default function MyStartupsPage() {
                         disabled={togglingWatchlistId === startupId}
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold border transition ${
                           isWatched
-                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-rose-500/15 hover:border-rose-500/30 hover:text-rose-400 group"
-                            : "bg-white/[0.04] border-white/[0.08] text-slate-300 hover:text-white hover:bg-white/[0.08]"
+                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-rose-500/15 hover:border-rose-500/30 hover:text-rose-500 dark:hover:text-rose-400 group"
+                            : "bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200/70 dark:bg-white/[0.04] dark:border-white/[0.08] dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/[0.08]"
                         } disabled:opacity-50`}
                         title={isWatched ? "Click to remove from Watchlist" : "Add to Watchlist"}
                       >
@@ -323,7 +324,7 @@ export default function MyStartupsPage() {
                       <button
                         type="button"
                         onClick={() => router.push(`/insights/${startupId}`)}
-                        className="cl-btn-secondary h-8 px-3 text-[12px]"
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-[12px] font-semibold text-slate-800 shadow-xs hover:bg-slate-50 hover:text-slate-900 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08] transition-all"
                         title="Open Startup Detail"
                       >
                         <span>Details</span>
@@ -338,7 +339,7 @@ export default function MyStartupsPage() {
                         className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                           confirming === startup._id
                             ? "bg-rose-600 text-white"
-                            : "border border-rose-500/30 text-rose-400 hover:bg-rose-500/10"
+                            : "border border-rose-500/30 text-rose-500 dark:text-rose-400 hover:bg-rose-500/10"
                         }`}
                       >
                         {removing === startup._id ? (
@@ -358,11 +359,13 @@ export default function MyStartupsPage() {
       </main>
 
       {toast && typeof document !== "undefined" && createPortal(
-        <div className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-xl bg-[#111318] border border-white/[0.12] px-5 py-2.5 text-[13px] font-semibold text-white shadow-2xl pointer-events-none">
+        <div className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-xl bg-slate-900 border border-slate-700 text-white dark:bg-[#111318] dark:border-white/[0.12] px-5 py-2.5 text-[13px] font-semibold shadow-2xl pointer-events-none">
           {toast}
         </div>,
         document.body
       )}
+
+      <Footer />
     </div>
   );
 }

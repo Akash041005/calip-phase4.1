@@ -72,13 +72,13 @@ export default function RecentActivity() {
   const activityData = items && items.length > 0 ? items : [];
 
   return (
-    <div className="min-h-[260px] w-full rounded-2xl border border-white/[0.08] bg-[#111318] shadow-sm">
+    <div className="min-h-[260px] w-full rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
       <div className="flex h-full flex-col p-[24px]">
         <div className="mb-[12px] flex items-center justify-between">
-          <h2 className="text-[17px] font-semibold text-white">Recent Activity</h2>
+          <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white transition-colors">Recent Activity</h2>
           <button
             type="button"
-            className="flex items-center gap-1 text-[13px] font-medium text-[#94a3b8] transition-colors hover:text-white"
+            className="flex items-center gap-1 text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-[#94a3b8] dark:hover:text-white"
           >
             View all
             <ArrowRight className="h-[12px] w-[12px]" strokeWidth={2.5} />
@@ -94,31 +94,31 @@ export default function RecentActivity() {
                 key={item.id}
                 className={`flex items-center justify-between py-[10px] ${
                   index < activityData.length - 1
-                    ? "border-b border-white/[0.06]"
+                    ? "border-b border-slate-100 dark:border-white/[0.06]"
                     : ""
                 }`}
               >
                 <div className="flex items-center gap-[12px]">
-                  <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-white">
+                  <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
                     <IconComponent
-                      className="h-[16px] w-[16px] text-[#94a3b8]"
+                      className="h-[16px] w-[16px] text-slate-500 dark:text-[#94a3b8]"
                       strokeWidth={1.8}
                     />
                   </div>
                   <div>
-                    <p className="text-[14px] font-semibold leading-tight text-white">
+                    <p className="text-[14px] font-semibold leading-tight text-slate-900 dark:text-white transition-colors">
                       {item.title}
                     </p>
-                    <p className="mt-[2px] text-[12px] text-[#94a3b8]">{item.subtitle}</p>
+                    <p className="mt-[2px] text-[12px] text-slate-500 dark:text-[#94a3b8]">{item.subtitle}</p>
                   </div>
                 </div>
 
                 <div className="text-right">
                   {item.amount && (
-                    <p className="text-[13px] font-medium text-white font-mono">{item.amount}</p>
+                    <p className="text-[13px] font-medium text-slate-900 dark:text-white font-mono">{item.amount}</p>
                   )}
                   <p
-                    className={`text-[12px] text-[#94a3b8] ${
+                    className={`text-[12px] text-slate-400 dark:text-[#94a3b8] ${
                       item.amount ? "mt-[1px]" : ""
                     }`}
                   >

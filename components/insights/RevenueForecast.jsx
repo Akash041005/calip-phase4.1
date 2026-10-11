@@ -29,13 +29,13 @@ export default function RevenueForecast({ data }) {
   const yTicks = [0, yMax / 4, yMax / 2, (yMax * 3) / 4, yMax];
 
   return (
-    <div className="h-[375px] w-full flex-1 rounded-2xl border border-white/[0.08] bg-[#111318] shadow-sm">
+    <div className="h-[375px] w-full flex-1 rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
       <div className="flex h-full flex-col pl-[27px] pr-[15px] pt-[26px] pb-[20px]">
         <div className="flex items-center justify-between">
-          <h2 className="text-[16px] font-bold text-white">
+          <h2 className="text-[16px] font-bold text-slate-900 dark:text-white transition-colors">
             Revenue Forecast
           </h2>
-          <span className="text-[12px] text-slate-400">AI Projection</span>
+          <span className="text-[12px] text-slate-500 dark:text-slate-400">AI Projection</span>
         </div>
 
         <div className="mt-[20px] min-h-0 flex-1">
@@ -46,26 +46,26 @@ export default function RevenueForecast({ data }) {
             >
               <defs>
                 <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ffffff" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#ffffff" stopOpacity={0.01} />
+                  <stop offset="5%" stopColor={isDark ? "#ffffff" : "#0f172a"} stopOpacity={0.15} />
+                  <stop offset="95%" stopColor={isDark ? "#ffffff" : "#0f172a"} stopOpacity={0.01} />
                 </linearGradient>
               </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke="rgba(255, 255, 255, 0.05)"
+                stroke={isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(100, 116, 139, 0.12)"}
                 vertical={false}
               />
               <XAxis
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#94a3b8", fontSize: 12 }}
+                tick={{ fill: isDark ? "#94a3b8" : "#64748b", fontSize: 12 }}
                 dy={8}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#94a3b8", fontSize: 12 }}
+                tick={{ fill: isDark ? "#94a3b8" : "#64748b", fontSize: 12 }}
                 tickFormatter={formatYAxis}
                 domain={[0, yMax]}
                 ticks={yTicks}
@@ -76,23 +76,23 @@ export default function RevenueForecast({ data }) {
                   `₹ ${Number(value).toLocaleString("en-IN")}`,
                   "Revenue",
                 ]}
-                cursor={{ stroke: "rgba(255, 255, 255, 0.2)", strokeDasharray: "4 4" }}
+                cursor={{ stroke: isDark ? "rgba(255, 255, 255, 0.2)" : "rgba(15, 23, 42, 0.2)", strokeDasharray: "4 4" }}
                 contentStyle={{
-                  backgroundColor: "#111318",
-                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  backgroundColor: isDark ? "#151824" : "#ffffff",
+                  border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(226, 232, 240, 1)",
                   borderRadius: "12px",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+                  boxShadow: isDark ? "0 8px 32px rgba(0, 0, 0, 0.5)" : "0 8px 24px rgba(0, 0, 0, 0.08)",
                   padding: "10px 14px",
                   whiteSpace: "nowrap",
                 }}
-                labelStyle={{ color: "#94a3b8", fontSize: 13 }}
-                itemStyle={{ color: "#ffffff", fontSize: 14 }}
+                labelStyle={{ color: isDark ? "#94a3b8" : "#64748b", fontSize: 13 }}
+                itemStyle={{ color: isDark ? "#ffffff" : "#0f172a", fontSize: 14 }}
               />
               <Area
                 type="monotone"
                 dataKey="value"
                 name="Revenue"
-                stroke="#ffffff"
+                stroke={isDark ? "#ffffff" : "#0f172a"}
                 strokeWidth={1.75}
                 fill="url(#revenueFill)"
               />

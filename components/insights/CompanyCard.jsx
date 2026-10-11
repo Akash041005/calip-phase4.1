@@ -17,34 +17,34 @@ export default function CompanyCard({ data }) {
   const valuation = formatValuation(base.valuation) || "₹15 Cr";
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-white/[0.08] bg-[#111318] p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
+    <div className="flex flex-col gap-4 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5 dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
       <div className="flex items-center gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-[#0e1015] text-white">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-800 dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white transition-colors">
           <span className="text-[18px] font-bold">
             {name.charAt(0).toUpperCase()}
           </span>
         </div>
         <div>
-          <h2 className="text-[18px] font-bold text-white">
+          <h2 className="text-[18px] font-bold text-slate-900 dark:text-white transition-colors">
             {name}
           </h2>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-[13px] text-slate-400">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-[13px] text-slate-500 dark:text-slate-400">
             <span>{sector}</span>
             <span>•</span>
             <span>{stage}</span>
             <span>•</span>
-            <span className="font-medium text-white">Valuation: {valuation}</span>
+            <span className="font-medium text-slate-900 dark:text-white">Valuation: {valuation}</span>
             <span>•</span>
-            <span className="capitalize text-emerald-400 font-medium">{sentiment} sentiment</span>
+            <span className="capitalize text-emerald-600 dark:text-emerald-400 font-medium">{sentiment} sentiment</span>
           </div>
         </div>
       </div>
 
-      <div className="flex h-16 w-20 shrink-0 flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-[#0e1015]">
-        <span className="text-[26px] font-extrabold font-mono text-white">
+      <div className="flex h-16 w-20 shrink-0 flex-col items-center justify-center rounded-xl border border-slate-200 bg-slate-50 dark:border-white/[0.08] dark:bg-[#0e1015] transition-colors">
+        <span className="text-[26px] font-extrabold font-mono text-slate-900 dark:text-white">
           {aiScore}
         </span>
-        <span className="mt-0.5 text-[10px] font-semibold tracking-wider uppercase text-slate-400">
+        <span className="mt-0.5 text-[10px] font-semibold tracking-wider uppercase text-slate-500 dark:text-slate-400">
           AI Score
         </span>
       </div>

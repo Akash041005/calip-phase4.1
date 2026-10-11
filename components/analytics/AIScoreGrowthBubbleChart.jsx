@@ -81,24 +81,24 @@ export default function AIScoreGrowthBubbleChart() {
   const data = chartData.length > 0 ? chartData : FALLBACK_BUBBLES;
 
   return (
-    <div className="relative w-full rounded-2xl border border-white/[0.08] bg-[#111318] p-5 sm:p-6 shadow-sm">
+    <div className="relative w-full rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm dark:border-white/[0.08] dark:bg-[#111318] transition-colors">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-white/[0.06] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 dark:border-white/[0.06] pb-4 transition-colors">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-white">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
               <Sparkles className="h-3.5 w-3.5" />
             </span>
-            <h2 className="text-[16px] font-bold text-white">
+            <h2 className="text-[16px] font-bold text-slate-900 dark:text-white transition-colors">
               AI Score vs. Growth Velocity Matrix
             </h2>
           </div>
-          <p className="mt-1 text-[12px] text-[#94a3b8]">
+          <p className="mt-1 text-[12px] text-slate-500 dark:text-[#94a3b8] transition-colors">
             Correlation between Calip AI algorithmic rating (0-100) and 30-day traction growth
           </p>
         </div>
 
-        <span className="rounded-md bg-white/[0.05] border border-white/[0.08] px-3 py-1 font-mono text-[11px] font-semibold text-white">
+        <span className="rounded-md bg-slate-100 border border-slate-200 px-3 py-1 font-mono text-[11px] font-semibold text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
           Bubble Size = Valuation
         </span>
       </div>
@@ -106,13 +106,13 @@ export default function AIScoreGrowthBubbleChart() {
       {/* Scatter Chart */}
       <div className="mt-4 h-[300px] w-full">
         {loading ? (
-          <div className="flex h-full items-center justify-center text-[12.5px] text-[#737d91]">
+          <div className="flex h-full items-center justify-center text-[12.5px] text-slate-400 dark:text-[#737d91]">
             Computing matrix…
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 15, right: 20, bottom: 15, left: -10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(100, 116, 139, 0.12)" />
               <XAxis
                 dataKey="aiScore"
                 type="number"
@@ -120,7 +120,7 @@ export default function AIScoreGrowthBubbleChart() {
                 unit=" pts"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#737d91", fontSize: 11, fontFamily: "monospace" }}
+                tick={{ fill: "#64748b", fontSize: 11, fontFamily: "monospace" }}
               />
               <YAxis
                 dataKey="growth"
@@ -129,7 +129,7 @@ export default function AIScoreGrowthBubbleChart() {
                 unit="%"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#737d91", fontSize: 11, fontFamily: "monospace" }}
+                tick={{ fill: "#64748b", fontSize: 11, fontFamily: "monospace" }}
               />
               <ZAxis dataKey="raisedValue" range={[80, 450]} />
               <Tooltip
@@ -137,18 +137,18 @@ export default function AIScoreGrowthBubbleChart() {
                   if (!active || !payload || !payload.length) return null;
                   const item = payload[0].payload;
                   return (
-                    <div className="rounded-xl border border-white/10 bg-[#111318] p-3 shadow-2xl backdrop-blur-md">
-                      <p className="text-[13px] font-bold text-white mb-1.5">{item.name}</p>
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:border-white/10 dark:bg-[#111318] transition-colors">
+                      <p className="text-[13px] font-bold text-slate-900 dark:text-white mb-1.5">{item.name}</p>
                       <div className="space-y-1 text-[12px] font-mono">
-                        <div className="flex items-center justify-between gap-4 text-sky-400">
+                        <div className="flex items-center justify-between gap-4 text-sky-600 dark:text-sky-400">
                           <span>AI Health Score:</span>
                           <span className="font-bold">{item.aiScore}/100</span>
                         </div>
-                        <div className="flex items-center justify-between gap-4 text-emerald-400">
+                        <div className="flex items-center justify-between gap-4 text-emerald-600 dark:text-emerald-400">
                           <span>Growth Rate:</span>
                           <span className="font-bold">+{item.growth}%</span>
                         </div>
-                        <div className="flex items-center justify-between gap-4 text-[#cbd5e1]">
+                        <div className="flex items-center justify-between gap-4 text-slate-700 dark:text-[#cbd5e1]">
                           <span>Valuation:</span>
                           <span className="font-bold">{formatCurrency(item.raisedValue)}</span>
                         </div>

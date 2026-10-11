@@ -67,20 +67,20 @@ export default function PortfolioChart() {
   const yTicks = [yMin, yMin + (yMax - yMin) / 4, yMin + (yMax - yMin) / 2, yMin + ((yMax - yMin) * 3) / 4, yMax];
 
   return (
-    <div className="h-[340px] w-full rounded-2xl border border-white/[0.08] bg-[#111318] shadow-sm">
+    <div className="h-[340px] w-full rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
       <div className="flex h-full flex-col p-[20px] sm:p-[24px]">
         <div className="mb-1">
-          <h2 className="text-[17px] font-semibold text-white">Net Invested Capital</h2>
-          <p className="mt-[2px] text-[13px] text-[#94a3b8]">Cumulative confirmed buys minus sells</p>
+          <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white">Net Invested Capital</h2>
+          <p className="mt-[2px] text-[13px] text-slate-500 dark:text-[#94a3b8]">Cumulative confirmed buys minus sells</p>
         </div>
 
         <div className="min-h-0 flex-1">
           {loading ? (
-            <div className="flex h-full items-center justify-center text-[13px] text-[#94a3b8]">
+            <div className="flex h-full items-center justify-center text-[13px] text-slate-500 dark:text-[#94a3b8]">
               Loading investment history...
             </div>
           ) : chartData.length === 0 ? (
-            <div className="flex h-full items-center justify-center px-4 text-center text-[13px] text-[#94a3b8]">
+            <div className="flex h-full items-center justify-center px-4 text-center text-[13px] text-slate-500 dark:text-[#94a3b8]">
               {error ? "Investment history could not be loaded." : "No investment transactions are available yet."}
             </div>
           ) : (
@@ -91,13 +91,13 @@ export default function PortfolioChart() {
             >
               <defs>
                 <linearGradient id="portfolioGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ffffff" stopOpacity={0.18} />
-                  <stop offset="100%" stopColor="#ffffff" stopOpacity={0} />
+                  <stop offset="0%" stopColor={isDark ? "#ffffff" : "#0f172a"} stopOpacity={isDark ? 0.18 : 0.12} />
+                  <stop offset="100%" stopColor={isDark ? "#ffffff" : "#0f172a"} stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid
                 strokeDasharray="4 4"
-                stroke="rgba(255, 255, 255, 0.06)"
+                stroke={isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.06)"}
                 vertical
                 horizontal
               />
@@ -105,13 +105,13 @@ export default function PortfolioChart() {
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#94a3b8", fontSize: 12 }}
+                tick={{ fill: isDark ? "#94a3b8" : "#64748b", fontSize: 12 }}
                 dy={6}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#94a3b8", fontSize: 12 }}
+                tick={{ fill: isDark ? "#94a3b8" : "#64748b", fontSize: 12 }}
                 tickFormatter={formatYAxis}
                 domain={[yMin, yMax]}
                 ticks={yTicks}
@@ -121,26 +121,26 @@ export default function PortfolioChart() {
                 type="monotone"
                 dataKey="value"
                 name="Net Invested Capital"
-                stroke="#ffffff"
+                stroke={isDark ? "#ffffff" : "#0f172a"}
                 strokeWidth={2}
                 fill="url(#portfolioGradient)"
                 dot={false}
                 isAnimationActive={false}
-                activeDot={{ r: 4, fill: "#ffffff", stroke: "#111318", strokeWidth: 2 }}
+                activeDot={{ r: 4, fill: isDark ? "#ffffff" : "#0f172a", stroke: isDark ? "#151824" : "#ffffff", strokeWidth: 2 }}
               />
               <Tooltip
                 formatter={(value) => `$ ${Number(value).toLocaleString("en-IN")}`}
-                cursor={{ stroke: "rgba(255, 255, 255, 0.2)", strokeWidth: 1 }}
+                cursor={{ stroke: isDark ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.15)", strokeWidth: 1 }}
                 contentStyle={{
-                  backgroundColor: "#111318",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  backgroundColor: isDark ? "#151824" : "#ffffff",
+                  border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0, 0, 0, 0.08)",
                   borderRadius: "10px",
-                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.6)",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
                   padding: "8px 12px",
                   whiteSpace: "nowrap",
                 }}
-                labelStyle={{ color: "#94a3b8", fontSize: 13 }}
-                itemStyle={{ color: "#ffffff", fontSize: 13 }}
+                labelStyle={{ color: isDark ? "#94a3b8" : "#64748b", fontSize: 13 }}
+                itemStyle={{ color: isDark ? "#ffffff" : "#0f172a", fontSize: 13 }}
               />
             </AreaChart>
           </ResponsiveContainer>

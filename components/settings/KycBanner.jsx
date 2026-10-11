@@ -6,20 +6,20 @@ export default function KycBanner() {
     <SettingsCard>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-2">
         <div className="flex items-center gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04]">
-            <Shield className="h-5 w-5 text-white" strokeWidth={1.5} />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 dark:border-white/[0.08] dark:bg-white/[0.04]">
+            <Shield className="h-5 w-5 text-slate-700 dark:text-white" strokeWidth={1.5} />
           </div>
 
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-[15px] font-semibold text-white">
+              <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
                 Identity Verification (KYC)
               </p>
-              <span className="rounded-md border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-400">
+              <span className="rounded-md border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-500 dark:text-amber-400">
                 Not Verified
               </span>
             </div>
-            <p className="mt-1 text-[13px] text-slate-400">
+            <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
               Verify your identity to unlock institutional limits and direct investment rounds.
             </p>
           </div>

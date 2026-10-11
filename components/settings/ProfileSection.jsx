@@ -9,7 +9,7 @@ import { truncateAddress } from "../../lib/format";
 import { updateUserProfile } from "../../lib/authApi";
 
 const editableInputClass =
-  "h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 text-[13.5px] text-white placeholder-slate-500 outline-none transition focus:border-white/30 focus:bg-white/[0.04]";
+  "h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-[13.5px] text-slate-900 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:bg-white dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white dark:placeholder-slate-500 dark:focus:border-white/30 dark:focus:bg-white/[0.04]";
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -102,8 +102,8 @@ function ProfileCard({ user, updateUser }) {
 
   return (
     <SettingsCard>
-      <div className="pb-4 border-b border-white/[0.08]">
-        <h2 className="text-[18px] font-bold text-white">
+      <div className="pb-4 border-b border-slate-200 dark:border-white/[0.08]">
+        <h2 className="text-[18px] font-bold text-slate-900 dark:text-white">
           Profile
         </h2>
       </div>
@@ -120,7 +120,7 @@ function ProfileCard({ user, updateUser }) {
 
       <div className="flex items-center gap-5 py-5">
         <div className="relative shrink-0">
-          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-white/[0.08] bg-[#0e1015]">
+          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-white/[0.08] dark:bg-[#0e1015]">
             {photoPreview || serverPhoto ? (
               <Image
                 src={photoPreview || serverPhoto}
@@ -130,7 +130,7 @@ function ProfileCard({ user, updateUser }) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <User className="h-7 w-7 text-white" strokeWidth={1.5} />
+              <User className="h-7 w-7 text-slate-700 dark:text-white" strokeWidth={1.5} />
             )}
           </div>
           <input
@@ -147,26 +147,26 @@ function ProfileCard({ user, updateUser }) {
               onClick={() => fileInputRef.current?.click()}
               disabled={saving}
               aria-label="Upload profile photo"
-              className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-white text-black transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-70"
+              className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {saving ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-black" strokeWidth={2} />
+                <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2} />
               ) : (
-                <Camera className="h-3.5 w-3.5 text-black" strokeWidth={2} />
+                <Camera className="h-3.5 w-3.5" strokeWidth={2} />
               )}
             </button>
           ) : (
-            <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-white">
-              <Camera className="h-3.5 w-3.5 text-white" strokeWidth={2} />
+            <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-slate-200 text-slate-700 dark:bg-white/20 dark:text-white">
+              <Camera className="h-3.5 w-3.5" strokeWidth={2} />
             </div>
           )}
         </div>
 
         <div className="min-w-0">
-          <p className="text-[16px] font-bold text-white">
+          <p className="text-[16px] font-bold text-slate-900 dark:text-white">
             {displayName}
           </p>
-          <p className="mt-1 text-[13px] text-slate-400">
+          <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
             {displayHandle}
           </p>
         </div>

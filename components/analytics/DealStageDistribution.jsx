@@ -50,24 +50,24 @@ export default function DealStageDistribution() {
   const chartData = data && data.length > 0 ? data : FALLBACK_STAGES;
 
   return (
-    <div className="relative w-full min-w-0 xl:max-w-[460px] rounded-2xl border border-white/[0.08] bg-[#111318] p-5 sm:p-6 shadow-sm">
+    <div className="relative w-full min-w-0 xl:max-w-[460px] rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm dark:border-white/[0.08] dark:bg-[#111318] transition-colors">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+      <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/[0.06] pb-4 transition-colors">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-white">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
               <PieIcon className="h-3.5 w-3.5" />
             </span>
-            <h2 className="text-[16px] font-bold text-white">
+            <h2 className="text-[16px] font-bold text-slate-900 dark:text-white transition-colors">
               Deal Stage Distribution
             </h2>
           </div>
-          <p className="mt-1 text-[12px] text-[#94a3b8]">
+          <p className="mt-1 text-[12px] text-slate-500 dark:text-[#94a3b8] transition-colors">
             Allocation across fundraising rounds
           </p>
         </div>
 
-        <span className="rounded-md bg-white/[0.05] border border-white/[0.08] px-2.5 py-0.5 text-[11px] font-semibold text-white">
+        <span className="rounded-md bg-slate-100 border border-slate-200 px-2.5 py-0.5 text-[11px] font-semibold text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
           5 Stages
         </span>
       </div>
@@ -86,32 +86,34 @@ export default function DealStageDistribution() {
                 innerRadius="65%"
                 outerRadius="92%"
                 paddingAngle={3}
-                stroke="#111318"
-                strokeWidth={3}
+                stroke="transparent"
+                strokeWidth={2}
               >
                 {chartData.map((entry) => (
                   <Cell key={entry.name} fill={entry.color} />
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value) => [`${value}%`, "Share"]}
-                contentStyle={{
-                  backgroundColor: "#111318",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  borderRadius: "12px",
-                  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
-                  padding: "8px 12px",
+                content={({ active, payload }) => {
+                  if (!active || !payload || !payload.length) return null;
+                  const item = payload[0];
+                  return (
+                    <div className="rounded-xl border border-slate-200 bg-white p-2.5 shadow-xl dark:border-white/10 dark:bg-[#111318] transition-colors">
+                      <p className="text-[12px] font-semibold text-slate-700 dark:text-slate-300">{item.name}</p>
+                      <p className="font-mono text-[13px] font-bold text-slate-900 dark:text-white">
+                        {item.value}% <span className="text-[11px] font-normal text-slate-500 font-sans">Share</span>
+                      </p>
+                    </div>
+                  );
                 }}
-                labelStyle={{ color: "#ffffff", fontWeight: 600, fontSize: 13 }}
-                itemStyle={{ color: "#ffffff", fontFamily: "monospace", fontSize: 13, fontWeight: 700 }}
               />
             </PieChart>
           </ResponsiveContainer>
 
           {/* Donut Center Label */}
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center">
-            <span className="font-mono text-[22px] font-bold text-white">100%</span>
-            <span className="text-[10px] uppercase tracking-widest text-[#737d91]">Pipeline</span>
+            <span className="font-mono text-[22px] font-bold text-slate-900 dark:text-white transition-colors">100%</span>
+            <span className="text-[10px] uppercase tracking-widest text-slate-400 dark:text-[#737d91] transition-colors">Pipeline</span>
           </div>
         </div>
 
@@ -124,11 +126,11 @@ export default function DealStageDistribution() {
                   className="h-2.5 w-2.5 shrink-0 rounded-full"
                   style={{ backgroundColor: entry.color, boxShadow: `0 0 8px ${entry.color}80` }}
                 />
-                <span className="text-[12.5px] font-medium text-[#cbd5e1]">
+                <span className="text-[12.5px] font-medium text-slate-700 dark:text-[#cbd5e1] transition-colors">
                   {entry.name}
                 </span>
               </div>
-              <span className="font-mono text-[12px] font-bold text-white sm:ml-auto">
+              <span className="font-mono text-[12px] font-bold text-slate-900 dark:text-white sm:ml-auto transition-colors">
                 {entry.value}%
               </span>
             </div>

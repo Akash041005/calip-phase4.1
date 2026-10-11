@@ -285,11 +285,199 @@
     - Configured active state (`bg-white text-zinc-950 font-bold border-white shadow-md`) and registered route detection for `/faq` in `resolveActivePage`.
     - Added highlighted "Help & Docs" pill to the mobile drawer.
 
+---
 
+### [2026-10-11 19:05:00] - Implement Institutional Light Theme for Markets Dashboard Prototype
+- **Author**: Vismay
+- **Components**: `app/globals.css`, `app/layout.jsx`, `app/dashboard/page.jsx`, `components/auth/ThemeProvider.jsx`, `components/dashboard/Navbar.jsx`, `components/auth/ConnectWalletButton.jsx`, `components/dashboard/TopTraderTicker.jsx`, `components/dashboard/DashboardHeader.jsx`, `components/market/MarketTerminal.jsx`
+- **Changes**:
+  - **CSS Design System & Root Tokens**:
+    - Configured clean light theme palette in `:root` (`--background: #f8fafc`, `--foreground: #090a0f`, elevated cards `--calip-card: #ffffff`, hairline borders `--calip-border: rgba(0, 0, 0, 0.08)`) while preserving obsidian tokens in `.dark`.
+    - Updated `.cl-glass-card` and `.cl-pill-active` utilities with dual light/dark styling.
+  - **Theme Toggle Persistence in ThemeProvider**:
+    - Updated `ThemeProvider.jsx` mount effect to respect stored `"light"` preference from `localStorage` without forcing dark mode reset.
+    - Updated `app/layout.jsx` body to dynamically adapt between `bg-[#f8fafc] text-slate-900` and dark mode.
+  - **High-Definition Light Theme Logo**:
+    - Created `public/caliplogo-dark-text.png` preserving identical violet diamond mark and crisp `#090a0f` typography with full alpha anti-aliasing.
+    - Configured `Navbar.jsx` with responsive logo switching (`hidden dark:block` for white logo, `block dark:hidden` for dark text logo).
+  - **Navigation Bar & Profile Hub**:
+    - Updated Navbar header to `bg-white/95 text-slate-900 border-slate-200/80` with dark text, high-contrast segmented active pills (`bg-slate-900 text-white`), and emerald FAQ badge.
+    - Updated `ConnectWalletButton.jsx` merged account chip and dropdown menu with light card surfaces, slate typography, and seamless theme toggle.
+  - **Top Trader Ticker**:
+    - Styled ticker tape in light mode with `bg-slate-100/90 border-slate-200/80 text-slate-800`, light avatar badges, slate handles, and emerald profit labels.
+  - **Markets Dashboard Header & KPI Cards**:
+    - Upgraded 4 KPI cards (Total FDV, 24H Volume, Active Tokens, 24H Whale Activity) to crisp elevated white cards (`bg-white border-slate-200/90 shadow-sm`), dark slate values, and high-contrast green badges.
+  - **Market Terminal & Token Table**:
+    - Modernized 4 Focus Stream cards (Trending, Just Graduated, Gainers, Live Trades) with white cards, dark slate symbols, and legible deltas.
+    - Upgraded toolbar segmented tabs, instant search bar, 24h timeframe selector, and table headers (`bg-slate-50/90 text-slate-500 border-slate-200/80`).
+    - Formatted token rows, sparklines, range bars, watchlist bookmarks, and pagination controls with institutional light mode styling.
 
+---
 
+### [2026-10-11 20:15:00] - Comprehensive Platform-Wide Institutional Light Theme Rollout Across Every Page
+- **Author**: Vismay
+- **Component**: Entire Platform (`app/*`, `components/*`)
+- **Changes**:
+  - **Universal Dual-Responsive Branding & Footer**:
+    - Upgraded `components/dashboard/Footer.jsx` with institutional light mode surface (`bg-[#f8fafc] border-t border-slate-200 text-slate-800 dark:bg-[#090a0f] dark:border-white/[0.08] dark:text-white`), dual logo (`caliplogo-dark-text.png` in light mode, `caliplogo.png` in dark mode), and unified social/navigation links.
+    - Appended `<Footer />` across all application pages that previously lacked it.
+  - **Marketplace & Token Discovery (`/marketplace`, `/marketplace/[id]`, `/marketplace/create`)**:
+    - `app/marketplace/page.jsx`: Adaptive canvas `bg-[#f8fafc] dark:bg-[#090a0f]`, stats kicker cards, filter buttons, and search inputs.
+    - `components/marketplace/TokenCard.jsx` & `RecentlyCreated.jsx`: Upgraded card surfaces to `bg-white border-slate-200/90 shadow-sm dark:bg-[#111318]`, dark slate symbols, and legible ROI badges.
+    - `app/marketplace/[id]/page.jsx` & `components/marketplace/TokenDetail.jsx`: Adaptive token identity cards, performance chart, metrics panel, and `<Footer />`.
+    - `components/marketplace/TokenTradePanel.jsx`: Dual-mode buy/sell toggle tabs, adaptive balance indicators, inputs, and order value summary.
+    - `app/marketplace/create/page.jsx` & `components/founders/ApplicationForm.jsx`: Converted all form inputs, selects, text areas, and submission cards into crisp dual-mode components with slate-50 backgrounds and slate-900 typography.
+  - **Auction Suite (`/auction/live`, `/auction/upcoming`, `/auction/closed`)**:
+    - `components/auction/AuctionCard.jsx`: Adaptive white card surfaces (`bg-white border-slate-200/90 shadow-sm dark:bg-[#111318]`), dual-theme progress bars, bid charts, and action buttons.
+    - `components/auction/AuctionFilterTabs.jsx`: Crisp segmented pills for Live / Upcoming / Closed states.
+    - All auction views equipped with responsive headers, empty states, and `<Footer />`.
+  - **Analytics Suite (`/analytics`, `/analytics/comparison`)**:
+    - `app/analytics/page.jsx` & `app/analytics/comparison/page.jsx`: Converted root containers to `bg-[#f8fafc] dark:bg-[#090a0f]` with `<Footer />`.
+    - `components/analytics/AnalyticsHeader.jsx`: High-contrast segmented time and metric tabs.
+    - Chart modules (`TotalFundingSector`, `DealStageDistribution`, `MonthlyActivity`, `AIScoreGrowthBubbleChart`, `StartupComparisonTable`): Adaptive card containers, Recharts axis tick colors, grid lines, and tooltips.
+  - **Signals & Trends (`/trending`)**:
+    - `components/trending-news/TrendingNews.jsx`: Dual-mode canvas with `<Footer />`.
+    - `components/trending-news/CategoryTabs.jsx`: Adaptive filter pills.
+    - `components/trending-news/FeaturedCard.jsx` & `NewsListItem.jsx`: Crisp elevated card surfaces, high-contrast typography, and source attribution badges.
+  - **Founders Portal (`/founders`)**:
+    - Upgraded `FoundersHero.jsx`, `WhyRaiseOnCalip.jsx`, `EligibilityCriteria.jsx`, and `HowItWorks.jsx` with light mode contrast, adaptive cards, and marketplace bridge CTA.
+  - **FAQ Suite (`/faq`)**:
+    - `app/faq/page.jsx` & `components/faq/FAQAccordion.jsx`: Adaptive search bar, category filter pills, accordion items with rotating indicator, CTA card, and `<Footer />`.
+  - **Performance Summary (`/performance-summary`)**:
+    - `components/performance-summary/PerformanceSummary.jsx`: Dual-mode canvas, summary cards, and `<Footer />`.
+    - `MonthlyReturnsBarChart.jsx`: Adaptive bar fills (`#0f172a` in light, `#ffffff` in dark), custom tooltip, and grid styling.
+    - `AIRecommendationsTable.jsx`: Clean light table rows with slate-900 typography and emerald badges.
+  - **My Startups (`/my-startups`)**:
+    - Dual-mode card grid, status tags, watchlist toggles, delete confirmation modals, and `<Footer />`.
+  - **Company Insights (`/insights/[id]`)**:
+    - Adaptive company profile canvas, loader, and `<Footer />`.
+  - **Pro Membership (`/pro`)**:
+    - `components/pro/`: Dual-mode hero, billing toggle (`PricingToggle`), and tier cards (`PricingCard`) with high-contrast text and benefit checklists.
+  - **User Profile & Activity (`/profile`)**:
+    - `components/profile/UserInsights.jsx`: Adaptive command banner, KPI counters, segmented tabs, and `<Footer />`.
+  - **Settings Suite (`/settings`, `/setting`)**:
+    - `app/settings/page.jsx`: Adaptive layout with `<Footer />`.
+    - `components/settings/SettingsCard.jsx`: Standardized base card surface (`bg-white border-slate-200/90 dark:bg-[#111318] dark:border-white/[0.08]`).
+    - `ProfileSection.jsx`: Dual-mode input styling (`border-slate-200 bg-slate-50 text-slate-900 dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white`).
+    - `SecuritySection.jsx`, `PrivacySection.jsx`, `NotificationsSection.jsx`, `ActiveSessions.jsx`, `ConnectedWallets.jsx`, `KycBanner.jsx`, `DeleteAccount.jsx`: Clean dual-mode typography, borders, and controls.
+    - `AppearanceSection.jsx`: Live light & dark theme preview cards with instant toggle action.
+  - **Global Header & Navigation Components**:
+    - `components/dashboard/Navbar.jsx`: Preserved 100% functionality of all global & personal navigation pills, dual logos, and mobile drawer.
+    - `components/dashboard/NotificationBell.jsx` & `NotificationDropdown.jsx`: Adaptive notification bell button, unread count pill, and full dropdown popover with high-contrast read/unread styling and mark-all-read action.
+  - **Quality & Static Analysis Verification**:
+    - Ran full project lint check via `npm run lint` and resolved all Next.js/React 19 rule violations:
+      - Resolved `@next/next/no-html-link-for-pages` in `app/founders/page.jsx` and `components/founders/ApplicationForm.jsx` by converting `<a>` tags to `<Link />`.
+      - Resolved `react-hooks/set-state-in-effect` cascading render issues in `components/landing/LandingPage.jsx`, `components/auction/AuctionCard.jsx`, and `components/marketplace/TokenTradePanel.jsx` by adjusting state during render and using microtask callbacks.
+---
 
+### [2026-10-11 20:32:00] - Harmonize Active Pill Behavior Across Signals, Performance, and My Startups
+- **Author**: Vismay
+- **Component**: `components/dashboard/Navbar.jsx`
+- **Changes**:
+  - **Signals Navigation Route Key Alignment**:
+    - Changed `globalPlatformNav` key for Signals from `"trending"` to `"signals"`, matching `activePage="signals"` emitted by `TrendingNews.jsx`.
+    - Updated `resolveActivePage` to symmetrically map both `"trending"` and `"signals"` to `"signals"`.
+  - **Harmonized Active Pill Geometry & Color**:
+    - Upgraded `userPillActiveClass` to match `activePillClass` (`bg-slate-900 border border-slate-900 text-white dark:bg-white/[0.08] dark:border-white/[0.12] dark:text-white shadow-sm`), replacing the previously pale grey surface.
+    - Synchronized dimensions across all navigation items to consistent `h-[32px] px-3 text-[12.5px] font-medium`.
+    - Made icon colors inside active pills high-contrast white (`text-white`) when selected.
+    - Enabled `xl:flex` visibility breakpoint so Performance and My Startups remain directly accessible across laptops and wide screens.
+    - Synchronized mobile drawer active pills to the same solid black state.
 
+---
 
+### [2026-10-11 20:58:00] - Fix Startup Details & Profile Theme Flaws, and Elevate Dark Mode Island Contrast
+- **Author**: Vismay
+- **Components**:
+  - `app/globals.css`
+  - `components/overview/TokenDetailOverview.jsx`
+  - `components/profile/UserInsights.jsx`
+  - `components/overview/CompanyCard.jsx`
+  - `components/overview/WatchlistAfter.jsx`
+- **Changes**:
+  - **Global Dark Mode Island Separation & Elevation**:
+    - Addressed low contrast in Dark Mode where the deep background (`#08090d`) and card islands previously blended into a flat single-black appearance.
+    - Upgraded `.dark` card tokens: `--calip-card` to `#151824`, `--calip-surface` to `#0e111c`, `--calip-card-border` and `--calip-border` to `rgba(255, 255, 255, 0.12)`.
+    - Enhanced `.dark .cl-glass-card` with elevated background `#151824`, `rgba(255, 255, 255, 0.12)` border, and ambient rim shadow `0 4px 24px -2px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05)`.
+    - Added global dark surface rules ensuring all cards and insets pop distinctly across the entire application.
+  - **Startup Details (`/insights/[id]`) Theme Overhaul**:
+    - Fully fixed `components/overview/TokenDetailOverview.jsx` which previously rendered pitch-black cards on light mode and invisible white-on-white header text.
+    - Asset Header: upgraded startup title to `text-slate-900 dark:text-white`, back button to `border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-white/[0.12] dark:bg-[#151824]`, and action buttons to dual-theme styling.
+    - Trades Feed: converted from hardcoded dark container to `border-slate-200/90 bg-white dark:border-white/[0.12] dark:bg-[#151824]` with clear typography.
+    - Candlestick Chart: adaptive header price, zoom controls (`bg-slate-100 dark:bg-[#0e111c]`), timeframe buttons, and currency selectors, keeping the dedicated high-contrast trading canvas backdrop.
+    - About, Team, Allocation Donut, Supply Breakdown, and Forum sections upgraded to dual-adaptive cards with proper text contrast and borders.
+    - Route & Market Overview sidebar cards upgraded with crisp dual-theme styling and interactive hover states.
+  - **User Profile (`/profile`) Theme Overhaul**:
+    - Upgraded `components/profile/UserInsights.jsx` summary cards ("Your Watched Companies" and "My Startups") from pitch-black boxes to `border-slate-200/90 bg-white shadow-sm dark:border-white/[0.12] dark:bg-[#151824]`.
+    - Harmonized all 5 profile tabs (Command Overview, Performance, Watchlist, My Startups, Marketplace Activity) with high-contrast typography, interactive items, and empty state illustrations.
+    - Synchronized `CompanyCard.jsx` and `WatchlistAfter.jsx` for seamless multi-theme presentation.
+  - **Verification**:
+    - Verified full repository via `npm run lint` (exited with code 0 and 0 errors).
+
+---
+
+### [2026-10-11 21:22:00] - Fix Performance Summary, Application Form File Inputs, and Global Button Contrast
+- **Author**: Vismay
+- **Components**:
+  - `app/globals.css`
+  - `components/dashboard/SectorAllocation.jsx`
+  - `components/dashboard/PortfolioChart.jsx`
+  - `components/dashboard/RecentActivity.jsx`
+  - `components/dashboard/AIRecommendations.jsx`
+  - `components/dashboard/AIRecommendationsActivated.jsx`
+  - `components/performance-summary/MonthlyReturnsBarChart.jsx`
+  - `components/performance-summary/AIRecommendationsTable.jsx`
+  - `components/founders/ApplicationForm.jsx`
+  - `components/marketplace/ListingCard.jsx`
+  - `components/marketplace/TradeHistory.jsx`
+  - `components/marketplace/CreateListingModal.jsx`
+  - `components/marketplace/BuyModal.jsx`
+  - `components/pro/UpgradeModal.jsx`
+  - `components/insights/InsightsHeader.jsx`
+  - `components/insights/CompanyCard.jsx`
+  - `components/insights/InvestmentSummary.jsx`
+  - `components/insights/MultiDimensionScore.jsx`
+  - `components/insights/RevenueForecast.jsx`
+- **Changes**:
+  - **Global Button Contrast (`.cl-btn-primary`, `.cl-btn-secondary`, `.cl-card-interactive`)**:
+    - Resolved light mode invisible primary buttons: set light mode `.cl-btn-primary` to solid dark slate (`background: #0f172a; color: #ffffff !important; border: 1px solid #0f172a;`) and dark mode to crisp white (`background: #ffffff; color: #090a0f !important;`).
+    - Upgraded `.cl-btn-secondary` to dual-theme with proper border and text contrast in both themes.
+    - Updated `.cl-card-interactive:hover` with light mode shadow and border tokens alongside dark mode elevation.
+  - **Performance Summary (`/performance summary`) Dual-Theme Restoration**:
+    - Converted `SectorAllocation.jsx` and `PortfolioChart.jsx` from hardcoded `#111318` boxes to `border border-slate-200/90 bg-white shadow-sm dark:border-white/[0.12] dark:bg-[#151824]`.
+    - Harmonized Pie chart center counter, sector list rows, and tooltips with adaptive light/dark mode text and borders.
+    - Upgraded `MonthlyReturnsBarChart.jsx` and `AIRecommendationsTable.jsx` to elevated `#151824` dark cards and clean white light cards.
+  - **Marketplace Application Form (`/marketplace/create` & `/founders`)**:
+    - Replaced bright purple/indigo file button styling (`file:bg-[#4f46e5]`) with monochromatic luxury fintech buttons (`file:bg-slate-900 file:text-white dark:file:bg-white dark:file:text-slate-950`).
+    - Elevated "Submit Application" button contrast and responsive states.
+  - **Marketplace & Modals Dual-Theme Integration**:
+    - Upgraded `ListingCard.jsx` and `TradeHistory.jsx` to dual-theme adaptive cards with high-contrast headers, status badges, and typography.
+    - Converted `CreateListingModal.jsx`, `BuyModal.jsx`, and `UpgradeModal.jsx` to dual-theme modal overlays with adaptive backgrounds, inputs, and close buttons.
+  - **AI Insights Dual-Theme Upgrades**:
+    - Converted `CompanyCard.jsx`, `InsightsHeader.jsx`, `InvestmentSummary.jsx`, `MultiDimensionScore.jsx`, and `RevenueForecast.jsx` to dual-theme aware cards, radar charts, area gradients, and report export triggers.
+  - **Verification**:
+    - Validated entire codebase with `npm run lint` (0 errors, 28 warnings).
+
+---
+
+### [2026-10-11 22:01:00] - Fix Startup Details Candlestick Chart Light Theme & Mock Token Fallback
+- **Author**: Vismay
+- **Components**:
+  - `lib/tradingApi.js`
+  - `components/overview/TokenDetailOverview.jsx`
+- **Changes**:
+  - **Graceful OHLC, Supply, and Trades Fallback for Mock & Unpaired Tokens**:
+    - Resolved chart breaking with `"Could not load candles from the backend."` and `$0.000000` price on mock startup routes (such as `/insights/mock nova pay`):
+    - In `lib/tradingApi.js`, updated `getTokenOHLC` with deterministic fallback generator (`mockCandles`) scaled to realistic token price levels and timestamps.
+    - Updated `getTokenSupply` and `getTokenTrades` with clean fallback allocations and initial trades when backend calls fail or tokens lack live market pairs.
+  - **Candlestick Chart Viewport Dual-Theme Integration**:
+    - In `TokenDetailOverview.jsx`, converted the chart viewport from a hardcoded pitch-black box (`bg-[#090b11]`) to dual-theme adaptive background (`bg-slate-50 dark:bg-[#090b11] border-slate-200 dark:border-white/[0.08]`).
+    - Connected `useTheme` (`isDark`) directly to canvas drawing routines:
+      - Adaptive grid lines: subtle slate in light mode (`rgba(15, 23, 42, 0.06)`), subtle white in dark mode.
+      - Adaptive price axis typography: high-contrast slate `#64748b` in light mode, `#5e6f85` in dark mode.
+      - Adaptive crosshairs, price tags, and date hover pills.
+      - Adaptive dynamic OHLC top bar text (`text-slate-900 dark:text-white`).
+  - **Verification**:
+    - Validated entire repository with `npm run lint` (exited with code 0, 0 errors).
 
 

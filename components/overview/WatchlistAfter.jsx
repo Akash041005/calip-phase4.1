@@ -108,20 +108,20 @@ export default function WatchlistAfter() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#08090d] dark:text-[#f8fafc] transition-colors">
       <Navbar activePage="dashboard" />
 
       <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="pt-6 border-b border-white/[0.08] pb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div className="pt-6 border-b border-slate-200 dark:border-white/[0.08] pb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <p className="cl-kicker-label">
               <span className="cl-mint-dot" />
               Saved Portfolios
             </p>
-            <h1 className="mt-2 text-[26px] sm:text-[32px] font-bold leading-tight text-white">
+            <h1 className="mt-2 text-[26px] sm:text-[32px] font-bold leading-tight text-slate-900 dark:text-white">
               Watchlist
             </h1>
-            <p className="mt-1 text-[14px] text-[#94a3b8]">
+            <p className="mt-1 text-[14px] text-slate-500 dark:text-[#94a3b8]">
               Track your saved companies, liquidity movements, and stay updated on auction activity.
             </p>
           </div>
@@ -137,17 +137,17 @@ export default function WatchlistAfter() {
         </div>
 
         {actionError && (
-          <div className="mt-4 flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-rose-400 text-[13.5px]">
+          <div className="mt-4 flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-rose-500 dark:text-rose-400 text-[13.5px]">
             <X className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2} />
             <p>{actionError}</p>
           </div>
         )}
 
         {loading ? (
-          <div className="mt-8 text-center text-[13px] text-[#94a3b8]">Loading watchlist…</div>
+          <div className="mt-8 text-center text-[13px] text-slate-500 dark:text-[#94a3b8]">Loading watchlist…</div>
         ) : startups.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-white/[0.08] bg-[#111318] p-12 text-center text-[#94a3b8]">
-            <p className="text-[15px] font-semibold text-white">No startups in your watchlist</p>
+          <div className="mt-8 rounded-2xl border border-slate-200/90 bg-white dark:border-white/[0.12] dark:bg-[#151824] p-12 text-center text-slate-500 dark:text-[#94a3b8] shadow-sm">
+            <p className="text-[15px] font-semibold text-slate-900 dark:text-white">No startups in your watchlist</p>
             <p className="mt-1 text-[13px]">Add startups to monitor their real-time performance.</p>
           </div>
         ) : (
@@ -166,43 +166,43 @@ export default function WatchlistAfter() {
         ariaLabel="Add companies to watchlist"
       >
         <div
-          className="w-full max-w-[560px] rounded-2xl border border-white/[0.08] bg-[#111318] p-6 shadow-2xl text-white"
+          className="w-full max-w-[560px] rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl text-slate-900 dark:border-white/[0.12] dark:bg-[#151824] dark:text-white"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between">
-            <h2 className="text-[17px] font-bold text-white">
+            <h2 className="text-[17px] font-bold text-slate-900 dark:text-white">
               Add companies to watchlist
             </h2>
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.05] text-[#94a3b8] hover:text-white"
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-600 hover:text-slate-900 dark:border-white/[0.08] dark:bg-white/[0.05] dark:text-[#94a3b8] dark:hover:text-white transition"
               aria-label="Close"
             >
               <X className="h-4 w-4" strokeWidth={2} />
             </button>
           </div>
 
-          <div className="mt-4 flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[#0e1015] px-3">
-            <Search className="h-4 w-4 text-[#94a3b8]" strokeWidth={2} />
+          <div className="mt-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 dark:border-white/[0.08] dark:bg-[#0e111c]">
+            <Search className="h-4 w-4 text-slate-400 dark:text-[#94a3b8]" strokeWidth={2} />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search startups by name..."
-              className="h-[40px] w-full bg-transparent text-[13.5px] text-white placeholder:text-[#94a3b8] outline-none"
+              className="h-[40px] w-full bg-transparent text-[13.5px] text-slate-900 placeholder:text-slate-400 dark:text-white dark:placeholder:text-[#94a3b8] outline-none"
             />
           </div>
 
           <div className="mt-4 max-h-[320px] overflow-y-auto" data-lenis-prevent>
             {!query.trim() ? (
-              <p className="py-8 text-center text-[13px] text-[#94a3b8]">
+              <p className="py-8 text-center text-[13px] text-slate-500 dark:text-[#94a3b8]">
                 Type to search for startups
               </p>
             ) : searching ? (
-              <p className="py-8 text-center text-[13px] text-[#94a3b8]">Searching…</p>
+              <p className="py-8 text-center text-[13px] text-slate-500 dark:text-[#94a3b8]">Searching…</p>
             ) : results.length === 0 ? (
-              <p className="py-8 text-center text-[13px] text-[#94a3b8]">
+              <p className="py-8 text-center text-[13px] text-slate-500 dark:text-[#94a3b8]">
                 No startups found
               </p>
             ) : (
@@ -211,17 +211,17 @@ export default function WatchlistAfter() {
                 return (
                   <div
                     key={startup._id}
-                    className="flex items-center justify-between border-b border-white/[0.06] py-3"
+                    className="flex items-center justify-between border-b border-slate-100 dark:border-white/[0.06] py-3"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-[36px] w-[36px] items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-[14px] font-semibold text-white">
+                      <div className="flex h-[36px] w-[36px] items-center justify-center rounded-lg bg-slate-100 border border-slate-200 text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] text-[14px] font-semibold dark:text-white">
                         {startup.startupName?.[0]?.toUpperCase() ?? "?"}
                       </div>
                       <div>
-                        <p className="text-[13.5px] font-semibold text-white">
+                        <p className="text-[13.5px] font-semibold text-slate-900 dark:text-white">
                           {startup.startupName ?? "Unknown"}
                         </p>
-                        <p className="text-[12px] text-[#94a3b8]">
+                        <p className="text-[12px] text-slate-500 dark:text-[#94a3b8]">
                           {startup.industrySector ?? "N/A"}
                         </p>
                       </div>
@@ -232,7 +232,7 @@ export default function WatchlistAfter() {
                       disabled={isAdded}
                       className={`flex h-[32px] items-center gap-1.5 rounded-lg px-3 text-[12.5px] font-semibold transition-all ${
                         isAdded
-                          ? "border border-white/[0.08] bg-white/[0.04] text-[#94a3b8]"
+                          ? "border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-[#94a3b8]"
                           : "cl-btn-primary"
                       }`}
                     >
