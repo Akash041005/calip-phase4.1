@@ -29,13 +29,13 @@ export default function SettingsToggle({
       aria-label="Toggle setting"
       aria-disabled={disabled}
       onClick={handleClick}
-      className={`relative h-[24px] w-[47px] shrink-0 rounded-full transition-colors duration-200 ${
+      className={`relative h-[24px] w-[46px] shrink-0 rounded-full transition-colors duration-200 ${
         disabled ? "cursor-not-allowed opacity-60" : ""
-      } ${on ? "bg-[#6B54F3]" : "bg-[#d1d5db] dark:bg-[#2a2e3e]"}`}
+      } ${on ? "bg-white" : "bg-white/20"}`}
     >
       <span
-        className={`absolute top-[2px] h-[20px] w-[20px] rounded-full bg-white transition-all duration-200 ${
-          on ? "left-[25px]" : "left-[2px]"
+        className={`absolute top-[2px] h-[20px] w-[20px] rounded-full transition-all duration-200 ${
+          on ? "left-[24px] bg-black" : "left-[2px] bg-white"
         }`}
       />
     </button>

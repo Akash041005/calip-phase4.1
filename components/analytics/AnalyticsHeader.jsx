@@ -1,31 +1,53 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BarChart3, GitCompare, Sparkles, TrendingUp, Layers } from "lucide-react";
 
 export default function AnalyticsHeader() {
+  const pathname = usePathname();
+  const isComparison = pathname?.includes("/comparison");
+
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:items-start justify-between gap-4">
+    <div className="flex flex-col gap-5 border-b border-slate-200 dark:border-white/[0.06] pb-6 sm:flex-row sm:items-end sm:justify-between transition-colors">
+      {/* Title & Kicker */}
       <div>
-        <h1 className="text-[24px] font-semibold leading-[30px] text-black dark:text-white">
-          Analytics
+        <p className="cl-kicker-label flex items-center gap-2">
+          <span className="cl-mint-dot" />
+          On-Chain Intelligence & Analytics
+        </p>
+        <h1 className="mt-2 text-[30px] font-bold tracking-tight text-slate-900 dark:text-white sm:text-[38px] leading-tight transition-colors">
+          Market & Ecosystem Analytics
         </h1>
-        <p className="mt-[5px] text-[14px] leading-[21px] text-[#4b5563] dark:text-[#9ca3af]">
-          Deep-dive analytics: startup comparisons, industry trends, and funding heatmaps.
+        <p className="mt-1.5 max-w-2xl text-[13.5px] leading-relaxed text-slate-600 dark:text-[#a6adbf] transition-colors">
+          Deep-dive funding heatmaps, deal stage allocation, historical activity, and AI-scored startup comparisons across the Calip ecosystem.
         </p>
       </div>
 
-      <div className="mt-[16px] flex items-center gap-[10px]">
+      {/* Segmented Control Navigation */}
+      <div className="flex items-center gap-1 p-1 rounded-xl border border-slate-200 bg-white shadow-xs dark:border-white/[0.08] dark:bg-[#0e1015] sm:shrink-0 transition-colors">
         <Link
           href="/analytics"
-          className="flex h-[34px] w-[110px] items-center justify-center rounded-[12px] bg-[#7a49e8] text-[13px] text-white shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)]"
+          className={`inline-flex h-[32px] items-center gap-2 rounded-lg px-3.5 text-[12.5px] font-semibold transition-all select-none ${
+            !isComparison
+              ? "bg-slate-900 text-white shadow-sm dark:bg-white dark:text-black"
+              : "text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+          }`}
         >
-          Overview
+          <BarChart3 className="h-3.5 w-3.5" strokeWidth={2} />
+          <span>Overview</span>
         </Link>
+
         <Link
           href="/analytics/comparison"
-          className="flex h-[34px] w-[110px] items-center justify-center rounded-[12px] border border-[#e5e7eb] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] text-[13px] text-[#4b5563] dark:text-[#9ca3af] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)]"
+          className={`inline-flex h-[32px] items-center gap-2 rounded-lg px-3.5 text-[12.5px] font-semibold transition-all select-none ${
+            isComparison
+              ? "bg-slate-900 text-white shadow-sm dark:bg-white dark:text-black"
+              : "text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+          }`}
         >
-          Comparison
+          <GitCompare className="h-3.5 w-3.5" strokeWidth={2} />
+          <span>Comparison</span>
         </Link>
       </div>
     </div>

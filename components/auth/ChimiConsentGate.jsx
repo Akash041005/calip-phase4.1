@@ -16,9 +16,10 @@ function subscribeStorage(callback) {
 
 function getConsentSnapshot() {
   try {
-    return localStorage.getItem(CONSENT_STORAGE_KEY) === "true";
+    const val = localStorage.getItem(CONSENT_STORAGE_KEY);
+    return val !== "false";
   } catch {
-    return false;
+    return true;
   }
 }
 
@@ -77,9 +78,9 @@ export default function ChimiConsentGate({ children }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-[#070a10] px-4 py-8">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-[#090a0f] px-4 py-8">
       {/* Subtle ambient light around Chimi only */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#6366f1]/10 blur-[80px]" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[320px] w-[320px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.03] blur-[80px]" />
 
       <div className="relative flex w-full max-w-[420px] flex-col items-center text-center">
         {/* Chimi — the visual focus; stays through the exit sequence */}
@@ -121,13 +122,13 @@ export default function ChimiConsentGate({ children }) {
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="flex w-full flex-col items-center"
             >
-              <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.28em] text-[#818cf8]">
+              <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.28em] text-emerald-400">
                 Chimi
               </p>
               <h1 className="mt-2 text-[26px] font-extrabold tracking-tight text-white sm:text-[30px]">
                 Welcome to Calip.
               </h1>
-              <p className="mt-2 max-w-[320px] text-[14px] leading-relaxed text-[#94a3b8]">
+              <p className="mt-2 max-w-[320px] text-[14px] leading-relaxed text-slate-400">
                 Discover startups. Track what matters. Decide for yourself.
               </p>
 
@@ -145,21 +146,21 @@ export default function ChimiConsentGate({ children }) {
                   }}
                   animate={isChecked ? { scale: [1, 1.25, 1] } : { scale: 1 }}
                   transition={{ duration: 0.25 }}
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-[6px] border transition-colors duration-200 ${
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-colors duration-200 ${
                     isChecked
-                      ? "border-[#6366f1] bg-[#6366f1] text-white"
-                      : "border-[#334155] bg-transparent hover:border-[#6366f1]"
+                      ? "border-emerald-400 bg-emerald-400 text-black font-bold"
+                      : "border-white/20 bg-transparent hover:border-white/40"
                   }`}
                 >
                   {isChecked && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
                 </motion.span>
-                <span className="text-[12.5px] leading-snug text-[#cbd5e1]">
+                <span className="text-[12.5px] leading-snug text-slate-300">
                   I understand and agree to the applicable Terms, Privacy Policy and Risk
                   Disclaimers.{" "}
                   <button
                     type="button"
                     onClick={() => setActiveLegal("terms")}
-                    className="font-semibold text-[#818cf8] underline underline-offset-2 hover:text-[#a5b4fc]"
+                    className="font-semibold text-white underline underline-offset-2 hover:text-emerald-400"
                   >
                     Terms
                   </button>
@@ -167,7 +168,7 @@ export default function ChimiConsentGate({ children }) {
                   <button
                     type="button"
                     onClick={() => setActiveLegal("privacy")}
-                    className="font-semibold text-[#818cf8] underline underline-offset-2 hover:text-[#a5b4fc]"
+                    className="font-semibold text-white underline underline-offset-2 hover:text-emerald-400"
                   >
                     Privacy
                   </button>
@@ -175,7 +176,7 @@ export default function ChimiConsentGate({ children }) {
                   <button
                     type="button"
                     onClick={() => setActiveLegal("risk")}
-                    className="font-semibold text-[#818cf8] underline underline-offset-2 hover:text-[#a5b4fc]"
+                    className="font-semibold text-white underline underline-offset-2 hover:text-emerald-400"
                   >
                     Risks
                   </button>
@@ -186,10 +187,10 @@ export default function ChimiConsentGate({ children }) {
                 type="button"
                 disabled={!isChecked}
                 onClick={handleEnterCalip}
-                className={`mt-5 inline-flex h-[46px] w-full items-center justify-center rounded-[12px] text-[14px] font-bold transition-all duration-200 sm:w-[240px] ${
+                className={`mt-5 inline-flex h-[46px] w-full items-center justify-center rounded-xl text-[14px] font-bold transition-all duration-200 sm:w-[240px] ${
                   isChecked
-                    ? "bg-[#6366F1] text-white shadow-[0_4px_24px_rgba(99,102,241,0.4)] hover:bg-[#5558e3]"
-                    : "cursor-not-allowed border border-[#222c40] bg-transparent text-[#64748b]"
+                    ? "cl-btn-primary"
+                    : "cursor-not-allowed border border-white/10 bg-transparent text-slate-500"
                 }`}
               >
                 Enter Calip
@@ -216,7 +217,7 @@ export default function ChimiConsentGate({ children }) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-[440px] rounded-[16px] border border-[#222b3d] bg-[#0d121c] p-6 text-slate-200"
+              className="w-full max-w-[440px] rounded-2xl border border-white/[0.08] bg-[#111318] p-6 text-slate-200 shadow-2xl"
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-[15px] font-bold text-white">
@@ -226,19 +227,19 @@ export default function ChimiConsentGate({ children }) {
                   type="button"
                   onClick={() => setActiveLegal(null)}
                   aria-label="Close"
-                  className="rounded-full p-1 text-[#94a3b8] hover:bg-[#1a2233] hover:text-white"
+                  className="rounded-full p-1 text-slate-400 hover:bg-white/5 hover:text-white"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
-              <p className="mt-3 text-[13px] leading-relaxed text-[#94a3b8]">
+              <p className="mt-3 text-[13px] leading-relaxed text-slate-400">
                 {LEGAL_COPY[activeLegal].body}
               </p>
               <div className="mt-4 text-right">
                 <button
                   type="button"
                   onClick={() => setActiveLegal(null)}
-                  className="rounded-[8px] bg-[#6366F1] px-4 py-1.5 text-[12px] font-bold text-white hover:bg-[#5558e3]"
+                  className="cl-btn-primary px-4 py-1.5 text-[12px] font-bold"
                 >
                   Understood
                 </button>

@@ -29,17 +29,17 @@ export default function DeleteAccount() {
   };
 
   return (
-    <SettingsCard className="bg-[#6450ea]">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-[35px] py-[20px]">
+    <SettingsCard className="border-rose-200 bg-rose-50/40 dark:border-rose-500/20 dark:bg-[#111318]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-2">
         <div>
-          <p className="text-[14px] sm:text-[16px] font-semibold leading-none text-[#e9edf6]">
-            Delete account
+          <p className="text-[16px] font-semibold text-slate-900 dark:text-white">
+            Delete Account
           </p>
-          <p className="mt-[6px] text-[12px] sm:text-[14px] leading-none text-white">
-            Permanently delete your account and all data
+          <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
+            Permanently delete your account and all associated trading data.
           </p>
           {error && (
-            <p className="mt-[6px] text-[12px] leading-none text-[#ffd0d8]">
+            <p className="mt-2 text-[12px] text-rose-400">
               {error}
             </p>
           )}
@@ -49,10 +49,10 @@ export default function DeleteAccount() {
           type="button"
           onClick={handleDelete}
           disabled={busy}
-          className="flex h-[40px] w-full sm:w-[135px] items-center justify-center gap-[6px] rounded-[15px] border border-[#471a2e] bg-white text-[14px] sm:text-[16px] font-semibold text-[#F0395A] transition-colors hover:bg-[#fef2f2] disabled:cursor-not-allowed disabled:opacity-70"
+          className="flex h-[38px] w-full sm:w-auto px-5 items-center justify-center gap-2 rounded-lg border border-rose-300 bg-rose-100/60 text-[13.5px] font-medium text-rose-600 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
         >
-          {busy && <Loader2 className="h-[16px] w-[16px] animate-spin" strokeWidth={2} />}
-          {busy ? "Deleting..." : "Delete"}
+          {busy && <Loader2 className="h-[15px] w-[15px] animate-spin" strokeWidth={2} />}
+          {busy ? "Deleting..." : "Delete Account"}
         </button>
       </div>
     </SettingsCard>

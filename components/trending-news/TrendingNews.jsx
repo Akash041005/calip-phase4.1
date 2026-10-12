@@ -7,6 +7,8 @@ import FeaturedCard from "./FeaturedCard";
 import NewsListItem from "./NewsListItem";
 import { getTrendingNews } from "../../lib/newsApi";
 
+import Footer from "../dashboard/Footer";
+
 function normalizeArticle(article, index) {
   if (!article) return null;
   return {
@@ -91,60 +93,70 @@ export default function TrendingNews() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfbf9] dark:bg-[#0c0e14]">
-      <Navbar />
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-[#f4f5fb] transition-colors">
+      <Navbar activePage="signals" />
 
-      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 pb-8">
-        <div className="pt-4">
-          <h1 className="text-[28px] font-bold leading-none text-[#1a1a2e] dark:text-white">
-            Trending News
+      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 py-6 pb-16">
+        <div className="mb-6">
+          <p className="cl-kicker-label mb-2">
+            <span className="cl-mint-dot" />
+            Ecosystem Intelligence
+          </p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white transition-colors">
+            Market Signals & Trends
           </h1>
-          <p className="mt-[4px] text-[16px] leading-none text-[#6b7280] dark:text-[#9ca3af]">
-            Latest startup funding, market trends, and AI-generated summaries.
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400 transition-colors">
+            Latest startup rounds, token launches, and on-chain intelligence summaries.
           </p>
         </div>
 
-        <div className="mt-[24px]">
+        <div className="mb-6">
           <CategoryTabs
             activeCategory={activeCategory}
             onSelectCategory={(cat) => setActiveCategory(cat)}
           />
         </div>
 
-        <h2 className="mt-[28px] text-[18px] font-semibold leading-none text-[#1a1a2e] dark:text-white">
-          {activeCategory === "All" ? "Featured Stories" : `${activeCategory} News`}
-        </h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-[rgba(226,232,255,0.7)] transition-colors">
+            {activeCategory === "All" ? "Featured Stories" : `${activeCategory} Signals`}
+          </h2>
+        </div>
 
         {loading ? (
-          <div className="mt-[20px] grid grid-cols-1 gap-[20px] xl:grid-cols-2">
-            <div className="h-[200px] animate-pulse rounded-xl bg-gray-100 dark:bg-[#1c202e]" />
-            <div className="h-[200px] animate-pulse rounded-xl bg-gray-100 dark:bg-[#1c202e]" />
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+            <div className="h-[170px] animate-pulse rounded-2xl bg-white border border-slate-200 dark:bg-[#111318] dark:border-white/[0.08]" />
+            <div className="h-[170px] animate-pulse rounded-2xl bg-white border border-slate-200 dark:bg-[#111318] dark:border-white/[0.08]" />
           </div>
         ) : (
-          <div className="mt-[20px] grid grid-cols-1 gap-[20px] xl:grid-cols-2">
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
             {resolved.featured.map((article) => (
               <FeaturedCard key={article.id} {...article} />
             ))}
           </div>
         )}
 
-        <h2 className="mt-[24px] text-[18px] font-semibold leading-none text-[#1a1a2e] dark:text-white">
-          Latest
-        </h2>
+        <div className="mt-8 mb-4 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 transition-colors">
+            Latest Feed
+          </h2>
+        </div>
 
         {loading ? (
-          <div className="mt-[20px] space-y-[20px]">
-            <div className="h-[90px] animate-pulse rounded-xl bg-gray-100 dark:bg-[#1c202e]" />
-            <div className="h-[90px] animate-pulse rounded-xl bg-gray-100 dark:bg-[#1c202e]" />
+          <div className="space-y-3">
+            <div className="h-[80px] animate-pulse rounded-2xl bg-white border border-slate-200 dark:bg-[#111318] dark:border-white/[0.08]" />
+            <div className="h-[80px] animate-pulse rounded-2xl bg-white border border-slate-200 dark:bg-[#111318] dark:border-white/[0.08]" />
           </div>
         ) : (
-          <div className="mt-[20px] space-y-[20px]">
+          <div className="space-y-3">
             {resolved.latest.map((article) => (
               <NewsListItem key={article.id} {...article} />
             ))}
           </div>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 }

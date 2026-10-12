@@ -2,23 +2,33 @@ import { howItWorksSteps } from "./foundersMockData";
 
 export default function HowItWorks() {
   return (
-    <section className="mt-[60px] sm:mt-[80px] lg:mt-[110px]">
-      <h2 className="text-center text-[32px] font-bold leading-[48px] tracking-[-0.5px] text-[#111827] dark:text-white">
-        How it Works ?
-      </h2>
+    <section className="mt-14 sm:mt-18">
+      <div className="text-center">
+        <h2 className="text-[26px] sm:text-[32px] font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
+          How It Works
+        </h2>
+        <p className="mt-1.5 text-[13.5px] text-slate-600 dark:text-[#a6adbf] transition-colors">
+          From onboarding to active on-chain community allocations in four streamlined steps.
+        </p>
+      </div>
 
-      <div className="mt-[60px] flex flex-wrap justify-center gap-[32px]">
-        {howItWorksSteps.map((step) => (
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {howItWorksSteps.map((step, idx) => (
           <div
             key={step.id}
-            className="min-h-[195px] h-auto w-[300px] max-w-full rounded-[20px] border border-[#e5e7eb] bg-white p-[26px] shadow-[0_2px_4px_0px_rgba(0,0,0,0.25)] dark:border-[#2a2e3e] dark:bg-[#181c28] dark:shadow-[0_2px_4px_0px_rgba(0,0,0,0.5)]"
+            className="cl-card-interactive relative rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#111318] dark:hover:border-white/20 transition-all flex flex-col justify-between"
           >
-            <h3 className="text-[20px] font-semibold leading-[22.5px] text-[#111827] dark:text-white">
-              {step.title}
-            </h3>
-            <p className="mt-[26px] max-w-[209px] text-[16px] leading-[20.8px] text-[#4b5563] dark:text-[#b0b5bf]">
-              {step.description}
-            </p>
+            <div>
+              <span className="inline-block font-mono text-[11px] font-bold text-slate-800 bg-slate-100 border border-slate-200 dark:text-white dark:bg-white/[0.06] dark:border-white/[0.08] px-2 py-0.5 rounded transition-colors">
+                0{idx + 1}
+              </span>
+              <h3 className="mt-3 text-[16px] font-bold text-slate-900 dark:text-white transition-colors">
+                {step.title}
+              </h3>
+              <p className="mt-2 text-[13px] leading-relaxed text-slate-600 dark:text-slate-400 transition-colors">
+                {step.description}
+              </p>
+            </div>
           </div>
         ))}
       </div>

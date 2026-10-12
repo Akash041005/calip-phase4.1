@@ -32,13 +32,12 @@ const watchlistKey = "calip.watchlist.v1";
 const initialWatchlist = ["mock-nova-pay", "mock-voltgrid", "mock-fleetai"];
 
 function getWorkspaceDestination() {
-  if (typeof window === "undefined") return "/dashboard";
-  try {
-    const path = window.sessionStorage.getItem("calip.auth.returnTo");
-    window.sessionStorage.removeItem("calip.auth.returnTo");
-    if (path && path.startsWith("/") && !path.startsWith("//") && !path.includes("\\")) return path;
-  } catch {
-    // Use the dashboard when browser storage is unavailable.
+  if (typeof window !== "undefined") {
+    try {
+      window.sessionStorage.removeItem("calip.auth.returnTo");
+    } catch {
+      // Ignore storage errors
+    }
   }
   return "/dashboard";
 }
@@ -291,9 +290,14 @@ export default function LandingPage() {
     });
   }, [query, sector]);
 
-  // Reset viewport scroll & bottom-state whenever filter/query changes
-  useEffect(() => {
+  const [prevFilter, setPrevFilter] = useState({ sector, query });
+  if (prevFilter.sector !== sector || prevFilter.query !== query) {
+    setPrevFilter({ sector, query });
     setGridAtBottom(false);
+  }
+
+  // Reset viewport scroll whenever filter/query changes
+  useEffect(() => {
     if (gridViewportRef.current) gridViewportRef.current.scrollTop = 0;
   }, [sector, query]);
 

@@ -9,7 +9,7 @@ import { truncateAddress } from "../../lib/format";
 import { updateUserProfile } from "../../lib/authApi";
 
 const editableInputClass =
-  "h-[40px] w-full rounded-[10px] border border-[#242730] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] px-4 text-[14px] leading-none text-[#2b3244] dark:text-[#e4e4e9] outline-none focus:border-[#6550EB]";
+  "h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-[13.5px] text-slate-900 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:bg-white dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white dark:placeholder-slate-500 dark:focus:border-white/30 dark:focus:bg-white/[0.04]";
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
@@ -101,36 +101,36 @@ function ProfileCard({ user, updateUser }) {
   };
 
   return (
-    <SettingsCard className="border-[#242730] dark:border-[#2a2e3e] bg-[rgba(255,255,255,0.3)] dark:bg-[rgba(30,34,48,0.5)]">
-      <div className="px-[35px] pt-[15px] pb-[4px]">
-        <h2 className="text-[20px] font-bold leading-none text-black dark:text-white">
+    <SettingsCard>
+      <div className="pb-4 border-b border-slate-200 dark:border-white/[0.08]">
+        <h2 className="text-[18px] font-bold text-slate-900 dark:text-white">
           Profile
         </h2>
       </div>
 
       {notice && (
         <p
-          className={`px-[35px] text-[13px] leading-none ${
-            notice.type === "error" ? "text-[#F0395A]" : "text-[#0e8a4d]"
+          className={`pt-3 text-[13px] ${
+            notice.type === "error" ? "text-rose-400" : "text-emerald-400"
           }`}
         >
           {notice.text}
         </p>
       )}
 
-      <div className="flex items-center gap-[20px] px-[35px] py-[18px]">
+      <div className="flex items-center gap-5 py-5">
         <div className="relative shrink-0">
-          <div className="flex h-[81px] w-[81px] items-center justify-center overflow-hidden rounded-full bg-white dark:bg-[#1c202e]">
+          <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-white/[0.08] dark:bg-[#0e1015]">
             {photoPreview || serverPhoto ? (
               <Image
                 src={photoPreview || serverPhoto}
                 alt={displayName}
-                width={81}
-                height={81}
+                width={64}
+                height={64}
                 className="h-full w-full object-cover"
               />
             ) : (
-              <User className="h-[36px] w-[36px] text-black dark:text-white" strokeWidth={1.5} />
+              <User className="h-7 w-7 text-slate-700 dark:text-white" strokeWidth={1.5} />
             )}
           </div>
           <input
@@ -147,26 +147,26 @@ function ProfileCard({ user, updateUser }) {
               onClick={() => fileInputRef.current?.click()}
               disabled={saving}
               aria-label="Upload profile photo"
-              className="absolute -bottom-[2px] -right-[2px] flex h-[34.8px] w-[34.8px] items-center justify-center rounded-full bg-[#6551EE] transition-colors hover:bg-[#5741dc] disabled:cursor-not-allowed disabled:opacity-70"
+              className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-white dark:bg-white dark:text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {saving ? (
-                <Loader2 className="h-[16px] w-[16px] animate-spin text-white" strokeWidth={2} />
+                <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2} />
               ) : (
-                <Camera className="h-[16px] w-[16px] text-white" strokeWidth={2} />
+                <Camera className="h-3.5 w-3.5" strokeWidth={2} />
               )}
             </button>
           ) : (
-            <div className="absolute -bottom-[2px] -right-[2px] flex h-[34.8px] w-[34.8px] items-center justify-center rounded-full bg-[#6551EE]">
-              <Camera className="h-[16px] w-[16px] text-white" strokeWidth={2} />
+            <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-slate-200 text-slate-700 dark:bg-white/20 dark:text-white">
+              <Camera className="h-3.5 w-3.5" strokeWidth={2} />
             </div>
           )}
         </div>
 
         <div className="min-w-0">
-          <p className="text-[16px] font-bold leading-none text-[#9ca3af] dark:text-[#7c8190]">
+          <p className="text-[16px] font-bold text-slate-900 dark:text-white">
             {displayName}
           </p>
-          <p className="mt-[4px] text-[14px] leading-none text-[#8791a7] dark:text-[#9ca3af]">
+          <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
             {displayHandle}
           </p>
         </div>
@@ -176,10 +176,10 @@ function ProfileCard({ user, updateUser }) {
             type="button"
             onClick={handleSave}
             disabled={!dirty || saving}
-            className="ml-auto flex h-[40px] w-[135px] items-center justify-center gap-[6px] rounded-[15px] bg-[#6550EB] text-[15px] font-semibold text-white transition-colors hover:bg-[#5741dc] disabled:cursor-not-allowed disabled:opacity-50"
+            className="ml-auto cl-btn-primary h-[38px] px-6 text-[13.5px] disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {saving && <Loader2 className="h-[16px] w-[16px] animate-spin" strokeWidth={2} />}
-            {saving ? "Saving..." : "Save"}
+            {saving && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />}
+            {saving ? "Saving..." : "Save Changes"}
           </button>
         )}
       </div>

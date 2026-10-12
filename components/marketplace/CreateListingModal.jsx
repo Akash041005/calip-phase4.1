@@ -6,7 +6,7 @@ import { getMyStartups } from "../../lib/startupsManageApi";
 import ModalPortal from "../ui/ModalPortal";
 
 const inputClass =
-  "h-[42px] w-full rounded-[10px] border border-[#e5e7eb] bg-[#f4f5f7] px-4 text-[14px] sm:text-[16px] text-[#1a1a2e] placeholder:text-[#9ca3af] outline-none transition-colors focus:border-[#6366f1] focus:bg-white dark:border-[#2a2e3e] dark:bg-[#1c202e] dark:text-white dark:placeholder:text-[#7c8190] dark:focus:bg-[#181c28]";
+  "h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-[14px] text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-slate-400 focus:bg-white dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-white/20 dark:focus:bg-[#111318]";
 
 export default function CreateListingModal({ onClose, onSubmit }) {
   const [startups, setStartups] = useState([]);
@@ -70,41 +70,41 @@ export default function CreateListingModal({ onClose, onSubmit }) {
     <ModalPortal
       isOpen={true}
       onClose={onClose}
-      backdropClassName="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
+      backdropClassName="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 dark:bg-black/75 backdrop-blur-sm p-4"
       ariaLabel="Create a new listing"
     >
       <div
-        className="w-full max-w-[480px] max-h-[85vh] overflow-y-auto rounded-[16px] border border-[#e5e7eb] bg-white shadow-xl dark:border-[#2a2e3e] dark:bg-[#141620]"
+        className="w-full max-w-[480px] max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-white/[0.12] dark:bg-[#151824]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-[#e5e7eb] px-[20px] py-[14px] dark:border-[#2a2e3e]">
-          <h3 className="text-[16px] font-semibold text-black dark:text-white">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/[0.08] px-5 py-4">
+          <h3 className="text-[16px] font-bold text-slate-900 dark:text-white transition-colors">
             Create a new listing
           </h3>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-[26px] w-[26px] items-center justify-center rounded-[6px] text-[#6b7280] transition-colors hover:bg-[#f3f4f6] dark:text-[#9ca3af] dark:hover:bg-[#1e2234]"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-100 dark:hover:text-white dark:hover:bg-white/5 transition-colors"
           >
-            <X className="h-[15px] w-[15px]" strokeWidth={2} />
+            <X className="h-4 w-4" strokeWidth={2} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-[20px] py-[20px]">
+        <form onSubmit={handleSubmit} className="p-5">
           <label
             htmlFor="listing-startup"
-            className="mb-[8px] block text-[13px] font-medium text-[#374151] dark:text-[#b0b5bf]"
+            className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-300"
           >
             Startup
           </label>
           {loadingStartups ? (
-            <div className="flex h-[42px] items-center gap-[8px] px-4 text-[13px] text-[#9ca3af]">
-              <Loader2 className="h-[14px] w-[14px] animate-spin" strokeWidth={2} />
+            <div className="flex h-[42px] items-center gap-2 px-4 text-[13px] text-slate-500 dark:text-slate-400">
+              <Loader2 className="h-4 w-4 animate-spin text-slate-700 dark:text-white" strokeWidth={2} />
               Loading your startups...
             </div>
           ) : startups.length === 0 ? (
-            <p className="text-[13px] text-[#F0395A]">
+            <p className="text-[13px] text-rose-500 dark:text-rose-400">
               No startups found. Submit a startup from the Founders page first.
             </p>
           ) : (
@@ -115,13 +115,13 @@ export default function CreateListingModal({ onClose, onSubmit }) {
                 setStartupId(e.target.value);
                 setError("");
               }}
-              className="h-[42px] w-full appearance-none rounded-[10px] border border-[#e5e7eb] bg-[#f4f5f7] px-4 text-[14px] sm:text-[16px] text-[#1a1a2e] outline-none transition-colors focus:border-[#6366f1] dark:border-[#2a2e3e] dark:bg-[#1c202e] dark:text-white"
+              className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-[14px] text-slate-900 outline-none focus:border-slate-400 focus:bg-white dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white dark:focus:border-white/20 transition-colors"
             >
-              <option value="" disabled>
+              <option value="" disabled className="bg-white text-slate-500 dark:bg-[#111318] dark:text-slate-400">
                 Select a startup
               </option>
               {startups.map((startup) => (
-                <option key={startup._id} value={startup._id}>
+                <option key={startup._id} value={startup._id} className="bg-white text-slate-900 dark:bg-[#111318] dark:text-white">
                   {startup.startupName}
                 </option>
               ))}
@@ -130,7 +130,7 @@ export default function CreateListingModal({ onClose, onSubmit }) {
 
           <label
             htmlFor="listing-token"
-            className="mb-[8px] mt-[16px] block text-[13px] font-medium text-[#374151] dark:text-[#b0b5bf]"
+            className="mb-1.5 mt-4 block text-[13px] font-medium text-slate-700 dark:text-slate-300"
           >
             Payment token
           </label>
@@ -138,19 +138,19 @@ export default function CreateListingModal({ onClose, onSubmit }) {
             id="listing-token"
             value={paymentToken}
             onChange={(e) => setPaymentToken(e.target.value)}
-            className="h-[42px] w-full appearance-none rounded-[10px] border border-[#242730] bg-[#f4f5f7] px-4 text-[16px] text-[#1a1a2e] outline-none transition-colors focus:border-[#6366f1] dark:border-[#2a2e3e] dark:bg-[#1c202e] dark:text-white"
+            className="h-[42px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-[14px] text-slate-900 outline-none focus:border-slate-400 focus:bg-white dark:border-white/[0.08] dark:bg-[#0e1015] dark:text-white dark:focus:border-white/20 transition-colors"
           >
-            <option value="USDT">USDT</option>
-            <option value="USDC">USDC</option>
-            <option value="ETH">ETH</option>
-            <option value="DAI">DAI</option>
+            <option value="USDT" className="bg-white text-slate-900 dark:bg-[#111318] dark:text-white">USDT</option>
+            <option value="USDC" className="bg-white text-slate-900 dark:bg-[#111318] dark:text-white">USDC</option>
+            <option value="ETH" className="bg-white text-slate-900 dark:bg-[#111318] dark:text-white">ETH</option>
+            <option value="DAI" className="bg-white text-slate-900 dark:bg-[#111318] dark:text-white">DAI</option>
           </select>
 
-          <div className="mt-[16px] grid grid-cols-2 gap-[14px]">
+          <div className="mt-4 grid grid-cols-2 gap-3.5">
             <div>
               <label
                 htmlFor="listing-amount"
-                className="mb-[8px] block text-[13px] font-medium text-[#374151] dark:text-[#b0b5bf]"
+                className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-300"
               >
                 Token amount
               </label>
@@ -171,7 +171,7 @@ export default function CreateListingModal({ onClose, onSubmit }) {
             <div>
               <label
                 htmlFor="listing-price"
-                className="mb-[8px] block text-[13px] font-medium text-[#374151] dark:text-[#b0b5bf]"
+                className="mb-1.5 block text-[13px] font-medium text-slate-700 dark:text-slate-300"
               >
                 Price per token
               </label>
@@ -191,17 +191,17 @@ export default function CreateListingModal({ onClose, onSubmit }) {
             </div>
           </div>
 
-          {error && <p className="mt-[12px] text-[13px] text-[#F0395A]">{error}</p>}
+          {error && <p className="mt-3 text-[13px] text-rose-400">{error}</p>}
 
           <button
             type="submit"
             disabled={busy || startups.length === 0}
-            className="mt-[20px] flex h-[46px] w-full items-center justify-center gap-[8px] rounded-[10px] bg-[#6366f1] text-[15px] font-semibold text-white transition-colors hover:bg-[#5558e3] disabled:cursor-not-allowed disabled:opacity-60"
+            className="cl-btn-primary mt-5 h-[44px] w-full text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-50"
           >
             {busy ? (
-              <Loader2 className="h-[18px] w-[18px] animate-spin" strokeWidth={2} />
+              <Loader2 className="h-4 w-4 animate-spin text-black" strokeWidth={2} />
             ) : (
-              <PlusCircle className="h-[17px] w-[17px]" strokeWidth={2} />
+              <PlusCircle className="h-4 w-4" strokeWidth={2} />
             )}
             {busy ? "Creating..." : "Create listing"}
           </button>

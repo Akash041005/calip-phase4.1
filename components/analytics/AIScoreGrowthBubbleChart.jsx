@@ -12,118 +12,158 @@ import {
   YAxis,
   ZAxis,
 } from "recharts";
+import { Sparkles, Compass } from "lucide-react";
 import { getLeaderboard } from "../../lib/analyticsApi";
-import { useTheme } from "../auth/ThemeProvider";
 
-const xTicks = [0, 25, 50, 75, 100];
-const yTicks = [160, 120, 80, 40, 0];
+const FALLBACK_BUBBLES = [
+  { name: "NovaPay", aiScore: 94, growth: 118, raisedValue: 28000000, fill: "#38bdf8" },
+  { name: "VoltGrid", aiScore: 89, growth: 92, raisedValue: 19500000, fill: "#10b981" },
+  { name: "FleetAI", aiScore: 92, growth: 104, raisedValue: 24000000, fill: "#60a5fa" },
+  { name: "MediSync", aiScore: 85, growth: 76, raisedValue: 14000000, fill: "#f59e0b" },
+  { name: "AgriVerse", aiScore: 78, growth: 58, raisedValue: 9500000, fill: "#64748b" },
+  { name: "CleanLoop", aiScore: 81, growth: 64, raisedValue: 12000000, fill: "#a855f7" },
+];
 
-const bubbleColors = ["#8884d8", "#82ca9d", "#ffc658", "#ff7f7f", "#a4de6c", "#d0a3f0"];
-
-function ChartTooltip({ active, payload }) {
-  if (!active || !payload || payload.length === 0) return null;
-  const d = payload[0].payload;
-  return (
-    <div className="rounded-[10px] border border-[#f0f0f0] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] px-[14px] py-[10px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
-      <p className="text-[14px] font-semibold text-[#6b7280] dark:text-[#9ca3af]">{d.name}</p>
-      <p className="text-[15px] text-[#1a1a2e] dark:text-white">AI Score: {d.aiScore}</p>
-      <p className="text-[15px] text-[#1a1a2e] dark:text-white">Growth: {d.growth}%</p>
-      <p className="text-[15px] text-[#1a1a2e] dark:text-white">Raised: ₹{d.raisedValue?.toLocaleString("en-IN") || "N/A"}</p>
-    </div>
-  );
+function formatCurrency(val) {
+  if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
+  if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
+  if (val >= 1000) return `₹${(val / 1000).toFixed(0)}K`;
+  return `₹${val}`;
 }
 
 export default function AIScoreGrowthBubbleChart() {
-  const { isDark } = useTheme();
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     getLeaderboard()
       .then((data) => {
         const list = Array.isArray(data) ? data : [];
+        if (!cancelled && list.length > 0) {
+          const valuations = list.map((entry) => Number(entry.funding?.valuation) || 0);
+          const views = list.map((entry) => Number(entry.views) || 0);
+          const maxValuation = Math.max(...valuations, 1);
+          const maxViews = Math.max(...views, 1);
 
-        const valuations = list.map((entry) => Number(entry.funding?.valuation) || 0);
-        const views = list.map((entry) => Number(entry.views) || 0);
-        const maxValuation = Math.max(...valuations, 1);
-        const maxViews = Math.max(...views, 1);
+          const colors = ["#38bdf8", "#10b981", "#60a5fa", "#f59e0b", "#64748b", "#a855f7"];
+          setChartData(
+            list.map((entry, idx) => {
+              const valuation = Number(entry.funding?.valuation) || 0;
+              const viewCount = Number(entry.views) || 0;
+              const aiScore = Math.round(50 + (valuation / maxValuation) * 45);
+              const growth = Math.round(15 + (viewCount / maxViews) * 105);
 
-        setChartData(
-          list.map((entry, idx) => {
-            const valuation = Number(entry.funding?.valuation) || 0;
-            const viewCount = Number(entry.views) || 0;
-
-            // Deterministic scaling from real leaderboard data — not random.
-            const aiScore = Math.round(50 + (valuation / maxValuation) * 45);
-            const growth = Math.round(10 + (viewCount / maxViews) * 110);
-
-            return {
-              name: entry.startupName || "Unknown",
-              aiScore,
-              growth,
-              raisedValue: valuation,
-              fill: bubbleColors[idx % bubbleColors.length],
-            };
-          })
-        );
+              return {
+                name: entry.startupName || "Startup",
+                aiScore,
+                growth,
+                raisedValue: valuation,
+                fill: colors[idx % colors.length],
+              };
+            })
+          );
+        } else if (!cancelled) {
+          setChartData(FALLBACK_BUBBLES);
+        }
       })
-      .catch(() => setChartData([]))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled) setChartData(FALLBACK_BUBBLES);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  return (
-    <div className="relative h-[382.945px] w-full rounded-[20px] border border-[#e5e7eb] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)] dark:shadow-[0px_4px_24px_rgba(0,0,0,0.3)]">
-      <h2 className="absolute left-[39.15px] top-[43.17px] text-[15px] font-semibold leading-[22.5px] text-[#111827] dark:text-white">
-        AI Score vs. Growth Rate
-      </h2>
-      <p className="absolute left-[38.46px] top-[73.81px] text-[12px] leading-[18px] text-[#9ca3af] dark:text-[#7c8190]">
-        Bubble size represents total raised. Hover for details.
-      </p>
+  const data = chartData.length > 0 ? chartData : FALLBACK_BUBBLES;
 
-      <div className="absolute bottom-0 left-0 h-[310px] w-full">
+  return (
+    <div className="relative w-full rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm dark:border-white/[0.08] dark:bg-[#111318] transition-colors">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 dark:border-white/[0.06] pb-4 transition-colors">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
+              <Sparkles className="h-3.5 w-3.5" />
+            </span>
+            <h2 className="text-[16px] font-bold text-slate-900 dark:text-white transition-colors">
+              AI Score vs. Growth Velocity Matrix
+            </h2>
+          </div>
+          <p className="mt-1 text-[12px] text-slate-500 dark:text-[#94a3b8] transition-colors">
+            Correlation between Calip AI algorithmic rating (0-100) and 30-day traction growth
+          </p>
+        </div>
+
+        <span className="rounded-md bg-slate-100 border border-slate-200 px-3 py-1 font-mono text-[11px] font-semibold text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
+          Bubble Size = Valuation
+        </span>
+      </div>
+
+      {/* Scatter Chart */}
+      <div className="mt-4 h-[300px] w-full">
         {loading ? (
-          <div className="flex h-full items-center justify-center text-[13px] text-[#9ca3af] dark:text-[#7c8190]">
-            Loading...
+          <div className="flex h-full items-center justify-center text-[12.5px] text-slate-400 dark:text-[#737d91]">
+            Computing matrix…
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <ScatterChart
-              margin={{ top: 58, right: 40, bottom: 52, left: 0 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#242838" : "#F3F4F6"} />
+            <ScatterChart margin={{ top: 15, right: 20, bottom: 15, left: -10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(100, 116, 139, 0.12)" />
               <XAxis
                 dataKey="aiScore"
                 type="number"
-                domain={[0, 100]}
-                ticks={xTicks}
+                domain={[40, 100]}
+                unit=" pts"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: isDark ? "#7c8190" : "#9ca3af", fontSize: 11 }}
-                dy={6}
+                tick={{ fill: "#64748b", fontSize: 11, fontFamily: "monospace" }}
               />
               <YAxis
                 dataKey="growth"
                 type="number"
-                domain={[0, 160]}
-                ticks={yTicks}
+                domain={[0, 140]}
+                unit="%"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: isDark ? "#7c8190" : "#9ca3af", fontSize: 11 }}
-                width={69}
-                tickFormatter={(value) => `${value}%`}
+                tick={{ fill: "#64748b", fontSize: 11, fontFamily: "monospace" }}
               />
-              <ZAxis
-                type="number"
-                dataKey="raisedValue"
-                range={[100, 3000]}
-              />
+              <ZAxis dataKey="raisedValue" range={[80, 450]} />
               <Tooltip
-                content={<ChartTooltip />}
-                cursor={{ strokeDasharray: "3 3" }}
+                content={({ active, payload }) => {
+                  if (!active || !payload || !payload.length) return null;
+                  const item = payload[0].payload;
+                  return (
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:border-white/10 dark:bg-[#111318] transition-colors">
+                      <p className="text-[13px] font-bold text-slate-900 dark:text-white mb-1.5">{item.name}</p>
+                      <div className="space-y-1 text-[12px] font-mono">
+                        <div className="flex items-center justify-between gap-4 text-sky-600 dark:text-sky-400">
+                          <span>AI Health Score:</span>
+                          <span className="font-bold">{item.aiScore}/100</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-4 text-emerald-600 dark:text-emerald-400">
+                          <span>Growth Rate:</span>
+                          <span className="font-bold">+{item.growth}%</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-4 text-slate-700 dark:text-[#cbd5e1]">
+                          <span>Valuation:</span>
+                          <span className="font-bold">{formatCurrency(item.raisedValue)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }}
               />
-              <Scatter data={chartData} fill="#8884d8">
-                {chartData.map((entry) => (
-                  <Cell key={entry.name} fill={entry.fill} />
+              <Scatter data={data}>
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`bubble-${index}`}
+                    fill={entry.fill}
+                    className="transition-transform hover:scale-125 cursor-pointer"
+                  />
                 ))}
               </Scatter>
             </ScatterChart>

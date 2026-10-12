@@ -51,6 +51,7 @@ next-env.d.ts
 
 # documentation in the repo root (maintained outside of version control)
 *.md
+!history.md
 *.docx
 
 # dev server logs

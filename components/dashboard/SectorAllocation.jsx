@@ -12,9 +12,9 @@ function SectorTooltip({ active, payload }) {
   const item = payload[0];
 
   return (
-    <div className="rounded-[10px] border border-[#f0f0f0] bg-white px-[12px] py-[8px] shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-[#242838] dark:bg-[#181c28] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
-      <p className="m-0 text-[13px] text-[#6b7280] dark:text-[#9ca3af]">{item.name}</p>
-      <p className="m-0 mt-[2px] text-[13px] font-semibold text-[#1a1a2e] dark:text-white">
+    <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-2xl dark:border-white/[0.12] dark:bg-[#151824]">
+      <p className="m-0 text-[12px] text-slate-500 dark:text-[#94a3b8]">{item.name}</p>
+      <p className="m-0 mt-0.5 text-[14px] font-bold text-slate-900 dark:text-white font-mono">
         {item.value}%
       </p>
     </div>
@@ -58,9 +58,9 @@ export default function SectorAllocation() {
   const totalSectors = chartData.length;
 
   return (
-    <div className="h-[340px] w-full rounded-[14px] border border-[#f0f0f0] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-[#242838] dark:bg-[#181c28] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+    <div className="h-[340px] w-full rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
       <div className="flex h-full flex-col p-[24px]">
-        <h2 className="text-[18px] font-semibold text-[#1a1a2e] dark:text-white">Sector Allocation</h2>
+        <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white transition-colors">Sector Allocation</h2>
 
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="relative flex flex-1 items-center justify-center">
@@ -85,8 +85,8 @@ export default function SectorAllocation() {
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute flex flex-col items-center">
-              <span className="text-[15px] text-[#9ca3af] dark:text-[#7c8190]">Sectors</span>
-              <span className="text-[22px] font-bold leading-none text-[#1a1a2e] dark:text-white">
+              <span className="text-[12px] text-slate-500 dark:text-[#94a3b8]">Sectors</span>
+              <span className="text-[22px] font-bold leading-none text-slate-900 dark:text-white font-mono">
                 {totalSectors}
               </span>
             </div>
@@ -96,14 +96,14 @@ export default function SectorAllocation() {
             {chartData.map((sector) => (
               <div key={sector.name} className="flex items-center gap-2">
                 <span
-                  className="h-[12px] w-[12px] shrink-0 rounded-full"
+                  className="h-[10px] w-[10px] shrink-0 rounded-full"
                   style={{ backgroundColor: sector.color }}
                 />
-                <span className="w-[64px] shrink-0 text-[14px] text-[#374151] dark:text-[#b0b5bf]">
+                <span className="w-[64px] shrink-0 text-[13px] text-slate-600 dark:text-[#94a3b8]">
                   {sector.name}
                 </span>
-                <span className="flex-1 border-b border-dotted border-[#d1d5db] dark:border-[#3a3e4e]" />
-                <span className="w-[28px] text-right text-[14px] text-[#374151] dark:text-[#b0b5bf]">
+                <span className="flex-1 border-b border-dotted border-slate-200 dark:border-white/[0.08]" />
+                <span className="w-[28px] text-right text-[13px] font-medium text-slate-900 dark:text-white font-mono">
                   {sector.value}%
                 </span>
               </div>

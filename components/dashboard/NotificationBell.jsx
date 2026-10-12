@@ -83,12 +83,12 @@ export default function NotificationBell() {
         onClick={() => setOpen((o) => !o)}
         aria-label={open ? "Close notifications" : "Open notifications"}
         aria-expanded={open}
-        className="relative flex h-[28px] w-[28px] items-center justify-center rounded-[8px] border border-[#e5e7eb] bg-[#f4f5f7] dark:border-[#2a2e3e] dark:bg-[#1c202e] transition-colors duration-150 hover:bg-[#e5e7eb] dark:hover:bg-[#2a2e3e]"
+        className="relative flex h-[32px] w-[32px] items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition-colors duration-150 hover:border-slate-300 hover:text-slate-900 dark:border-white/[0.08] dark:bg-[#111318] dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
       >
         {loading ? (
-          <Loader2 className="h-[15px] w-[15px] animate-spin text-[#374151] dark:text-[#b0b5bf]" strokeWidth={1.5} />
+          <Loader2 className="h-4 w-4 animate-spin text-slate-400" strokeWidth={1.5} />
         ) : (
-          <Bell className="h-[15px] w-[15px] text-[#374151] dark:text-[#b0b5bf]" strokeWidth={1.5} />
+          <Bell className="h-4 w-4 text-slate-700 dark:text-slate-300" strokeWidth={1.5} />
         )}
         {unread > 0 && (
           <span className="absolute -right-[5px] -top-[5px] flex h-[16px] min-w-[16px] items-center justify-center rounded-full bg-[#F0395A] px-[4px] text-[10px] font-bold leading-none text-white">

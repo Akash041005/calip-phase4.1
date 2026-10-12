@@ -1,4 +1,3 @@
-import { Sora } from "next/font/google";
 import Navbar from "../../components/dashboard/Navbar";
 import AnalyticsHeader from "../../components/analytics/AnalyticsHeader";
 import TotalFundingSector from "../../components/analytics/TotalFundingSector";
@@ -7,44 +6,48 @@ import MonthlyActivity from "../../components/analytics/MonthlyActivity";
 import AIScoreGrowthBubbleChart from "../../components/analytics/AIScoreGrowthBubbleChart";
 import StartupComparisonTable from "../../components/analytics/StartupComparisonTable";
 
-const sora = Sora({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
+import Footer from "../../components/dashboard/Footer";
 
 export const metadata = {
-  title: "Calip — Analytics",
+  title: "Calip — Analytics & Market Intelligence",
   description:
-    "Deep-dive analytics: startup comparisons, industry trends, and funding heatmaps on Calip.",
+    "Deep-dive ecosystem analytics: startup valuation comparisons, industry trends, funding heatmaps, and AI growth metrics on Calip.",
 };
 
 export default function AnalyticsPage() {
   return (
-    <div className={`${sora.className} min-h-screen bg-[#fafaf8] dark:bg-[#1c202e]`}>
-      <Navbar />
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-[#f8fafc] transition-colors">
+      <Navbar activePage="analytics" />
 
-      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 pb-[24px]">
-        <div className="pt-[16px]">
+      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 pb-16">
+        {/* Header */}
+        <div className="pt-6 sm:pt-8">
           <AnalyticsHeader />
         </div>
 
-        <div className="mt-[40px] flex flex-col xl:flex-row gap-[24px]">
+        {/* Row 1: Funding by Sector & Deal Stage Distribution */}
+        <div className="mt-6 flex flex-col xl:flex-row gap-6">
           <TotalFundingSector />
           <DealStageDistribution />
         </div>
 
-        <div className="mt-[40px]">
+        {/* Row 2: Monthly Activity Bar Chart */}
+        <div className="mt-6">
           <MonthlyActivity />
         </div>
 
-        <div className="mt-[48px]">
+        {/* Row 3: AI Valuation Score vs. Growth Velocity Matrix */}
+        <div className="mt-6">
           <AIScoreGrowthBubbleChart />
         </div>
 
-        <div className="mt-[48px] pl-[4px]">
+        {/* Row 4: Startup Valuation & Performance Comparison Table */}
+        <div className="mt-6">
           <StartupComparisonTable />
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

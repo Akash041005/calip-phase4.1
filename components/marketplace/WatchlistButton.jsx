@@ -44,16 +44,16 @@ export default function WatchlistButton({
         disabled={busy}
         aria-label={watched ? `Remove ${startupName} from watchlist` : `Add ${startupName} to watchlist`}
         title={watched ? "In Watchlist" : "Add to Watchlist"}
-        className={`inline-flex items-center gap-1.5 rounded-lg border text-[12px] font-semibold transition disabled:opacity-60 ${
+        className={`inline-flex items-center gap-1.5 rounded-xl border text-[12px] font-semibold transition disabled:opacity-60 ${
           watched
-            ? "border-[#6366f1]/50 bg-[#6366f1]/15 px-3 py-1.5 text-[#818cf8]"
-            : "border-white/10 bg-white/5 px-3 py-1.5 text-neutral-300 hover:border-[#6366f1]/50 hover:text-white"
+            ? "border-emerald-500/30 bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 px-3 py-1.5"
+            : "border-slate-200 bg-white px-3 py-1.5 text-slate-700 hover:border-slate-300 hover:text-slate-900 shadow-xs dark:border-white/[0.08] dark:bg-[#111318] dark:text-slate-300 dark:hover:border-white/20 dark:hover:text-white"
         } ${className}`}
       >
         {busy ? (
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-700 dark:text-white" />
         ) : (
-          <Star className={`h-3.5 w-3.5 ${watched ? "fill-[#818cf8]" : ""}`} />
+          <Star className={`h-3.5 w-3.5 ${watched ? "fill-emerald-500 text-emerald-500" : ""}`} />
         )}
         {showLabel && <span>{busy ? (watched ? "Removing..." : "Adding...") : watched ? "In Watchlist" : "Add to Watchlist"}</span>}
       </button>

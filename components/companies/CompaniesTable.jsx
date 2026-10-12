@@ -50,15 +50,15 @@ export default function CompaniesTable({ data = [] }) {
   return (
     <div
       data-lenis-prevent
-      className="w-full overflow-x-auto rounded-[14px] border border-[#f0f0f0] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
+      className="w-full overflow-x-auto rounded-2xl border border-white/[0.08] bg-[#111318] shadow-sm"
     >
-      <div className="min-w-[960px] px-6 pb-4 pt-6 sm:px-10">
-        <h2 className="text-lg font-semibold leading-none text-[#1a1a2e] dark:text-white">
+      <div className="min-w-[960px] px-6 pb-6 pt-6 sm:px-8">
+        <h2 className="text-[17px] font-semibold leading-none text-white">
           Startups
         </h2>
 
         {/* Header */}
-        <div className="mt-3 flex items-center gap-4">
+        <div className="mt-4 flex items-center gap-4">
           {columns.map((col) => {
             const isActive = col.key === sortKey;
             return (
@@ -66,30 +66,30 @@ export default function CompaniesTable({ data = [] }) {
                 key={col.key}
                 type="button"
                 onClick={() => handleSort(col.key)}
-                className={`flex items-center gap-1 whitespace-nowrap text-left text-[13px] leading-none text-[#9ca3af] dark:text-[#7c8190] transition-colors hover:text-[#6366f1] ${
+                className={`flex items-center gap-1 whitespace-nowrap text-left text-[11.5px] font-semibold uppercase tracking-wider text-[#94a3b8] transition-colors hover:text-white ${
                   col.key === "startupName" ? "min-w-[200px] flex-1 pl-[54px]" : "w-[140px]"
                 }`}
               >
                 {col.label}
                 {isActive ? (
                   sortDir === "asc" ? (
-                    <ChevronUp className="h-4 w-4 text-[#6366f1]" strokeWidth={2} />
+                    <ChevronUp className="h-3.5 w-3.5 text-white" strokeWidth={2} />
                   ) : (
-                    <ChevronDown className="h-4 w-4 text-[#6366f1]" strokeWidth={2} />
+                    <ChevronDown className="h-3.5 w-3.5 text-white" strokeWidth={2} />
                   )
                 ) : (
-                  <ChevronDown className="h-4 w-4" strokeWidth={2} />
+                  <ChevronDown className="h-3.5 w-3.5 opacity-40" strokeWidth={2} />
                 )}
               </button>
             );
           })}
         </div>
 
-        <div className="mt-3 border-t border-[#e5e7eb] dark:border-[#2a2e3e]" />
+        <div className="mt-3 border-t border-white/[0.06]" />
 
         {/* Rows */}
         {sortedRows.length === 0 ? (
-          <div className="py-16 text-center text-sm text-[#9ca3af] dark:text-[#7c8190]">
+          <div className="py-16 text-center text-sm text-[#94a3b8]">
             No startups found
           </div>
         ) : (
@@ -107,40 +107,40 @@ export default function CompaniesTable({ data = [] }) {
                     router.push(`/insights/${row._id}`);
                   }
                 }}
-                className="flex h-11 cursor-pointer items-center gap-4 transition-colors hover:bg-[#fafafa] dark:hover:bg-[#1c202e]"
+                className="flex h-12 cursor-pointer items-center gap-4 rounded-xl px-2 transition-colors hover:bg-white/[0.03]"
               >
-                <div className="flex min-w-[200px] flex-1 items-center gap-3 pl-1">
-                  <div className="flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-lg bg-[#eef2ff] dark:bg-[#1c202e] text-[16px] font-semibold text-[#6366f1]">
+                <div className="flex min-w-[200px] flex-1 items-center gap-3">
+                  <div className="flex h-[34px] w-[34px] flex-shrink-0 items-center justify-center rounded-lg bg-white/[0.05] border border-white/[0.08] text-[14px] font-semibold text-white">
                     {(row.startupName ?? "?")[0]?.toUpperCase() ?? "?"}
                   </div>
-                  <span className="truncate text-[14px] font-semibold text-[#1a1a2e] dark:text-white">
+                  <span className="truncate text-[13.5px] font-semibold text-white">
                     {row.startupName ?? "—"}
                   </span>
                 </div>
 
-                <span className="w-[140px] truncate text-[13px] text-[#374151] dark:text-[#b0b5bf]">
+                <span className="w-[140px] truncate text-[13px] text-[#94a3b8]">
                   {row.industrySector ?? "—"}
                 </span>
 
-                <span className="w-[140px] truncate text-[13px] text-[#374151] dark:text-[#b0b5bf]">
+                <span className="w-[140px] truncate text-[13px] text-[#94a3b8]">
                   {row.startupStage ?? "—"}
                 </span>
 
-                <span className="w-[140px] truncate text-[13px] text-[#374151] dark:text-[#b0b5bf]">
+                <span className="w-[140px] truncate text-[13px] text-[#94a3b8]">
                   {row.fundingStatus ?? "—"}
                 </span>
 
-                <span className="w-[140px] truncate text-[14px] text-[#1a1a2e] dark:text-white">
+                <span className="w-[140px] truncate text-[13px] font-mono text-white">
                   {formatCurrency(row.currentStartupValuation)}
                 </span>
 
-                <span className="w-[140px] truncate text-[14px] text-[#1a1a2e] dark:text-white">
+                <span className="w-[140px] truncate text-[13px] font-mono text-[#94a3b8]">
                   {row.views ?? 0}
                 </span>
               </div>
 
               {index < sortedRows.length - 1 && (
-                <div className="border-t border-[#e5e7eb] dark:border-[#2a2e3e] pb-2" />
+                <div className="border-t border-white/[0.06]" />
               )}
             </div>
           ))

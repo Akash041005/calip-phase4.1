@@ -139,18 +139,18 @@ export default function NotificationDropdown({ onClose, onCountChange }) {
   };
 
   return (
-    <div className="absolute right-0 max-sm:-right-2 top-[36px] z-[60] w-[360px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[16px] border border-[#e5e7eb] bg-white shadow-[0_8px_40px_rgba(0,0,0,0.12)] dark:border-[#2a2e3e] dark:bg-[#141620] dark:shadow-[0_8px_40px_rgba(0,0,0,0.4)] sm:w-[400px]">
-      <div className="flex items-center justify-between border-b border-[#e5e7eb] px-[16px] py-[12px] dark:border-[#2a2e3e]">
+    <div className="absolute right-0 max-sm:-right-2 top-[36px] z-[60] w-[360px] max-w-[calc(100vw-24px)] overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-2xl sm:w-[400px] dark:border-white/[0.08] dark:bg-[#111318] dark:text-white">
+      <div className="flex items-center justify-between border-b border-slate-200 px-[16px] py-[12px] dark:border-white/[0.06]">
         <div className="flex items-center gap-2">
-          <Bell className="h-[16px] w-[16px] text-[#4f46e5]" strokeWidth={2} />
-          <h3 className="text-[15px] font-semibold text-black dark:text-white">Notifications</h3>
+          <Bell className="h-[16px] w-[16px] text-slate-900 dark:text-white" strokeWidth={2} />
+          <h3 className="text-[14px] font-semibold text-slate-900 dark:text-white">Notifications</h3>
         </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleReadAll}
             disabled={busy || items.every((n) => n.isRead)}
-            className="flex items-center gap-1 rounded-[8px] px-2 py-1 text-[12px] font-medium text-[#4f46e5] transition-colors hover:bg-[#eef2ff] dark:text-[#818cf8] dark:hover:bg-[#1e1b4b] disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center gap-1 rounded-[6px] px-2 py-1 text-[12px] font-medium text-slate-500 transition-colors hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 dark:text-[#94a3b8] dark:hover:text-white"
           >
             {busy ? (
               <Loader2 className="h-[12px] w-[12px] animate-spin" strokeWidth={2} />
@@ -163,7 +163,7 @@ export default function NotificationDropdown({ onClose, onCountChange }) {
             type="button"
             onClick={onClose}
             aria-label="Close notifications"
-            className="flex h-[24px] w-[24px] items-center justify-center rounded-[6px] text-[#6b7280] transition-colors hover:bg-[#f3f4f6] dark:text-[#9ca3af] dark:hover:bg-[#1e2234]"
+            className="flex h-[24px] w-[24px] items-center justify-center rounded-[6px] text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-[#94a3b8] dark:hover:bg-white/[0.05] dark:hover:text-white"
           >
             <X className="h-[14px] w-[14px]" strokeWidth={2} />
           </button>
@@ -173,15 +173,15 @@ export default function NotificationDropdown({ onClose, onCountChange }) {
       <div className="max-h-[380px] overflow-y-auto" data-lenis-prevent>
         {loading ? (
           <div className="flex items-center justify-center py-[48px]">
-            <Loader2 className="h-[22px] w-[22px] animate-spin text-[#4f46e5]" strokeWidth={2} />
+            <Loader2 className="h-[22px] w-[22px] animate-spin text-slate-900 dark:text-white" strokeWidth={2} />
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center gap-[8px] px-[20px] py-[48px] text-center">
-            <Megaphone className="h-[28px] w-[28px] text-[#d1d5db] dark:text-[#374151]" strokeWidth={1.5} />
-            <p className="text-[13px] font-medium text-[#6b7280] dark:text-[#9ca3af]">
+            <Megaphone className="h-[28px] w-[28px] text-slate-400 dark:text-zinc-600" strokeWidth={1.5} />
+            <p className="text-[13px] font-medium text-slate-900 dark:text-white">
               No notifications yet
             </p>
-            <p className="text-[12px] text-[#9ca3af] dark:text-[#7c8190]">
+            <p className="text-[12px] text-slate-500 dark:text-[#94a3b8]">
               Updates about your auctions, trades, and market news will appear here.
             </p>
           </div>
@@ -192,15 +192,15 @@ export default function NotificationDropdown({ onClose, onCountChange }) {
             return (
               <div
                 key={item._id}
-                className={`group flex items-start gap-[12px] border-b border-[#f3f4f6] px-[16px] py-[14px] transition-colors hover:bg-[#f9fafb] dark:border-[#242838] dark:hover:bg-[#181c28] ${
-                  unread ? "bg-[#fbfbff] dark:bg-[#171a26]" : ""
+                className={`group flex items-start gap-[12px] border-b border-slate-200 px-[16px] py-[14px] transition-colors hover:bg-slate-50 dark:border-white/[0.06] dark:hover:bg-white/[0.02] ${
+                  unread ? "bg-slate-50/80 dark:bg-white/[0.02]" : ""
                 }`}
               >
                 <div
-                  className={`mt-[2px] flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-[10px] ${
+                  className={`mt-[2px] flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-lg border ${
                     unread
-                      ? "bg-[#eef2ff] text-[#4f46e5] dark:bg-[#1e1b4b] dark:text-[#818cf8]"
-                      : "bg-[#f3f4f6] text-[#9ca3af] dark:bg-[#1e2234] dark:text-[#6b7280]"
+                      ? "bg-slate-900 text-white border-slate-900 dark:bg-white/[0.08] dark:border-white/[0.12] dark:text-white"
+                      : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-white/[0.03] dark:border-white/[0.06] dark:text-[#94a3b8]"
                   }`}
                 >
                   <Icon className="h-[15px] w-[15px]" strokeWidth={1.8} />
@@ -208,18 +208,18 @@ export default function NotificationDropdown({ onClose, onCountChange }) {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-semibold uppercase tracking-wide text-[#9ca3af] dark:text-[#7c8190]">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-[#94a3b8]">
                       {typeLabel(item.type)}
                     </span>
-                    <span className="shrink-0 text-[11px] text-[#9ca3af] dark:text-[#7c8190]">
+                    <span className="shrink-0 text-[11px] text-slate-400 font-mono dark:text-[#94a3b8]">
                       {formatTime(item.createdAt || item.updatedAt, now)}
                     </span>
                   </div>
-                  <p className="mt-[2px] text-[13px] font-semibold leading-[18px] text-[#1a1a2e] dark:text-white">
+                  <p className="mt-[2px] text-[13px] font-semibold leading-[18px] text-slate-900 dark:text-white">
                     {item.title}
                   </p>
                   {item.message && (
-                    <p className="mt-[2px] line-clamp-2 text-[12px] leading-[17px] text-[#6b7280] dark:text-[#9ca3af]">
+                    <p className="mt-[2px] line-clamp-2 text-[12px] leading-[17px] text-slate-600 dark:text-[#94a3b8]">
                       {item.message}
                     </p>
                   )}
@@ -231,7 +231,7 @@ export default function NotificationDropdown({ onClose, onCountChange }) {
                       type="button"
                       onClick={(e) => handleRead(item._id, e)}
                       aria-label="Mark as read"
-                      className="flex h-[26px] w-[26px] items-center justify-center rounded-[6px] text-[#4f46e5] transition-colors hover:bg-[#eef2ff] dark:text-[#818cf8] dark:hover:bg-[#1e1b4b]"
+                      className="flex h-[26px] w-[26px] items-center justify-center rounded-[6px] text-slate-700 transition-colors hover:bg-slate-200 dark:text-white dark:hover:bg-white/[0.08]"
                     >
                       <CheckCheck className="h-[14px] w-[14px]" strokeWidth={2} />
                     </button>
@@ -241,7 +241,7 @@ export default function NotificationDropdown({ onClose, onCountChange }) {
                     onClick={(e) => handleDelete(item._id, e)}
                     disabled={removing === item._id}
                     aria-label="Delete notification"
-                    className="flex h-[26px] w-[26px] items-center justify-center rounded-[6px] text-[#f0395a] transition-colors hover:bg-[#fef2f2] disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-[#3b1420]"
+                    className="flex h-[26px] w-[26px] items-center justify-center rounded-[6px] text-rose-500 transition-colors hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
                   >
                     {removing === item._id ? (
                       <Loader2 className="h-[14px] w-[14px] animate-spin" strokeWidth={2} />

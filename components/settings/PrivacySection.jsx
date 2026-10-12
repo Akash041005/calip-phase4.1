@@ -71,45 +71,40 @@ export default function PrivacySection() {
 
   return (
     <SettingsCard>
-      <div className="px-[35px] pt-[15px] pb-[4px]">
-        <h2 className="text-[20px] font-bold leading-none text-black dark:text-white">
+      <div className="pb-4 border-b border-slate-200 dark:border-white/[0.08]">
+        <h2 className="text-[18px] font-bold text-slate-900 dark:text-white">
           Privacy
         </h2>
-        <p className="mt-[6px] text-[14px] leading-none text-[#8791a7] dark:text-[#9ca3af]">
-          Control what others can see about you
+        <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
+          Control profile visibility and public investment disclosures.
         </p>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-10">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#6B54F3] border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-900 border-t-transparent dark:border-white dark:border-t-transparent" />
         </div>
       ) : (
-        <div className="flex flex-col">
-          {privacyConfig.map((item, index) => {
+        <div className="divide-y divide-slate-200 dark:divide-white/[0.08]">
+          {privacyConfig.map((item) => {
             const Icon = item.Icon;
             return (
-              <div key={item.key}>
-                {index > 0 && (
-                  <div className="mx-[35px] h-px bg-[#e5e7eb] dark:bg-[#2a2e3e]" />
-                )}
-                <div className="flex items-center gap-[20px] px-[35px] py-[18px]">
-                  <div className="flex h-[59px] w-[58px] shrink-0 items-center justify-center rounded-[20px] border border-[#131622] dark:border-[#2a2e3e] bg-[#6450ea] dark:bg-[#5546d4]">
-                    <Icon className="h-[28px] w-[28px] text-white" strokeWidth={1.5} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[16px] font-semibold leading-none text-[#9da3b0] dark:text-[#b0b5bf]">
-                      {item.title}
-                    </p>
-                    <p className="mt-[4px] text-[14px] leading-none text-[#8791a7] dark:text-[#9ca3af]">
-                      {item.description}
-                    </p>
-                  </div>
-                  <SettingsToggle
-                    checked={!!preferences[item.key]}
-                    onChange={(val) => handleToggle(item.key, val)}
-                  />
+              <div key={item.key} className="flex items-center gap-4 py-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 dark:border-white/[0.08] dark:bg-white/[0.04]">
+                  <Icon className="h-5 w-5 text-slate-700 dark:text-white" strokeWidth={1.5} />
                 </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[15px] font-semibold text-slate-900 dark:text-white">
+                    {item.title}
+                  </p>
+                  <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
+                    {item.description}
+                  </p>
+                </div>
+                <SettingsToggle
+                  checked={!!preferences[item.key]}
+                  onChange={(val) => handleToggle(item.key, val)}
+                />
               </div>
             );
           })}

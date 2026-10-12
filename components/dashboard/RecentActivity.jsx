@@ -72,13 +72,13 @@ export default function RecentActivity() {
   const activityData = items && items.length > 0 ? items : [];
 
   return (
-    <div className="min-h-[260px] w-full rounded-[14px] border border-[#f0f0f0] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-[#242838] dark:bg-[#181c28] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]">
+    <div className="min-h-[260px] w-full rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
       <div className="flex h-full flex-col p-[24px]">
-        <div className="mb-[8px] flex items-center justify-between">
-          <h2 className="text-[18px] font-semibold text-[#1a1a2e] dark:text-white">Recent Activity</h2>
+        <div className="mb-[12px] flex items-center justify-between">
+          <h2 className="text-[17px] font-semibold text-slate-900 dark:text-white transition-colors">Recent Activity</h2>
           <button
             type="button"
-            className="flex items-center gap-1 text-[13px] font-medium text-[#6366f1] transition-colors hover:text-[#5558e3]"
+            className="flex items-center gap-1 text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-[#94a3b8] dark:hover:text-white"
           >
             View all
             <ArrowRight className="h-[12px] w-[12px]" strokeWidth={2.5} />
@@ -92,37 +92,33 @@ export default function RecentActivity() {
             return (
               <div
                 key={item.id}
-                className={`flex items-center justify-between py-[8px] ${
+                className={`flex items-center justify-between py-[10px] ${
                   index < activityData.length - 1
-                    ? "border-b border-[#f3f4f6] dark:border-[#242838]"
+                    ? "border-b border-slate-100 dark:border-white/[0.06]"
                     : ""
                 }`}
               >
                 <div className="flex items-center gap-[12px]">
-                  <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg bg-[#f3f4f6] dark:bg-[#1c202e]">
+                  <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 text-slate-800 dark:bg-white/[0.05] dark:border-white/[0.08] dark:text-white transition-colors">
                     <IconComponent
-                      className={`h-[18px] w-[18px] ${
-                        item.icon === "bookmark"
-                          ? "text-[#374151] dark:text-[#b0b5bf]"
-                          : "text-[#7c6cf0] dark:text-[#9485f5]"
-                      }`}
-                      strokeWidth={1.5}
+                      className="h-[16px] w-[16px] text-slate-500 dark:text-[#94a3b8]"
+                      strokeWidth={1.8}
                     />
                   </div>
                   <div>
-                    <p className="text-[14px] font-semibold leading-tight text-[#1a1a2e] dark:text-white">
+                    <p className="text-[14px] font-semibold leading-tight text-slate-900 dark:text-white transition-colors">
                       {item.title}
                     </p>
-                    <p className="mt-[1px] text-[12px] text-[#9ca3af] dark:text-[#7c8190]">{item.subtitle}</p>
+                    <p className="mt-[2px] text-[12px] text-slate-500 dark:text-[#94a3b8]">{item.subtitle}</p>
                   </div>
                 </div>
 
                 <div className="text-right">
                   {item.amount && (
-                    <p className="text-[13px] font-medium text-[#7c6cf0] dark:text-[#9485f5]">{item.amount}</p>
+                    <p className="text-[13px] font-medium text-slate-900 dark:text-white font-mono">{item.amount}</p>
                   )}
                   <p
-                    className={`text-[12px] text-[#9ca3af] dark:text-[#7c8190] ${
+                    className={`text-[12px] text-slate-400 dark:text-[#94a3b8] ${
                       item.amount ? "mt-[1px]" : ""
                     }`}
                   >

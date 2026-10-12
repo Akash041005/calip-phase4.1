@@ -37,37 +37,41 @@ export default function Companies() {
   }, [searchQuery]);
 
   return (
-    <div className="min-h-screen bg-[#fbfbf9] dark:bg-[#0c0e14]">
+    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
       <Navbar activePage="companies" />
 
-      <main className="mx-auto max-w-[1440px] px-[16px] sm:px-[24px] lg:px-[40px] pb-8">
-        <div className="pt-4">
-          <h1 className="text-[22px] sm:text-[28px] font-bold leading-none text-[#1a1a2e] dark:text-white">
+      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="pt-6 border-b border-white/[0.08] pb-6">
+          <p className="cl-kicker-label">
+            <span className="cl-mint-dot" />
+            Verified Registry
+          </p>
+          <h1 className="mt-2 text-[26px] sm:text-[32px] font-bold leading-tight text-white">
             Companies
           </h1>
-          <p className="mt-[4px] text-[14px] sm:text-[16px] text-[#6b7280] dark:text-[#9ca3af]">
-            All verified startups onboarded to the Calip platform.
+          <p className="mt-1 text-[14px] text-[#94a3b8]">
+            All verified startups and projects onboarded to the Calip ecosystem.
           </p>
         </div>
 
-        <div className="mt-[16px] sm:mt-[24px]">
-          <div className="mb-[16px]">
+        <div className="mt-6">
+          <div className="mb-4">
             <input
               type="text"
-              placeholder="Search startups..."
+              placeholder="Search startups by name or industry..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-[40px] w-full max-w-[400px] rounded-[10px] border border-[#e5e7eb] dark:border-[#2a2e3e] bg-white dark:bg-[#181c28] px-4 text-[14px] text-[#1a1a2e] dark:text-white placeholder:text-[#9ca3af] dark:placeholder:text-[#7c8190] outline-none transition-colors focus:border-[#6366f1]"
+              className="h-[40px] w-full max-w-[420px] rounded-xl border border-white/[0.08] bg-[#0e1015] px-4 text-[13.5px] text-white placeholder:text-[#94a3b8] outline-none transition-colors focus:border-white/20 focus:bg-[#111318]"
             />
           </div>
 
           {loading ? (
             <div className="flex h-[200px] items-center justify-center">
-              <p className="text-[14px] text-[#6b7280] dark:text-[#9ca3af]">Loading startups...</p>
+              <p className="text-[13px] text-[#94a3b8]">Loading startups...</p>
             </div>
           ) : error ? (
             <div className="flex h-[200px] items-center justify-center">
-              <p className="text-[14px] text-[#ef4444]">{error}</p>
+              <p className="text-[13px] text-rose-400">{error}</p>
             </div>
           ) : (
             <CompaniesTable data={startups} />

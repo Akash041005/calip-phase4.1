@@ -1,41 +1,37 @@
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowRight, Sparkles, Plus } from "lucide-react";
 import Link from "next/link";
 
 export default function FoundersHero() {
   return (
-    <section className="pt-[40px]">
-      <p className="text-center text-[24px] font-semibold text-black dark:text-white">
-        For Founders
+    <section className="pt-6 sm:pt-8 text-center border-b border-slate-200 dark:border-white/[0.06] pb-12 transition-colors">
+      <p className="cl-kicker-label inline-flex items-center gap-2">
+        <span className="cl-mint-dot" />
+        Capital Raising for Visionary Teams
       </p>
 
-      <h1 className="mt-[20px] text-center text-[32px] sm:text-[42px] lg:text-[48px] font-bold leading-[1.1] text-[#6051b4]">
-        Calip
+      <h1 className="mt-3 text-[32px] sm:text-[44px] lg:text-[52px] font-bold tracking-tight text-slate-900 dark:text-white leading-tight transition-colors">
+        Scale with Programmable Capital
       </h1>
-      <p className="text-center text-[24px] sm:text-[30px] lg:text-[36px] font-bold leading-[1.3] text-[#c39fe3]">
-        Web 3 investment for start ups
+
+      <p className="mx-auto mt-3 max-w-2xl text-[14px] sm:text-[15.5px] leading-relaxed text-slate-600 dark:text-[#a6adbf] transition-colors">
+        List your startup on Calip to unlock transparent community auctions, AI-assisted valuation discovery, and on-chain secondary liquidity — all in one unified ecosystem.
       </p>
 
-      <p className="mx-auto mt-[16px] max-w-[520px] text-center text-[20px] font-bold leading-[30px] text-[#4b5563] dark:text-[#b0b5bf]">
-        List your startup on Calip to unlock transparent token auctions,
-        AI-powered investor matching, and on-chain equity management all in one
-        platform.
-      </p>
-
-      <div className="mt-[40px] flex flex-wrap items-center justify-center gap-3.5">
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
         <Link
           href="/marketplace"
-          className="inline-flex h-[44px] px-6 items-center justify-center gap-[8px] rounded-[10px] bg-[#6366f1] text-[14px] font-semibold text-white transition-colors hover:bg-[#5346ae] shadow-lg shadow-[#6366f1]/20"
+          className="cl-btn-primary h-[42px] px-6 text-[13.5px]"
         >
-          Explore Marketplace
-          <ArrowRight className="h-[14px] w-[14px]" strokeWidth={2} />
+          <span>Explore Live Startups</span>
+          <ArrowRight className="h-4 w-4" strokeWidth={2} />
         </Link>
 
         <Link
           href="/marketplace/create"
-          className="inline-flex h-[44px] px-6 items-center justify-center gap-[8px] rounded-[10px] border border-[#6366f1]/40 bg-[#6366f1]/10 text-[14px] font-semibold text-[#818cf8] hover:bg-[#6366f1] hover:text-white transition-all shadow-sm"
+          className="inline-flex h-[42px] items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 text-[13.5px] font-semibold text-slate-800 shadow-sm hover:bg-slate-50 hover:text-slate-900 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08] transition-all"
         >
-          Create Token
-          <ExternalLink className="h-[14px] w-[14px]" strokeWidth={2} />
+          <Plus className="h-4 w-4" strokeWidth={2} />
+          <span>Launch Startup Token</span>
         </Link>
       </div>
     </section>

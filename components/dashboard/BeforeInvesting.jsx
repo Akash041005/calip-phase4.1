@@ -6,15 +6,15 @@ import { beforeStatsData } from "./beforeMockData";
 
 export default function BeforeInvesting() {
   return (
-    <div className="min-h-screen bg-[#fbfbf9] dark:bg-[#0c0e14]">
+    <div className="min-h-screen bg-[#090a0f] text-[#f8fafc]">
       <Navbar />
 
-      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 pb-8">
+      <main className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 pb-12">
         <div className="pt-4">
-          <h1 className="text-[28px] font-bold leading-none text-[#1a1a2e] dark:text-white">
+          <h1 className="text-[28px] font-extrabold tracking-tight text-white">
             Dashboard
           </h1>
-          <p className="mt-[4px] text-[16px] text-[#6b7280] dark:text-[#9ca3af]">
+          <p className="mt-1 text-[15px] text-slate-400">
             Your investment portfolio at a glance
           </p>
         </div>
