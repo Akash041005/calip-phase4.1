@@ -480,4 +480,300 @@
   - **Verification**:
     - Validated entire repository with `npm run lint` (exited with code 0, 0 errors).
 
+---
+
+### [2026-10-19 16:55:00] - Implement Missing Backend Endpoints into Frontend, Resolve P0 Auth Mismatches, and Add Admin Governance Suite
+- **Author**: Vismay
+- **Components**:
+  - `context.md`
+  - `lib/apiClient.js`
+  - `lib/adminApi.js`
+  - `lib/contactApi.js`
+  - `lib/oracleApi.js`
+  - `lib/startupsUploadApi.js`
+  - `lib/startupsManageApi.js`
+  - `components/auth/AuthProvider.jsx`
+  - `components/profile/UserInsights.jsx`
+  - `components/overview/TokenDetailOverview.jsx`
+  - `components/dashboard/Footer.jsx`
+  - `app/contact/page.jsx`
+  - `app/admin/login/page.jsx`
+  - `app/admin/dashboard/page.jsx`
+  - `app/admin/page.jsx`
+  - `app/my-startups/page.jsx`
+- **Changes**:
+  - **Created `context.md`**: Detailed architecture, system components, auth lifecycles, and run commands for the frontend.
+  - **P0 Authentication & Session Compatibility**:
+    - Resolved `POST /startups/upload` HTTP 401 error by passing `auth: true` in `lib/startupsUploadApi.js`.
+    - Resolved `POST /auth/verify` failure by adding resilient fallback expiry and persisting `refreshToken` in session state.
+    - Updated `apiClient.js` single-flight refresh mutex to send `{ refreshToken }` in request body for `POST /auth/refresh`.
+  - **Added Enterprise Admin v1 Console (`/admin`)**:
+    - Created `lib/adminApi.js` with full support for Admin v1 session handling, idle activity touch, and permissions.
+    - Built `app/admin/login/page.jsx` with scrypt email/password administrative authentication.
+    - Built `app/admin/dashboard/page.jsx` featuring KPI summaries, startup application review queue with verification checklist toggles (`kycVerified`, `legalIncorporation`, `techAudit`, `financialProof`), approval/rejection triggers, auction closing, token deployment worker queue triggers, and live immutable audit trails.
+  - **Added General Support & Institutional Investor Inquiry Suite (`/contact`)**:
+    - Created `lib/contactApi.js` connecting `POST /enquiry` and `POST /contact/investor`.
+    - Built `app/contact/page.jsx` with dual tab workflow (General Support & Institutional Investor Application) adhering to platform design tokens.
+    - Linked Contact & Governance portal into `Footer.jsx`.
+  - **Integrated Missing Secondary Market & Participation Operations**:
+    - In `UserInsights.jsx`, integrated Active Secondary Market Listings with price updating (`PUT /marketplace/:listingId/price`) and cancellation (`DELETE /marketplace/:listingId`).
+    - Integrated Primary Auction Allocations via `GET /participation/history` in `UserInsights.jsx`.
+  - **Integrated Token Holders Distribution**:
+    - In `TokenDetailOverview.jsx`, added Top Token Holders & Cap Table card connected to `GET /tokens/:startupId/holders`.
+  - **Added Startup Owner Modification (`PATCH /startups/:id`)**:
+    - Added `updateStartup(id, data)` in `lib/startupsManageApi.js` and wired an Edit profile modal/action in `app/my-startups/page.jsx`.
+
+---
+
+### [2026-10-19 16:58:30] - Hotfix: Resolve Turbopack Parse Syntax Error in apiClient.js
+- **Author**: Vismay
+- **Component**: `lib/apiClient.js`
+- **Changes**:
+  - Fixed syntax error in `attemptRefresh()` where `try {` block declaration was accidentally omitted before the `response = await fetch(...)` call, causing Turbopack to fail with `Expected ',', got 'catch'`.
+  - Re-verified syntax via `node -c lib/apiClient.js` and `npx tsc --noEmit` (0 errors).
+
+---
+
+### [2026-10-19 17:03:00] - Remove Discover Link from Landing Header
+- **Author**: Vismay
+- **Component**: `components/landing/LandingPage.jsx`
+- **Changes**:
+  - Removed the standalone "Discover" navigation link from the top right navigation bar on the public landing page (`/`), leaving a clean header showing the Calip.io brand on the left and the "Connect wallet" CTA on the right.
+
+---
+
+### [2026-10-19 17:35:00] - Unify Landing Page with Live Market Terminal & Implement Non-Blocking Web3 Gating
+- **Author**: Vismay
+- **Components**:
+  - `app/page.jsx`
+  - `app/dashboard/page.jsx`
+  - `app/layout.jsx`
+  - `components/home/UnifiedHome.jsx`
+  - `components/home/InstitutionalHero.jsx`
+  - `components/home/EcosystemPillars.jsx`
+  - `components/home/HomeFaqAccordion.jsx`
+  - `components/home/index.js`
+  - `components/layout/index.js`
+  - `components/auth/AuthProvider.jsx`
+  - `components/auth/ConnectWalletModal.jsx`
+  - `components/auth/ConnectWalletButton.jsx`
+  - `components/auth/RouteAccessGate.jsx`
+  - `components/auth/index.js`
+  - `components/market/MarketTerminal.jsx`
+  - `components/market/index.js`
+  - `components/marketplace/TokenTradePanel.jsx`
+  - `components/marketplace/WatchlistButton.jsx`
+  - `components/marketplace/index.js`
+  - `components/auction/AuctionCard.jsx`
+  - `components/auction/index.js`
+  - `components/dashboard/Navbar.jsx`
+  - `components/dashboard/TraderPortfolioBanner.jsx`
+- **Changes**:
+  - **Unified Public Terminal on Root (`/`)**:
+    - Eliminated the walled-garden isolation of the landing page where the terminal was locked behind a wallet connection button.
+    - Merged the vision/discovery hero with the live Market Terminal (`DashboardHeader` + `MarketTerminal`) directly on `app/page.jsx`.
+    - Public visitors can now explore all 42 tokens, view real-time prices, 24H volume, FDV, interactive sparklines, top gainers, just graduated tokens, and live trades without connecting a wallet.
+  - **Universal Global Navigation (`Navbar.jsx`)**:
+    - Updated navigation to expose all ecosystem menus (`Dashboard`, `Marketplace`, `Auction`, `Analytics`, `Signals`, `Founders`, `FAQ`) upfront to all visitors.
+    - Gated user-specific items (`Performance`, `My Startups`) so that clicking them when unauthenticated opens the Connect Wallet modal.
+  - **New High-Aesthetic Connect Wallet Modal (`ConnectWalletModal.jsx`)**:
+    - Supports both **MetaMask** (`window.ethereum`) with EIP-4361 signing and a **Demo Trader Account** (1-click instant login with 14.28 ETH preloaded balance) for seamless local dev inspection.
+    - Integrated automatic redirect to `/dashboard` upon wallet connection from the home page per user specification.
+  - **Non-Blocking Route Access Gate (`RouteAccessGate.jsx`)**:
+    - Converted exploratory routes (`/`, `/dashboard`, `/marketplace`, `/auction/*`, `/analytics`, `/trending`, `/founders`, `/faq`, `/contact`) to public read.
+    - Restricted wallet requirements strictly to state-mutating personal routes (`/performance-summary`, `/my-startups`, `/profile`, `/settings`, `/marketplace/create`), presenting an elegant branded access gate card rather than redirect loops.
+  - **Personalized Trader Command Center (`TraderPortfolioBanner.jsx`)**:
+    - Added authenticated command banner on `/dashboard` displaying user identity, portfolio FDV, available ETH balance, held token allocations, and active auction bids.
+  - **Action Button Gating**:
+    - In `TokenTradePanel.jsx`, `WatchlistButton.jsx`, and `AuctionCard.jsx`, clicking trade, watchlist, or bidding actions while disconnected triggers `openConnectModal()` gracefully.
+  - **Frontend Code Modularization**:
+    - Organized components into cohesive domain modules with index barrel exports (`components/home/`, `components/layout/`, `components/auth/`, `components/market/`, `components/marketplace/`, `components/auction/`).
+  - **Verification**:
+    - Successfully validated with `npx tsc --noEmit` (0 errors).
+    - Executed comprehensive visual and behavioral verification with browser subagent across unauthenticated landing, focus streams, connect modal, and logged-in dashboard.
+
+---
+
+### [2026-10-19 17:53:00] - Add Dedicated Product Tour Route (/landing) and Header Switcher
+- **Author**: Vismay
+- **Components**:
+  - `app/landing/page.jsx`
+  - `components/dashboard/Navbar.jsx`
+  - `components/home/InstitutionalHero.jsx`
+  - `components/landing/LandingPage.jsx`
+- **Changes**:
+  - **Preserved Video Tour Landing Experience (`/landing`)**:
+    - Created `app/landing/page.jsx` serving the full animated landing page (`LandingPage.jsx`) featuring the ambient video hero (`_ref-hero.mp4`), interactive opportunity search, traction charts, and radar screening video cards.
+  - **Added Global "Product Tour" Navigation Button**:
+    - In `components/dashboard/Navbar.jsx`, added a prominent `"Product Tour"` navigation pill with a `Sparkles` icon positioned directly beside `"Dashboard"` in the global platform navigation.
+    - In `components/home/InstitutionalHero.jsx`, added a `"Product Tour"` quick action button to the hero CTA row.
+  - **Seamless Bi-Directional Switching**:
+### [2026-10-19 18:05:00] - Refine Product Tour Access, Restore Left Nav, and Strip Live Stream Ticker
+- **Author**: Vismay
+- **Components**:
+  - `components/dashboard/Navbar.jsx`
+  - `components/home/InstitutionalHero.jsx`
+  - `components/home/UnifiedHome.jsx`
+  - `app/dashboard/page.jsx`
+  - `app/product-tour/page.jsx`
+  - `app/landing/page.jsx`
+  - `components/landing/LandingPage.jsx`
+- **Changes**:
+  - **Restored Left Navigation Bar**:
+    - Removed the bulky "Product Tour" text button from the main left navigation in `Navbar.jsx`, restoring the exact clean order: `Dashboard`, `Marketplace`, `Auction`, `Analytics`, `Signals`, `Founders`, `FAQ`.
+  - **Circular Product Tour Button beside Connect Wallet**:
+    - Added an elegant circular icon button (`h-[32px] w-[32px] rounded-full` with a golden `Sparkles` icon and glowing tooltip) on the top right, placed directly beside the "Connect Wallet" button in `Navbar.jsx`.
+    - Cleaned up `InstitutionalHero.jsx` by removing redundant "Product Tour" pill from the hero CTA row.
+  - **Renamed Route to `/product-tour`**:
+    - Created `app/product-tour/page.jsx` serving `<LandingPage />` at `http://localhost:3000/product-tour`.
+    - Configured `app/landing/page.jsx` with an automatic client redirect (`router.replace('/product-tour')`) for backward compatibility.
+  - **Clean Header on Product Tour Page**:
+    - Removed the "Connect wallet" button from `LandingPage.jsx`.
+    - Removed duplicate "Live Markets Terminal" link, keeping a single, unified "Markets Terminal ->" button in both desktop header and mobile menu.
+  - **Removed Live Stream Slider Completely**:
+    - Removed the `TopTraderTicker` ticker (`LIVE STREAM` slider with `@novaWhale`, `@quantRider`, etc.) from both `components/home/UnifiedHome.jsx` and `app/dashboard/page.jsx`.
+---
+
+---
+
+### [2026-10-19 18:30:00] - Website Redundancy Cleanup & Master Frontend-Backend Integration Plan
+- **Author**: Vismay
+- **Components**:
+  - `components/dashboard/Footer.jsx`
+  - `master_frontend_backend_integration_plan.md`
+- **Changes**:
+  - **Footer Link Redundancy Elimination**:
+    - Replaced redundant duplicate links to `/founders` and circular alias `/overview` with distinct destinations: `Explore Startups` (`/marketplace`), `For Founders` (`/founders`), `Apply to Raise` (`/marketplace/create`), and `Contact & Support` (`/contact`).
+  - **Master Frontend-Backend Integration Plan (`CALIP-INT-001`)**:
+    - Created authoritative integration blueprint mapping all 167 backend endpoints to frontend screens, components, button triggers, request DTOs, and state mutations adhering strictly to `product-srs.md`.
+    - Documented comprehensive redundancy elimination inventory, Web3 authentication and session heartbeat lifecycle, and phased execution roadmap.
+---
+
+### [2026-10-19 19:40:00] - Live Backend Wiring & Dual-Mode Wallet Interoperability
+- **Author**: Vismay
+- **Components**:
+  - `.env.local`
+  - `lib/presalesApi.js`
+  - `lib/marketplaceApi.js`
+  - `lib/startupsApi.js`
+  - `lib/newsApi.js`
+  - `components/auth/AuthProvider.jsx`
+  - `components/auth/ConnectWalletModal.jsx`
+- **Changes**:
+  - **Live Backend Activation**:
+    - Switched `NEXT_PUBLIC_USE_MOCKS=false` in `.env.local` to direct all frontend API traffic to `http://localhost:5001`.
+  - **Public Endpoint Auth Decoupling & Resilient Fallback**:
+    - Removed extraneous `auth: true` requirements from public discovery endpoints: `GET /presales/active`, `GET /presales/upcoming`, `GET /presales/completed`, `GET /marketplace/listings`, `GET /marketplace/:id`, `GET /marketplace/history`, and `GET /startups/search`.
+    - Added resilient fallback wrappers across `presalesApi.js`, `marketplaceApi.js`, `startupsApi.js`, and `newsApi.js` so that if the backend database has 0 records or is booting up, the UI gracefully falls back without throwing runtime errors or blanking the page.
+  - **Dual-Mode Wallet Support Preserved**:
+    - Verified that **Demo Trader Account** (1-Click Instant) remains 100% operational in `loginDemoAccount()` regardless of mock flags, allowing instant local testing without MetaMask.
+---
+
+### [2026-10-19 19:44:00] - Fix Socket Cleanup Null Dereference in Notification Bell
+- **Author**: Vismay
+- **Components**:
+  - `lib/socketClient.js`
+  - `components/dashboard/NotificationBell.jsx`
+- **Changes**:
+  - **Socket Teardown Null Guard**:
+    - Fixed `TypeError: Cannot read properties of null (reading 'off')` occurring when `NotificationBell` unmounted while `socket` was null or during session reset.
+    - Added local closure reference capture and defensive `typeof activeSocket.off === "function"` guards in `lib/socketClient.js:onNewNotification`.
+---
+
+### [2026-10-19 19:50:00] - Remove Dummy Wallet & Enable Base Sepolia MetaMask Flow
+- **Author**: Vismay
+- **Components**:
+  - `components/auth/ConnectWalletModal.jsx`
+  - `components/auth/AuthProvider.jsx`
+  - `lib/wallet.js`
+- **Changes**:
+  - **Dummy Wallet Removal**:
+    - Completely removed the "Demo Trader Account" button from `ConnectWalletModal.jsx`.
+    - Configured automatic silent cleanup of stale mock/demo sessions on boot to eliminate "Your session has expired" error toasts.
+  - **Base Sepolia Testnet Integration**:
+    - Added `switchToBaseSepolia()` and `BASE_SEPOLIA_CHAIN_ID` (84532 / `0x14a34`) in `lib/wallet.js` with auto-chain addition and switching.
+    - Updated `AuthProvider.jsx` to ensure network is verified or switched to Base Sepolia before issuing the SIWE sign-in challenge.
+---
+
+### [2026-10-19 19:54:00] - Fix React Rules of Hooks Order in ConnectWalletModal
+- **Author**: Vismay
+- **Component**: `components/auth/ConnectWalletModal.jsx`
+- **Changes**:
+  - Moved `useState` (`isInstalled`) and `useEffect` above any conditional return statements (`if (!isConnectModalOpen) return null;`) at the top level of `ConnectWalletModal`, strictly satisfying React's Rules of Hooks.
+- **Verification**:
+  - TypeScript validation passed (`npx tsc --noEmit`, 0 errors).
+
+---
+
+### [2026-10-19 23:35:00] - Purge All Mock Data Fallbacks & Design Admin Master Plan
+- **Author**: Vismay
+- **Component**: `components/dashboard/DashboardHeader.jsx`, `components/landing/LandingPage.jsx`, `lib/tradingApi.js`, `lib/presalesApi.js`, `lib/marketplaceApi.js`, `lib/startupsApi.js`, `lib/newsApi.js`
+- **Changes**:
+  - **Purged Mock Fallbacks**:
+    - Removed hardcoded dummy tokens, mock trades, and simulated leaderboard fallbacks from `lib/tradingApi.js`.
+    - Removed `mockPresales()` fallbacks from `lib/presalesApi.js` (`getActivePresales`, `getUpcomingPresales`, `getCompletedPresales`, `getPresaleBids`).
+    - Removed `mockGetListings()` and `mockGetListingDetails()` fallbacks from `lib/marketplaceApi.js`.
+    - Removed `mockSearchStartups()` and `mockGetStartupById()` fallbacks from `lib/startupsApi.js`.
+    - Removed `mockTrendingNews()` fallback from `lib/newsApi.js`.
+    - Replaced hardcoded `MOCK_STARTUPS` in `LandingPage.jsx` with live query to `searchStartups()`.
+  - **Truthful Dashboard Metrics**:
+    - Removed hardcoded `$428.5M` FDV, `$38.2M` Volume, `42` tokens, and `1,280 Whale Activity` numbers from `DashboardHeader.jsx`. Metrics are now computed dynamically from real backend token data.
+    - Updated network badge from "Base Mainnet" to "Base Sepolia".
+  - **Admin Panel Blueprint**:
+    - Authored exhaustive architecture and UI/UX blueprint artifact `calip_admin_panel_master_plan.md` covering `/admin/login`, `/admin/dashboard`, and `/admin/startups/[id]` dossier vetting.
+- **Verification**:
+  - `npx tsc --noEmit` runs with 0 errors.
+
+---
+
+### [2026-10-19 23:50:00] - Build Full Admin Console & Startup Vetting Suite
+- **Author**: Vismay
+- **Component**: `lib/adminApi.js`, `app/admin/login/page.jsx`, `app/admin/dashboard/page.jsx`, `app/admin/startups/page.jsx`, `app/admin/startups/[id]/page.jsx`
+- **Changes**:
+  - **Admin API Client (`lib/adminApi.js`)**:
+    - Fixed payload unwrapping to support `{ success: true, data: { accessToken, admin } }` from backend `POST /admin/v1/auth/password`.
+    - Enhanced `approveAdminStartup` and `rejectAdminStartup` to accept `{ reason, version }`.
+  - **Admin Gateway (`app/admin/login/page.jsx`)**:
+    - Added one-click "Auto-Fill SuperAdmin Credentials" button (`superadmin1@calip.io` / `SuperAdminPass123!`) for instant developer/operator testing.
+  - **Admin Dashboard (`app/admin/dashboard/page.jsx`)**:
+    - Normalized startup fields (`id || _id`, `stage || status`, `founderName || reviewOwner`, valuation).
+    - Added "Inspect" button linking directly to the full startup dossier.
+    - Updated network indicator to `Base Sepolia Testnet Gateway`.
+  - **Dedicated Vetting Desk (`app/admin/startups/page.jsx`)**:
+    - Built comprehensive tabbed queue (`all`, `pending`, `under_review`, `approved`, `rejected`), instant search filter, and quick action buttons.
+  - **Startup Application Dossier (`app/admin/startups/[id]/page.jsx`)**:
+    - Built complete inspection console with pitch deck PDF link/viewer, founder credentials, company registration, and utility statements.
+    - Implemented interactive Approve and Reject modals triggering `POST /admin/v1/startups/:id/proceed` and `POST /admin/v1/startups/:id/reject`.
+- **Verification**:
+  - TypeScript validation passed (`npx tsc --noEmit`, 0 errors).
+  - Tested live SuperAdmin login on backend `http://localhost:5001/admin/v1/auth/password` — received 200 OK with full wildcard permissions.
+
+---
+
+### [2026-10-20 00:23:00] - Fix Stray JSX Div Tag in DashboardHeader
+- **Author**: Vismay
+- **Component**: `components/dashboard/DashboardHeader.jsx`
+- **Changes**:
+  - Removed an extra orphan `</div>` tag that was causing Turbopack to fail with an "Unterminated regexp literal" parsing error.
+- **Verification**:
+  - Validated via browser subagent navigating to `http://localhost:3000` — page hydrated cleanly with 0 console errors and 0 build errors.
+
+---
+
+### [2026-10-20 00:50:00] - Purge Analytics Dummy Data & Fix Startup Pending Visibility
+- **Author**: Vismay
+- **Component**: `components/analytics/*`, `app/analytics/comparison/page.jsx`, `lib/analyticsApi.js`, `components/founders/ApplicationForm.jsx`, `app/admin/startups/page.jsx`, `app/admin/dashboard/page.jsx`
+- **Changes**:
+  - **Purged Analytics Dummy Data**:
+    - Removed all hardcoded fallback arrays (`FALLBACK_SECTORS`, `FALLBACK_STAGES`, `FALLBACK_MONTHS`, `FALLBACK_STARTUPS`, `FALLBACK_BUBBLES`) across `TotalFundingSector.jsx`, `DealStageDistribution.jsx`, `MonthlyActivity.jsx`, `StartupComparisonTable.jsx`, `AIScoreGrowthBubbleChart.jsx`, and `app/analytics/comparison/page.jsx`.
+    - Made analytics API calls in `lib/analyticsApi.js` public (`auth: false`) so public analytics pages fetch live metrics without requiring an active access token.
+    - Implemented graceful, premium empty states across all chart and table components for when telemetry has zero entries.
+  - **Fixed Startup Creation & Pending Queue Visibility**:
+    - Updated `components/founders/ApplicationForm.jsx` to retrieve the connected `walletAddress` from `useAuth()` and append it to the `FormData` on submission.
+    - Added direct navigation link to "View In My Startups" (`/my-startups`) on application submission success.
+    - Fixed Admin startups list unpacking in `app/admin/startups/page.jsx` and `app/admin/dashboard/page.jsx` to read `res?.data?.items` from the Admin v1 `listResponse` envelope, restoring instant visibility of submitted startups under the "Pending" tab.
+- **Verification**:
+  - Validated live public analytics endpoints (`/analytics/funding-by-sector`, `/analytics/deal-stages`, `/analytics/monthly-activity`, `/analytics/leaderboard`) returning 200 OK with real database records.
+  - Validated `GET /admin/v1/startups?stage=pending` and `GET /startups` returning the user's submitted startups (`vismay`, `Apex Cloud AI`) with `status: "pending"`.
+
 

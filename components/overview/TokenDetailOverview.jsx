@@ -18,7 +18,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../../lib/usersApi";
-import { getTokens, getTokenOHLC, getTokenSupply, getTokenTrades } from "../../lib/tradingApi";
+import { getTokens, getTokenOHLC, getTokenSupply, getTokenTrades, getTokenHolders } from "../../lib/tradingApi";
 import TokenTradePanel from "../marketplace/TokenTradePanel";
 import { useTheme } from "../auth/ThemeProvider";
 
@@ -247,6 +247,20 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
       .catch(() => {});
     return () => { cancelled = true; };
   }, [tokenId]);
+
+  const [tokenHolders, setTokenHolders] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    const sId = startupId || tokenId;
+    if (sId) {
+      getTokenHolders(sId)
+        .then((res) => {
+          if (!cancelled && res) setTokenHolders(res);
+        })
+        .catch(() => {});
+    }
+    return () => { cancelled = true; };
+  }, [startupId, tokenId]);
 
   // Handle timeframe change
   const handleTfChange = (tf) => {
@@ -945,7 +959,46 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
             )}
           </div>
 
-          {/* 6. Forum */}
+          {/* 6. Token Holders & Cap Table Distribution */}
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="text-[15px] font-bold text-slate-900 dark:text-white">Token Holders & Distribution</h3>
+                <p className="text-[11.5px] text-slate-500 dark:text-neutral-400">On-chain cap table transparency on Base L2</p>
+              </div>
+              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                {tokenHolders?.totalHolders ? `${tokenHolders.totalHolders} Holders` : "Verified Ledger"}
+              </span>
+            </div>
+
+            {tokenHolders && Array.isArray(tokenHolders.holders) && tokenHolders.holders.length > 0 ? (
+              <div className="divide-y divide-slate-100 dark:divide-white/[0.05]">
+                {tokenHolders.holders.slice(0, 5).map((h, i) => (
+                  <div key={h.address || i} className="py-2.5 flex items-center justify-between text-[12px]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-mono text-slate-400 w-4">#{i + 1}</span>
+                      <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">{h.address ? `${h.address.slice(0, 6)}...${h.address.slice(-4)}` : "Treasury Contract"}</span>
+                      {h.tag && (
+                        <span className="rounded bg-slate-100 dark:bg-white/[0.08] px-1.5 py-0.5 text-[10px] text-slate-500">
+                          {h.tag}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-right font-mono">
+                      <span className="font-bold text-slate-900 dark:text-white">{Number(h.amount || h.balance || 0).toLocaleString()}</span>
+                      <span className="text-slate-500 dark:text-neutral-500 ml-1.5">({h.percentage ? `${h.percentage}%` : "Cap"})</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-slate-200/80 bg-slate-50 p-4 dark:border-white/[0.04] dark:bg-[#0e111c] text-center text-xs text-slate-500">
+                Top token holder distribution ledger is indexed upon live auction completion.
+              </div>
+            )}
+          </div>
+
+          {/* 7. Forum */}
           <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
             <h3 className="text-[15px] font-bold text-slate-900 dark:text-white mb-3">Forum</h3>
             <div className="rounded-xl bg-slate-50 border border-slate-200 p-5 text-center flex flex-col items-center gap-3 mb-3 dark:bg-[#0e111c] dark:border-white/[0.08]">

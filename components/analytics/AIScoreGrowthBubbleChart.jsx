@@ -12,17 +12,8 @@ import {
   YAxis,
   ZAxis,
 } from "recharts";
-import { Sparkles, Compass } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { getLeaderboard } from "../../lib/analyticsApi";
-
-const FALLBACK_BUBBLES = [
-  { name: "NovaPay", aiScore: 94, growth: 118, raisedValue: 28000000, fill: "#38bdf8" },
-  { name: "VoltGrid", aiScore: 89, growth: 92, raisedValue: 19500000, fill: "#10b981" },
-  { name: "FleetAI", aiScore: 92, growth: 104, raisedValue: 24000000, fill: "#60a5fa" },
-  { name: "MediSync", aiScore: 85, growth: 76, raisedValue: 14000000, fill: "#f59e0b" },
-  { name: "AgriVerse", aiScore: 78, growth: 58, raisedValue: 9500000, fill: "#64748b" },
-  { name: "CleanLoop", aiScore: 81, growth: 64, raisedValue: 12000000, fill: "#a855f7" },
-];
 
 function formatCurrency(val) {
   if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
@@ -38,37 +29,41 @@ export default function AIScoreGrowthBubbleChart() {
   useEffect(() => {
     let cancelled = false;
     getLeaderboard()
-      .then((data) => {
-        const list = Array.isArray(data) ? data : [];
-        if (!cancelled && list.length > 0) {
-          const valuations = list.map((entry) => Number(entry.funding?.valuation) || 0);
-          const views = list.map((entry) => Number(entry.views) || 0);
-          const maxValuation = Math.max(...valuations, 1);
-          const maxViews = Math.max(...views, 1);
+      .then((res) => {
+        const list = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : [];
+        if (!cancelled) {
+          if (list.length > 0) {
+            const valuations = list.map((entry) => Number(entry.funding?.valuation) || 0);
+            const views = list.map((entry) => Number(entry.views) || 0);
+            const maxValuation = Math.max(...valuations, 1);
+            const maxViews = Math.max(...views, 1);
 
-          const colors = ["#38bdf8", "#10b981", "#60a5fa", "#f59e0b", "#64748b", "#a855f7"];
-          setChartData(
-            list.map((entry, idx) => {
-              const valuation = Number(entry.funding?.valuation) || 0;
-              const viewCount = Number(entry.views) || 0;
-              const aiScore = Math.round(50 + (valuation / maxValuation) * 45);
-              const growth = Math.round(15 + (viewCount / maxViews) * 105);
+            const colors = ["#38bdf8", "#10b981", "#60a5fa", "#f59e0b", "#64748b", "#a855f7"];
+            setChartData(
+              list.map((entry, idx) => {
+                const valuation = Number(entry.funding?.valuation) || 0;
+                const viewCount = Number(entry.views) || 0;
+                const aiScore = entry.score && entry.score > 0
+                  ? entry.score
+                  : Math.round(50 + (valuation / maxValuation) * 45);
+                const growth = Math.round(15 + (viewCount / maxViews) * 105);
 
-              return {
-                name: entry.startupName || "Startup",
-                aiScore,
-                growth,
-                raisedValue: valuation,
-                fill: colors[idx % colors.length],
-              };
-            })
-          );
-        } else if (!cancelled) {
-          setChartData(FALLBACK_BUBBLES);
+                return {
+                  name: entry.startupName || "Startup",
+                  aiScore,
+                  growth,
+                  raisedValue: valuation,
+                  fill: colors[idx % colors.length],
+                };
+              })
+            );
+          } else {
+            setChartData([]);
+          }
         }
       })
       .catch(() => {
-        if (!cancelled) setChartData(FALLBACK_BUBBLES);
+        if (!cancelled) setChartData([]);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -78,7 +73,7 @@ export default function AIScoreGrowthBubbleChart() {
     };
   }, []);
 
-  const data = chartData.length > 0 ? chartData : FALLBACK_BUBBLES;
+  const data = chartData || [];
 
   return (
     <div className="relative w-full rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm dark:border-white/[0.08] dark:bg-[#111318] transition-colors">
@@ -108,6 +103,14 @@ export default function AIScoreGrowthBubbleChart() {
         {loading ? (
           <div className="flex h-full items-center justify-center text-[12.5px] text-slate-400 dark:text-[#737d91]">
             Computing matrix…
+          </div>
+        ) : data.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center text-center p-6 text-slate-400 dark:text-[#94a3b8]">
+            <Sparkles className="h-8 w-8 mb-2 opacity-40" />
+            <p className="text-[13px] font-medium text-slate-700 dark:text-slate-300">No startup telemetry scored yet</p>
+            <p className="text-[11.5px] max-w-xs mt-1 text-slate-500 dark:text-slate-400">
+              The AI valuation matrix will plot bubbles dynamically as registered startups accumulate views and metrics.
+            </p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">

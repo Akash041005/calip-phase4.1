@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Zap, Clock, Bookmark, Loader2 } from "lucide-react";
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../../lib/usersApi";
 import { getTokens, getLiveTrades } from "../../lib/tradingApi";
+import { useAuth } from "../auth/AuthProvider";
 
 export const TOKENS_DATA = []; // Deprecated: mock catalog removed Sep 2026 — live data via lib/tradingApi.js (GET /tokens, GET /traders/leaderboard).
 
@@ -206,6 +207,7 @@ const TokenRow = memo(function TokenRow({
 
 export default function MarketTerminal() {
   const router = useRouter();
+  const { isAuthenticated, openConnectModal } = useAuth();
   // Live backend tokens (J1). TOKENS_DATA below is deprecated and no longer
   // used as render source — kept only for the named export.
   const [tokens, setTokens] = useState([]);
@@ -268,6 +270,10 @@ export default function MarketTerminal() {
 
   const handleToggleWatchlist = useCallback(async (e, tokenItem) => {
     e.stopPropagation();
+    if (!isAuthenticated) {
+      openConnectModal();
+      return;
+    }
     const targetId = tokenItem.id || tokenItem._id;
     if (!targetId) return;
 

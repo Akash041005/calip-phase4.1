@@ -12,15 +12,6 @@ import {
 import { Layers } from "lucide-react";
 import { getFundingBySector } from "../../lib/analyticsApi";
 
-const FALLBACK_SECTORS = [
-  { name: "AI & ML", value: 320000000 },
-  { name: "FinTech", value: 280000000 },
-  { name: "CleanTech", value: 195000000 },
-  { name: "HealthTech", value: 140000000 },
-  { name: "SpaceTech", value: 95000000 },
-  { name: "AgriTech", value: 75000000 },
-];
-
 function formatCurrency(val) {
   if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
   if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
@@ -29,7 +20,7 @@ function formatCurrency(val) {
 }
 
 export default function TotalFundingSector() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,18 +28,20 @@ export default function TotalFundingSector() {
     getFundingBySector()
       .then((res) => {
         const list = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : null;
-        if (!cancelled && list && list.length > 0) {
-          const mapped = list.map((item) => ({
-            name: item.sector || item.name || "Other",
-            value: Number(item.totalRaised || item.totalValuation || item.value || 0),
-          }));
-          setData(mapped.sort((a, b) => b.value - a.value));
-        } else if (!cancelled) {
-          setData(FALLBACK_SECTORS);
+        if (!cancelled) {
+          if (list && list.length > 0) {
+            const mapped = list.map((item) => ({
+              name: item.sector || item.name || "Other",
+              value: Number(item.totalRaised || item.totalValuation || item.value || 0),
+            }));
+            setData(mapped.sort((a, b) => b.value - a.value));
+          } else {
+            setData([]);
+          }
         }
       })
       .catch(() => {
-        if (!cancelled) setData(FALLBACK_SECTORS);
+        if (!cancelled) setData([]);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -58,9 +51,9 @@ export default function TotalFundingSector() {
     };
   }, []);
 
-  const chartData = data && data.length > 0 ? data : FALLBACK_SECTORS;
+  const chartData = data || [];
   const maxValue = chartData.reduce((max, d) => Math.max(max, Number(d.value) || 0), 0);
-  const xMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : 350000000;
+  const xMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : 1000000;
   const totalFunding = chartData.reduce((acc, curr) => acc + (curr.value || 0), 0);
 
   return (
@@ -91,6 +84,14 @@ export default function TotalFundingSector() {
         {loading ? (
           <div className="flex h-full items-center justify-center text-[12.5px] text-slate-400 dark:text-[#94a3b8]">
             Loading sector metrics…
+          </div>
+        ) : chartData.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center text-center p-6 text-slate-400 dark:text-[#94a3b8]">
+            <Layers className="h-8 w-8 mb-2 opacity-40" />
+            <p className="text-[13px] font-medium text-slate-700 dark:text-slate-300">No sector funding recorded yet</p>
+            <p className="text-[11.5px] max-w-xs mt-1 text-slate-500 dark:text-slate-400">
+              Sector distributions will automatically calibrate as token presales and funding rounds close on Calip.
+            </p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">

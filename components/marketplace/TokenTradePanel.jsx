@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, Loader2 } from "lucide-react";
+import { ArrowUpRight, Loader2, Wallet } from "lucide-react";
 import { getListings, createListing, buyTokens } from "../../lib/marketplaceApi";
 import { getPortfolioSummary } from "../../lib/portfolioApi";
+import { useAuth } from "../auth/AuthProvider";
 
 function unwrapListings(response) {
   if (Array.isArray(response?.data)) return response.data;
@@ -105,8 +106,14 @@ export default function TokenTradePanel({ token, startupId: startupIdProp }) {
     setNotice("");
   }
 
+  const { isAuthenticated, openConnectModal } = useAuth();
+
   async function handleSubmit(event) {
     event.preventDefault();
+    if (!isAuthenticated) {
+      openConnectModal();
+      return;
+    }
     if (busy) return;
     if (!startupId) {
       setError("This token is not linked to a startup listing yet.");
@@ -261,11 +268,23 @@ export default function TokenTradePanel({ token, startupId: startupIdProp }) {
           {notice && <p role="status" className="mb-2 break-words text-[12px] leading-relaxed text-emerald-500 dark:text-emerald-400">{notice}</p>}
           <button
             type="submit"
-            disabled={busy || loading || (mode === "buy" ? !selectedListing : availableBalance <= 0)}
+            disabled={isAuthenticated && (busy || loading || (mode === "buy" ? !selectedListing : availableBalance <= 0))}
             className="cl-btn-primary min-h-11 w-full text-[13.5px] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {busy ? <Loader2 className="h-4 w-4 animate-spin text-black" /> : <ArrowUpRight className="h-4 w-4" />}
-            {busy ? "Submitting…" : mode === "buy" ? `Buy ${token?.symbol}` : "Create Sell Listing"}
+            {busy ? (
+              <Loader2 className="h-4 w-4 animate-spin text-black" />
+            ) : !isAuthenticated ? (
+              <Wallet className="h-4 w-4" />
+            ) : (
+              <ArrowUpRight className="h-4 w-4" />
+            )}
+            {busy
+              ? "Submitting…"
+              : !isAuthenticated
+              ? `Connect Wallet to ${mode === "buy" ? "Buy" : "Sell"}`
+              : mode === "buy"
+              ? `Buy ${token?.symbol}`
+              : "Create Sell Listing"}
           </button>
           <p className="mt-2 text-[11px] leading-relaxed text-slate-500 dark:text-zinc-500">
             {mode === "buy" ? "Purchase executes against the selected active listing." : "This creates an on-chain order; execution occurs when matched."}

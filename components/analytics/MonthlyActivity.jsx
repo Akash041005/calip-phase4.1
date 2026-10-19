@@ -10,17 +10,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Activity, TrendingUp } from "lucide-react";
+import { Activity } from "lucide-react";
 import { getMonthlyActivity } from "../../lib/analyticsApi";
-
-const FALLBACK_MONTHS = [
-  { month: "Nov", presales: 6, funding: 18000000 },
-  { month: "Dec", presales: 9, funding: 27500000 },
-  { month: "Jan", presales: 14, funding: 42000000 },
-  { month: "Feb", presales: 18, funding: 56000000 },
-  { month: "Mar", presales: 22, funding: 71000000 },
-  { month: "Apr", presales: 29, funding: 94000000 },
-];
 
 function formatCurrency(val) {
   if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
@@ -30,7 +21,7 @@ function formatCurrency(val) {
 }
 
 export default function MonthlyActivity() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,19 +29,21 @@ export default function MonthlyActivity() {
     getMonthlyActivity()
       .then((res) => {
         const list = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : null;
-        if (!cancelled && list && list.length > 0) {
-          const mapped = list.map((item) => ({
-            month: item.month || "Unknown",
-            presales: Number(item.presalesCount || item.presales || 0),
-            funding: Number(item.fundingGoal || item.funding || 0),
-          }));
-          setData(mapped);
-        } else if (!cancelled) {
-          setData(FALLBACK_MONTHS);
+        if (!cancelled) {
+          if (list && list.length > 0) {
+            const mapped = list.map((item) => ({
+              month: item.month || "Unknown",
+              presales: Number(item.presalesCount || item.presales || 0),
+              funding: Number(item.fundingGoal || item.funding || 0),
+            }));
+            setData(mapped);
+          } else {
+            setData([]);
+          }
         }
       })
       .catch(() => {
-        if (!cancelled) setData(FALLBACK_MONTHS);
+        if (!cancelled) setData([]);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -60,7 +53,7 @@ export default function MonthlyActivity() {
     };
   }, []);
 
-  const chartData = data && data.length > 0 ? data : FALLBACK_MONTHS;
+  const chartData = data || [];
 
   return (
     <div className="relative w-full rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm dark:border-white/[0.08] dark:bg-[#111318] transition-colors">
@@ -98,6 +91,14 @@ export default function MonthlyActivity() {
         {loading ? (
           <div className="flex h-full items-center justify-center text-[12.5px] text-slate-400 dark:text-[#94a3b8]">
             Loading activity stream…
+          </div>
+        ) : chartData.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center text-center p-6 text-slate-400 dark:text-[#94a3b8]">
+            <Activity className="h-8 w-8 mb-2 opacity-40" />
+            <p className="text-[13px] font-medium text-slate-700 dark:text-slate-300">No monthly activity recorded yet</p>
+            <p className="text-[11.5px] max-w-xs mt-1 text-slate-500 dark:text-slate-400">
+              Monthly capital velocity will aggregate dynamically as project funding campaigns go live.
+            </p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">

@@ -21,6 +21,7 @@ import {
   LayoutDashboard,
   Users,
   CircleHelp,
+  Sparkles,
 } from "lucide-react";
 import ConnectWalletButton from "../auth/ConnectWalletButton";
 import { useAuth } from "../auth/AuthProvider";
@@ -53,6 +54,7 @@ function resolveActivePage(pathname, propActive) {
     return propActive;
   }
   if (!pathname || pathname === "/" || pathname.startsWith("/dashboard")) return "dashboard";
+  if (pathname.startsWith("/product-tour") || pathname.startsWith("/landing")) return "product-tour";
   if (pathname.startsWith("/marketplace")) return "marketplace";
   if (pathname.startsWith("/auction")) return "auction";
   if (pathname.startsWith("/analytics")) return "analytics";
@@ -71,7 +73,7 @@ export default function Navbar({ activePage: propActivePage }) {
   const currentActive = resolveActivePage(pathname, propActivePage);
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, openConnectModal } = useAuth();
   const { isDark, toggleTheme } = useTheme();
 
   const closeMobile = useCallback(() => setMobileOpen(false), []);
@@ -123,7 +125,7 @@ export default function Navbar({ activePage: propActivePage }) {
         <div className="flex items-center gap-4 lg:gap-5">
           {/* Brand Logo (Crisp in both Dark and Light mode) */}
           <Link
-            href="/dashboard"
+            href="/"
             aria-label="Calip home"
             className="flex items-center transition-opacity hover:opacity-90 shrink-0"
           >
@@ -198,8 +200,14 @@ export default function Navbar({ activePage: propActivePage }) {
                 <Link
                   key={item.key}
                   href={item.href}
+                  onClick={(e) => {
+                    if (!isAuthenticated) {
+                      e.preventDefault();
+                      openConnectModal();
+                    }
+                  }}
                   className={isActive ? userPillActiveClass : userPillInactiveClass}
-                  title={item.label}
+                  title={isAuthenticated ? item.label : `Connect wallet to view ${item.label}`}
                 >
                   <Icon className={`h-3.5 w-3.5 ${isActive ? "text-white" : "opacity-80"}`} strokeWidth={1.8} />
                   <span>{item.label}</span>
@@ -222,6 +230,16 @@ export default function Navbar({ activePage: propActivePage }) {
           <div className="shrink-0">
             <ConnectWalletButton />
           </div>
+
+          {/* Circular Product Tour Button to the right of Connect Wallet */}
+          <Link
+            href="/product-tour"
+            className="flex h-[32px] w-[32px] items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 shadow-xs dark:border-white/[0.12] dark:bg-white/[0.06] dark:text-zinc-300 dark:hover:border-white/[0.24] dark:hover:bg-white/[0.1] dark:hover:text-white transition-all shrink-0"
+            title="Product Tour"
+            aria-label="Product Tour"
+          >
+            <Sparkles className="h-4 w-4 text-amber-500" strokeWidth={2} />
+          </Link>
 
           {/* Mobile Menu Hamburger */}
           <button
@@ -287,6 +305,19 @@ export default function Navbar({ activePage: propActivePage }) {
                 );
               })}
 
+              <Link
+                href="/product-tour"
+                onClick={closeMobile}
+                className={`flex h-10 items-center gap-3 rounded-xl px-3 text-[13.5px] font-medium transition-colors ${
+                  currentActive === "product-tour"
+                    ? "bg-slate-100 border border-slate-300 text-slate-900 shadow-sm dark:bg-white/[0.08] dark:border-white/[0.12] dark:text-white"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-[#a6adbf] dark:hover:bg-white/[0.05] dark:hover:text-white"
+                }`}
+              >
+                <Sparkles className="h-4 w-4 shrink-0 text-amber-500" strokeWidth={2} />
+                <span>Product Tour</span>
+              </Link>
+
               <div className="my-2 h-px bg-slate-200 dark:bg-white/[0.07]" />
 
               {/* User Portfolio Section */}
@@ -300,7 +331,13 @@ export default function Navbar({ activePage: propActivePage }) {
                   <Link
                     key={link.key}
                     href={link.href}
-                    onClick={closeMobile}
+                    onClick={(e) => {
+                      closeMobile();
+                      if (!isAuthenticated) {
+                        e.preventDefault();
+                        openConnectModal();
+                      }
+                    }}
                     className={`flex h-10 items-center gap-3 rounded-xl px-3 text-[13.5px] font-medium transition-colors ${
                       isActive
                         ? "bg-slate-900 border border-slate-900 text-white shadow-sm dark:bg-white/[0.08] dark:border-white/[0.12] dark:text-white"
@@ -321,7 +358,13 @@ export default function Navbar({ activePage: propActivePage }) {
               </p>
               <Link
                 href="/profile"
-                onClick={closeMobile}
+                onClick={(e) => {
+                  closeMobile();
+                  if (!isAuthenticated) {
+                    e.preventDefault();
+                    openConnectModal();
+                  }
+                }}
                 className={`flex h-10 items-center gap-3 rounded-xl px-3 text-[13.5px] font-medium transition-colors ${
                   currentActive === "profile"
                     ? "bg-slate-100 border border-slate-300 text-slate-900 dark:bg-white/[0.08] dark:border-white/[0.12] dark:text-white"
@@ -333,7 +376,13 @@ export default function Navbar({ activePage: propActivePage }) {
               </Link>
               <Link
                 href="/settings"
-                onClick={closeMobile}
+                onClick={(e) => {
+                  closeMobile();
+                  if (!isAuthenticated) {
+                    e.preventDefault();
+                    openConnectModal();
+                  }
+                }}
                 className={`flex h-10 items-center gap-3 rounded-xl px-3 text-[13.5px] font-medium transition-colors ${
                   currentActive === "settings"
                     ? "bg-slate-100 border border-slate-300 text-slate-900 dark:bg-white/[0.08] dark:border-white/[0.12] dark:text-white"

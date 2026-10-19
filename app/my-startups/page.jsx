@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "../../components/dashboard/Navbar";
 import Footer from "../../components/dashboard/Footer";
-import { getMyStartups, deleteStartup } from "../../lib/startupsManageApi";
+import { getMyStartups, deleteStartup, updateStartup } from "../../lib/startupsManageApi";
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../../lib/usersApi";
 
 const statusConfig = {
@@ -160,6 +160,20 @@ export default function MyStartupsPage() {
       setToast(err?.message || "Failed to delete startup.");
     } finally {
       setRemoving(null);
+    }
+  };
+
+  const handleEditStartup = async (startup) => {
+    const newDesc = prompt("Update startup description:", startup.description || startup.startupDescription || "");
+    if (newDesc === null) return;
+    try {
+      await updateStartup(startup._id, { description: newDesc });
+      setStartups((prev) =>
+        prev.map((s) => (s._id === startup._id ? { ...s, description: newDesc, startupDescription: newDesc } : s))
+      );
+      setToast("Startup description updated successfully.");
+    } catch (err) {
+      setToast(err?.message || "Failed to update startup.");
     }
   };
 
@@ -318,6 +332,16 @@ export default function MyStartupsPage() {
                             <span>+ Watchlist</span>
                           </>
                         )}
+                      </button>
+
+                      {/* EDIT STARTUP BUTTON */}
+                      <button
+                        type="button"
+                        onClick={() => handleEditStartup(startup)}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-[12px] font-semibold text-slate-800 shadow-xs hover:bg-slate-50 hover:text-slate-900 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08] transition-all"
+                        title="Edit Startup Profile"
+                      >
+                        <span>Edit</span>
                       </button>
 
                       {/* OPEN DETAILS BUTTON */}

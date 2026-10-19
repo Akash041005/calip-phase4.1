@@ -14,6 +14,7 @@ const inter = Inter({
 });
 
 import ChimiConsentGate from "../components/auth/ChimiConsentGate";
+import ConnectWalletModal from "../components/auth/ConnectWalletModal";
 
 export const metadata = {
   title: "Calip | See the signal. Move with conviction.",
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
                 </SmoothScrollProvider>
               </ChimiConsentGate>
             </RouteAccessGate>
+            <ConnectWalletModal />
           </ThemeProvider>
         </AuthProvider>
       </body>

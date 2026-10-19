@@ -30,6 +30,7 @@ export default function ConnectWalletButton() {
     user,
     error,
     connectAndAuthenticate,
+    openConnectModal,
     logout,
     clearError,
   } = useAuth();
@@ -68,8 +69,7 @@ export default function ConnectWalletButton() {
       setMenuOpen((open) => !open);
       return;
     }
-    if (isLoading) return;
-    connectAndAuthenticate();
+    openConnectModal();
   };
 
   const handleCopy = useCallback(async (e) => {
