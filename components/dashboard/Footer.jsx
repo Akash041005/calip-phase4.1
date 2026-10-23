@@ -11,16 +11,17 @@ const platformLinks = [
 ];
 
 const forYouLinks = [
-  { label: "For Investors", href: "/overview" },
-  { label: "For Startups", href: "/founders" },
-  { label: "Join Calip.io", href: "/founders" },
+  { label: "Explore Startups", href: "/marketplace" },
+  { label: "For Founders", href: "/founders" },
+  { label: "Apply to Raise", href: "/marketplace/create" },
+  { label: "Contact & Support", href: "/contact" },
 ];
 
 const legalLinks = [
   { label: "Privacy Policy", href: "#" },
   { label: "Terms of Service", href: "#" },
-  { label: "Security", href: "#" },
-  { label: "Legal", href: "#" },
+  { label: "Security & Governance", href: "/admin" },
+  { label: "Legal Disclosures", href: "#" },
 ];
 
 const socialLinks = [

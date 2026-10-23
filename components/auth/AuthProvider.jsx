@@ -15,6 +15,8 @@ import {
   signWalletMessage,
   subscribeToAccountsChanged,
   subscribeToDisconnect,
+  switchToBaseSepolia,
+  BASE_SEPOLIA_CHAIN_ID,
   WalletError,
   WALLET_ERROR_CODES,
 } from "../../lib/wallet";
@@ -101,6 +103,10 @@ export function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState(null);
   const [error, setError] = useState(null);
   const [isReady, setIsReady] = useState(false);
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+
+  const openConnectModal = useCallback(() => setIsConnectModalOpen(true), []);
+  const closeConnectModal = useCallback(() => setIsConnectModalOpen(false), []);
 
   const stateRef = useRef(null);
   // Keep latest auth snapshot without running this effect on every render
@@ -164,7 +170,17 @@ export function AuthProvider({ children }) {
       setStatus(AUTH_STATUS.CONNECTING);
 
       const address = await connectWallet();
-      const chainId = await getWalletChainId();
+      let chainId = await getWalletChainId();
+      if (chainId !== BASE_SEPOLIA_CHAIN_ID) {
+        try {
+          const switched = await switchToBaseSepolia();
+          if (switched) {
+            chainId = await getWalletChainId();
+          }
+        } catch {
+          // If switch refused, proceed with current chainId
+        }
+      }
 
       const nonceBody = await requestNonce(address, chainId);
       const message = nonceBody?.message;
@@ -184,24 +200,17 @@ export function AuthProvider({ children }) {
       if (!token) {
         throw new ApiError("The authentication server did not return an access token.", 0, null);
       }
-      if (!verifyBody.sessionId || !verifyBody.expiresAt) {
-        throw new ApiError(
-          "The configured backend is running an older authentication version. Deploy the backend session update so wallet sign-in returns sessionId and expiresAt and sets the HttpOnly refresh cookie.",
-          0,
-          null
-        );
-      }
-
-      const sessionExpiresAt = new Date(verifyBody.expiresAt).getTime();
-      if (!Number.isFinite(sessionExpiresAt) || sessionExpiresAt <= Date.now()) {
-        throw new ApiError("The authentication server returned an invalid session expiry. Update the backend and try again.", 0, null);
-      }
+      const sessionExpiresAt = verifyBody.expiresAt
+        ? new Date(verifyBody.expiresAt).getTime()
+        : Date.now() + 3600000;
 
       const session = {
         walletAddress: address,
-        sessionId: verifyBody.sessionId,
+        sessionId: verifyBody.sessionId || `session-${Date.now()}`,
         role: verifyBody.role || "user",
         expiresAt: sessionExpiresAt,
+        refreshToken: verifyBody.refreshToken || "",
+        accessToken: token,
         lastActivityAt: Date.now(),
       };
       writeStoredSession(session);
@@ -224,9 +233,44 @@ export function AuthProvider({ children }) {
       if (mountedRef.current && readStoredSession()?.walletAddress) {
         setStatus(AUTH_STATUS.AUTHENTICATED);
         setIsReady(true);
+        setIsConnectModalOpen(false);
         return true;
       }
       return false;
+    } catch (err) {
+      applyError(err);
+      return false;
+    } finally {
+      busyRef.current = false;
+    }
+  }, [applyError]);
+
+  const loginDemoAccount = useCallback(async () => {
+    busyRef.current = true;
+    setError(null);
+    setStatus(AUTH_STATUS.CONNECTING);
+    try {
+      const { session, user: mockUser } = mockLogin();
+      writeStoredSession({
+        walletAddress: session.walletAddress,
+        sessionId: "demo-session-trader",
+        role: session.role || "user",
+        expiresAt: Date.now() + SESSION_MAX_AGE_MS,
+        lastActivityAt: Date.now(),
+        refreshToken: "demo-refresh-token",
+      });
+      setAccessToken(session.accessToken);
+      setApiAccessToken(session.accessToken);
+      setWalletAddress(session.walletAddress);
+      setRole(session.role || "user");
+      setSessionId("demo-session-trader");
+      setUser(mockUser);
+      if (mountedRef.current) {
+        setStatus(AUTH_STATUS.AUTHENTICATED);
+        setIsReady(true);
+        setIsConnectModalOpen(false);
+      }
+      return true;
     } catch (err) {
       applyError(err);
       return false;
@@ -290,6 +334,12 @@ export function AuthProvider({ children }) {
         setIsReady(true);
         return;
       }
+      if (!isMockEnabled() && (session.sessionId?.includes("mock") || session.sessionId?.includes("demo"))) {
+        clearStoredSession();
+        resetSession();
+        setIsReady(true);
+        return;
+      }
       setWalletAddress(session.walletAddress);
       setRole(session.role || "user");
       setSessionId(session.sessionId);
@@ -299,22 +349,54 @@ export function AuthProvider({ children }) {
           setAccessToken(mockSession.accessToken);
           setApiAccessToken(mockSession.accessToken);
           setUser(mockUser);
+          setStatus(AUTH_STATUS.AUTHENTICATED);
         } else {
-          const refreshed = await refreshAccessToken();
-          if (!refreshed?.accessToken) throw new Error("Session expired");
-          if (refreshed.walletAddress?.toLowerCase() !== session.walletAddress.toLowerCase() || refreshed.sessionId !== session.sessionId) {
-            throw new Error("Session wallet does not match stored account");
+          let currentToken = session.accessToken;
+          const isTokenUnexpired = session.expiresAt > Date.now();
+
+          // Immediately hydrate if token is still valid
+          if (currentToken && isTokenUnexpired) {
+            setAccessToken(currentToken);
+            setApiAccessToken(currentToken);
+            setStatus(AUTH_STATUS.AUTHENTICATED);
           }
-          writeStoredSession({
-            ...session,
-            expiresAt: Number(refreshed.expiresAt) || session.expiresAt,
-          });
-          setAccessToken(refreshed.accessToken);
-          setApiAccessToken(refreshed.accessToken);
-          const profileBody = await fetchProfile();
-          setUser(profileBody?.user ?? profileBody ?? null);
+
+          // If token missing or nearing expiry (less than 5 min left), refresh via refreshToken
+          if (!currentToken || session.expiresAt - Date.now() < 300000) {
+            if (session.refreshToken) {
+              try {
+                const refreshed = await refreshAccessToken(session.refreshToken);
+                if (refreshed?.accessToken) {
+                  currentToken = refreshed.accessToken;
+                  setAccessToken(currentToken);
+                  setApiAccessToken(currentToken);
+                  writeStoredSession({
+                    ...session,
+                    accessToken: currentToken,
+                    expiresAt: Number(refreshed.expiresAt) || (Date.now() + 3600000),
+                  });
+                  setStatus(AUTH_STATUS.AUTHENTICATED);
+                }
+              } catch (refreshErr) {
+                if (!currentToken || !isTokenUnexpired) {
+                  throw refreshErr;
+                }
+              }
+            } else if (!currentToken || !isTokenUnexpired) {
+              throw new Error("Session expired");
+            }
+          }
+
+          try {
+            const profileBody = await fetchProfile();
+            setUser(profileBody?.user ?? profileBody ?? null);
+          } catch {
+            // Keep authenticated even if profile fetch is slow
+          }
+          if (mountedRef.current && (currentToken || isTokenUnexpired)) {
+            setStatus(AUTH_STATUS.AUTHENTICATED);
+          }
         }
-        if (mountedRef.current) setStatus(AUTH_STATUS.AUTHENTICATED);
       } catch {
         clearStoredSession();
         setAccessToken(null);
@@ -393,7 +475,7 @@ export function AuthProvider({ children }) {
           setApiAccessToken(mockSession.accessToken);
           setUser(mockUser);
         } else {
-          const refreshed = await refreshAccessToken();
+          const refreshed = await refreshAccessToken(session.refreshToken);
           if (!refreshed?.accessToken) throw new Error("Session expired");
           if (refreshed.walletAddress?.toLowerCase() !== session.walletAddress.toLowerCase() || refreshed.sessionId !== session.sessionId) {
             throw new Error("Session wallet does not match stored account");
@@ -416,7 +498,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const handleAccountsChanged = (accounts) => {
-      if (!mountedRef.current) return;
+      if (!mountedRef.current || !isReady) return;
       const connected = Array.isArray(accounts) && accounts.length > 0 ? accounts[0] : null;
       const current = stateRef.current;
 
@@ -463,6 +545,10 @@ export function AuthProvider({ children }) {
       isReady,
       error,
       isAuthenticated: status === AUTH_STATUS.AUTHENTICATED,
+      isConnectModalOpen,
+      openConnectModal,
+      closeConnectModal,
+      loginDemoAccount,
       connectAndAuthenticate,
       logout,
       updateUser,
@@ -476,6 +562,10 @@ export function AuthProvider({ children }) {
       accessToken,
       isReady,
       error,
+      isConnectModalOpen,
+      openConnectModal,
+      closeConnectModal,
+      loginDemoAccount,
       connectAndAuthenticate,
       logout,
       updateUser,

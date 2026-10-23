@@ -22,6 +22,7 @@ import {
   Wallet,
   X,
 } from "lucide-react";
+import { searchStartups } from "../../lib/startupsApi";
 import { MOCK_STARTUPS } from "../../lib/mock/startups";
 import { mockAddToWatchlist, mockRemoveFromWatchlist } from "../../lib/mock/watchlist";
 import { isMockEnabled } from "../../lib/mock/enabled";
@@ -60,9 +61,7 @@ function getWatchlistSnapshot() {
     return "";
   }
 }
-const navItems = [
-  ["Discover", "#opportunities"],
-];
+const navItems = [];
 const sectors = ["All sectors", "FinTech", "CleanTech", "AI & ML", "HealthTech", "SpaceTech", "AgriTech"];
 const features = [
   {
@@ -281,14 +280,27 @@ export default function LandingPage() {
     return () => window.clearTimeout(timer);
   }, [toast]);
 
+  const [liveStartups, setLiveStartups] = useState([]);
+  useEffect(() => {
+    if (!isMockEnabled()) {
+      searchStartups().then((res) => {
+        const list = res?.data?.startups ?? res?.startups ?? (Array.isArray(res?.data) ? res.data : []);
+        setLiveStartups(Array.isArray(list) ? list : []);
+      }).catch(() => {
+        setLiveStartups([]);
+      });
+    }
+  }, []);
+
   const companies = useMemo(() => {
     const search = query.trim().toLowerCase();
-    return MOCK_STARTUPS.filter((company) => {
+    const source = isMockEnabled() ? MOCK_STARTUPS : liveStartups;
+    return source.filter((company) => {
       const matchesSector = sector === "All sectors" || company.industrySector === sector;
-      const haystack = `${company.startupName} ${company.industrySector} ${company.startupStage} ${company.description}`.toLowerCase();
+      const haystack = `${company.startupName || ""} ${company.industrySector || ""} ${company.startupStage || ""} ${company.description || ""}`.toLowerCase();
       return matchesSector && (!search || haystack.includes(search));
     });
-  }, [query, sector]);
+  }, [query, sector, liveStartups]);
 
   const [prevFilter, setPrevFilter] = useState({ sector, query });
   if (prevFilter.sector !== sector || prevFilter.query !== query) {
@@ -355,38 +367,21 @@ export default function LandingPage() {
           <Link href="/" className="cl-brand" aria-label="Calip home">
             <Image src={`${assets}/caliplogo.png`} alt="Calip" width={98} height={34} priority className="cl-brand-logo" />
           </Link>
-          <nav className="cl-nav-links" aria-label="Main navigation">
-            {navItems.map(([label, href]) => href.startsWith("/") ? (
-              <Link key={label} href={href}>{label}</Link>
-            ) : (
-              <a key={label} href={href}>{label}</a>
-            ))}
-          </nav>
           <div className="cl-nav-actions">
-            <button className="cl-wallet-button" type="button" onClick={() => { clearError(); setWalletOpen(true); }}>
-              <Wallet size={16} /> {sampleWallet ? `${sampleWallet.slice(0, 6)}...${sampleWallet.slice(-4)}` : "Connect wallet"}
-            </button>
-            <button
-              className="cl-menu-button"
-              type="button"
-              aria-expanded={menuOpen}
-              aria-label={menuOpen ? "Close navigation" : "Open navigation"}
-              onClick={() => setMenuOpen((open) => !open)}
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-2 text-[13px] font-semibold text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-500/60 transition-all shadow-xs"
             >
-              {menuOpen ? <X size={21} /> : <Menu size={21} />}
-            </button>
+              <span>Markets Terminal</span>
+              <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
         {menuOpen && (
           <nav className="cl-mobile-menu" aria-label="Mobile navigation">
-            {navItems.map(([label, href]) => href.startsWith("/") ? (
-              <Link key={label} href={href} onClick={() => setMenuOpen(false)}>{label}<ArrowUpRight size={15} /></Link>
-            ) : (
-              <a key={label} href={href} onClick={() => setMenuOpen(false)}>{label}<ArrowDownRight size={15} /></a>
-            ))}
-            <button type="button" onClick={() => { setMenuOpen(false); clearError(); setWalletOpen(true); }}>
-              {sampleWallet ? "Wallet settings" : "Connect wallet"}<Wallet size={15} />
-            </button>
+            <Link href="/" onClick={() => setMenuOpen(false)}>
+              Markets Terminal <ArrowRight size={15} />
+            </Link>
           </nav>
         )}
       </header>

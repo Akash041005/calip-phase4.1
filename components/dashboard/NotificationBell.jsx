@@ -54,7 +54,11 @@ export default function NotificationBell() {
     }
     return () => {
       cancelled = true;
-      if (unsub) unsub();
+      try {
+        if (typeof unsub === "function") unsub();
+      } catch {
+        // Safe unmount
+      }
     };
   }, [handlePushNotification]);
 

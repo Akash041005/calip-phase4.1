@@ -26,7 +26,8 @@ import { useAuth } from "../auth/AuthProvider";
 import { fetchProfile } from "../../lib/authApi";
 import { getWatchlist, removeFromWatchlist } from "../../lib/usersApi";
 import { getMyStartups } from "../../lib/startupsManageApi";
-import { getTradeHistory, getListings } from "../../lib/marketplaceApi";
+import { getTradeHistory, getListings, cancelListing, updateListingPrice } from "../../lib/marketplaceApi";
+import { getParticipationHistory } from "../../lib/participationApi";
 
 export default function UserInsights() {
   const router = useRouter();
@@ -40,11 +41,13 @@ export default function UserInsights() {
   const [myStartups, setMyStartups] = useState([]);
   const [tradeHistory, setTradeHistory] = useState([]);
   const [activeListings, setActiveListings] = useState([]);
+  const [participations, setParticipations] = useState([]);
 
   // Loading & error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [removingWatchlistId, setRemovingWatchlistId] = useState(null);
+  const [actionLoadingId, setActionLoadingId] = useState(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
   useEffect(() => {
@@ -54,12 +57,13 @@ export default function UserInsights() {
       setLoading(true);
       setError(null);
       try {
-        const [profRes, watchRes, startupsRes, historyRes, listingsRes] = await Promise.allSettled([
+        const [profRes, watchRes, startupsRes, historyRes, listingsRes, partRes] = await Promise.allSettled([
           fetchProfile().catch(() => null),
           getWatchlist().catch(() => null),
           getMyStartups().catch(() => null),
           getTradeHistory(1, 10).catch(() => null),
           getListings(1, 10).catch(() => null),
+          getParticipationHistory().catch(() => null),
         ]);
 
         if (cancelled) return;
@@ -87,6 +91,11 @@ export default function UserInsights() {
           const lists = listingsRes.value?.data?.listings || listingsRes.value?.listings || (Array.isArray(listingsRes.value) ? listingsRes.value : []);
           setActiveListings(lists.filter(Boolean));
         }
+
+        if (partRes.status === "fulfilled" && partRes.value) {
+          const parts = partRes.value?.data || partRes.value?.participations || (Array.isArray(partRes.value) ? partRes.value : []);
+          setParticipations(parts.filter(Boolean));
+        }
       } catch (err) {
         console.error("Failed to load user insights:", err);
         if (!cancelled) setError("Unable to load all profile insights. Some services may be unavailable.");
@@ -100,6 +109,35 @@ export default function UserInsights() {
       cancelled = true;
     };
   }, [reloadTrigger]);
+
+  const handleCancelListing = async (listingId) => {
+    if (!confirm("Are you sure you want to cancel this secondary market listing?")) return;
+    setActionLoadingId(listingId);
+    try {
+      await cancelListing(listingId);
+      setActiveListings((prev) => prev.filter((l) => (l._id || l.id) !== listingId));
+    } catch (err) {
+      alert("Failed to cancel listing: " + (err.message || "Unknown error"));
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleUpdatePrice = async (listingId, currentPrice) => {
+    const newPrice = prompt("Enter new price per token:", currentPrice || "0.05");
+    if (!newPrice || isNaN(Number(newPrice)) || Number(newPrice) <= 0) return;
+    setActionLoadingId(listingId);
+    try {
+      await updateListingPrice(listingId, Number(newPrice));
+      setActiveListings((prev) =>
+        prev.map((l) => (l._id || l.id) === listingId ? { ...l, pricePerToken: Number(newPrice) } : l)
+      );
+    } catch (err) {
+      alert("Failed to update listing price: " + (err.message || "Unknown error"));
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
 
   const handleRemoveFromWatchlist = async (id, e) => {
     if (e) e.stopPropagation();
@@ -588,48 +626,135 @@ export default function UserInsights() {
 
             {/* TAB: ACTIVITY */}
             {activeTab === "activity" && (
-              <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-4 transition-colors">
-                <div className="pb-3 border-b border-slate-200 dark:border-white/[0.08]">
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">Marketplace Activity & Trades</h2>
-                  <p className="text-[12.5px] text-slate-500 dark:text-slate-400">Verified backend trade ledger and market actions.</p>
+              <div className="space-y-6">
+                {/* 1. Active Secondary Listings */}
+                <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
+                  <div className="pb-3 border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between">
+                    <div>
+                      <h2 className="text-lg font-bold text-slate-900 dark:text-white">Active Secondary Market Listings</h2>
+                      <p className="text-[12.5px] text-slate-500 dark:text-slate-400">Manage orders, update unit prices, or cancel listings.</p>
+                    </div>
+                    <span className="rounded-full bg-violet-600/10 px-2.5 py-1 text-xs font-semibold text-violet-500">
+                      {activeListings.length} Active
+                    </span>
+                  </div>
+
+                  {activeListings.length === 0 ? (
+                    <div className="text-center py-10 text-slate-500 text-xs">
+                      You currently have no active sell orders on the secondary marketplace.
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                      {activeListings.map((l) => (
+                        <div key={l._id || l.id} className="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-slate-900 dark:text-white text-[14px]">
+                                {l.tokenAmount || l.amount} Tokens
+                              </span>
+                              <span className="rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 text-[10px] font-bold uppercase">
+                                {l.status || "ACTIVE"}
+                              </span>
+                            </div>
+                            <div className="mt-1 text-xs text-slate-500 font-mono">
+                              Unit Price: <strong className="text-slate-900 dark:text-white">${l.pricePerToken}</strong> | Total: ${(Number(l.pricePerToken || 0) * Number(l.tokenAmount || l.amount || 0)).toFixed(2)}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              disabled={actionLoadingId === (l._id || l.id)}
+                              onClick={() => handleUpdatePrice(l._id || l.id, l.pricePerToken)}
+                              className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/[0.1] dark:bg-white/[0.05] dark:text-slate-300 dark:hover:text-white transition"
+                            >
+                              Edit Price
+                            </button>
+                            <button
+                              disabled={actionLoadingId === (l._id || l.id)}
+                              onClick={() => handleCancelListing(l._id || l.id)}
+                              className="rounded-lg border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-xs font-semibold text-rose-500 hover:bg-rose-500/20 transition"
+                            >
+                              Cancel Listing
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {tradeHistory.length === 0 ? (
-                  <div className="text-center py-16 border border-dashed border-slate-200 bg-slate-50/50 rounded-xl dark:border-white/[0.08] dark:bg-white/[0.01]">
-                    <TrendingUp className="w-10 h-10 text-slate-400 dark:text-slate-500 mx-auto mb-3" />
-                    <p className="text-base font-semibold text-slate-900 dark:text-white">No trade activity recorded</p>
-                    <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
-                      Your completed purchases, orders, and secondary listings will show up here.
-                    </p>
+                {/* 2. Primary Auction Participations */}
+                <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
+                  <div className="pb-3 border-b border-slate-200 dark:border-white/[0.08]">
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Primary Auction Allocations</h2>
+                    <p className="text-[12.5px] text-slate-500 dark:text-slate-400">Crowdfunding commitments recorded from primary presale rounds.</p>
                   </div>
-                ) : (
-                  <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                    {tradeHistory.map((trade, idx) => (
-                      <div key={trade._id || idx} className="py-3.5 flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 border border-slate-200 dark:bg-white/[0.05] dark:text-white dark:border-white/[0.08] flex items-center justify-center">
-                            <ArrowLeftRight className="w-3.5 h-3.5" />
-                          </div>
-                          <div>
-                            <div className="font-semibold text-slate-900 dark:text-white text-[13.5px]">
-                              {trade.tokenAmount ? `${trade.tokenAmount} Tokens` : "Market Trade"}
-                            </div>
-                            <div className="text-[11.5px] text-slate-500">
-                              {trade.createdAt ? new Date(trade.createdAt).toLocaleString() : "Recently"}
-                            </div>
-                          </div>
-                        </div>
 
-                        <div className="text-right">
-                          <div className="font-mono font-bold text-slate-900 dark:text-white text-[13px]">
-                            {trade.pricePerToken ? `${trade.pricePerToken} per token` : "Executed"}
+                  {participations.length === 0 ? (
+                    <div className="text-center py-10 text-slate-500 text-xs">
+                      No primary auction commitments found for your connected wallet.
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                      {participations.map((p, i) => (
+                        <div key={p._id || i} className="py-3.5 flex items-center justify-between text-xs">
+                          <div>
+                            <span className="font-bold text-slate-900 dark:text-white text-[13.5px]">
+                              {p.startupName || "Startup Auction"}
+                            </span>
+                            <div className="text-slate-500 text-[11px] font-mono mt-0.5">
+                              Commitment: ${Number(p.totalInvested || p.amount || 0).toLocaleString()} • Allocated: {Number(p.tokensAllocated || p.tokenAmount || 0).toLocaleString()} Tokens
+                            </div>
                           </div>
-                          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">Completed</span>
+                          <span className="rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-2.5 py-1 text-[10px] font-bold uppercase">
+                            Confirmed
+                          </span>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Trade History */}
+                <div className="rounded-xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-4 transition-colors">
+                  <div className="pb-3 border-b border-slate-200 dark:border-white/[0.08]">
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Marketplace Trade History</h2>
+                    <p className="text-[12.5px] text-slate-500 dark:text-slate-400">Verified trade execution ledger.</p>
                   </div>
-                )}
+
+                  {tradeHistory.length === 0 ? (
+                    <div className="text-center py-10 text-slate-500 text-xs">
+                      No completed trades recorded yet.
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                      {tradeHistory.map((trade, idx) => (
+                        <div key={trade._id || idx} className="py-3.5 flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 border border-slate-200 dark:bg-white/[0.05] dark:text-white dark:border-white/[0.08] flex items-center justify-center">
+                              <ArrowLeftRight className="w-3.5 h-3.5" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-slate-900 dark:text-white text-[13.5px]">
+                                {trade.tokenAmount ? `${trade.tokenAmount} Tokens` : "Market Trade"}
+                              </div>
+                              <div className="text-[11.5px] text-slate-500">
+                                {trade.createdAt ? new Date(trade.createdAt).toLocaleString() : "Recently"}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="text-right">
+                            <div className="font-mono font-bold text-slate-900 dark:text-white text-[13px]">
+                              {trade.pricePerToken ? `${trade.pricePerToken} per token` : "Executed"}
+                            </div>
+                            <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">Completed</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

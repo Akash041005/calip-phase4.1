@@ -6,6 +6,7 @@ import { placePresaleBid, getPresaleBids } from "../../lib/presalesApi";
 import { X, Check, Gavel } from "lucide-react";
 import ModalPortal from "../ui/ModalPortal";
 import TokenSparkline from "../marketplace/TokenSparkline";
+import { useAuth } from "../auth/AuthProvider";
 
 const badgeStyles = {
   live: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
@@ -39,6 +40,7 @@ function mapStatus(item) {
 
 export default function AuctionCard({ item }) {
   const router = useRouter();
+  const { isAuthenticated, openConnectModal } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState("");
   const [tokenAmount, setTokenAmount] = useState("10");
@@ -231,11 +233,18 @@ export default function AuctionCard({ item }) {
         <div className="mt-4">
           <button
             type="button"
-            onClick={() => status === "live" && setModalOpen(true)}
+            onClick={() => {
+              if (status !== "live") return;
+              if (!isAuthenticated) {
+                openConnectModal();
+                return;
+              }
+              setModalOpen(true);
+            }}
             disabled={status === "closed"}
             className="cl-btn-primary h-[38px] w-full text-[13px] disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {button.label}
+            {!isAuthenticated && status === "live" ? "Connect Wallet to Bid" : button.label}
           </button>
         </div>
       </div>

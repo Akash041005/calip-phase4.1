@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Star, Loader2 } from "lucide-react";
 import { addToWatchlist, removeFromWatchlist } from "../../lib/usersApi";
+import { useAuth } from "../auth/AuthProvider";
 
 // Reusable watchlist toggle. Structured for the real backend:
 // same props + labels work unchanged once lib/*Api reconnects.
@@ -14,10 +15,15 @@ export default function WatchlistButton({
   showLabel = true,
   className = "",
 }) {
+  const { isAuthenticated, openConnectModal } = useAuth();
   const [status, setStatus] = useState("idle"); // idle | adding | removing | error
 
   async function handleClick(e) {
     e.stopPropagation();
+    if (!isAuthenticated) {
+      openConnectModal();
+      return;
+    }
     if (!startupId || status === "adding" || status === "removing") return;
     const adding = !watched;
     setStatus(adding ? "adding" : "removing");
