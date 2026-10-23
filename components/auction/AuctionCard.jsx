@@ -193,7 +193,7 @@ export default function AuctionCard({ item }) {
             </p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 dark:border-white/[0.06] dark:bg-[#0e1015]">
-            <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold">Equity</p>
+            <p className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-zinc-500 font-semibold">Allocated</p>
             <p className="text-[14px] font-semibold text-slate-900 dark:text-white mt-0.5 font-mono">
               {equityPercent}%
             </p>

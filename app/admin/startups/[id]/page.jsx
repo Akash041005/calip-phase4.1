@@ -10,6 +10,7 @@ import {
   rejectAdminStartup,
   requestStartupInfo,
   toggleStartupVerification,
+  launchAdminAuction,
 } from "../../../../lib/adminApi";
 import {
   ArrowLeft,
@@ -22,6 +23,7 @@ import {
   AlertTriangle,
   Clock,
   Sparkles,
+  Rocket,
   Loader2,
   User,
   Mail,
@@ -47,6 +49,59 @@ export default function StartupDossierPage() {
   const [approveRemarks, setApproveRemarks] = useState("Vetted and approved for fundraising presale");
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+
+  // Auction launch states
+  const [showAuctionModal, setShowAuctionModal] = useState(false);
+  const [auctionTitle, setAuctionTitle] = useState("");
+  const [tokenPrice, setTokenPrice] = useState("10");
+  const [totalTokens, setTotalTokens] = useState("100000");
+  const [minInvestment, setMinInvestment] = useState("500");
+  const [maxInvestment, setMaxInvestment] = useState("50000");
+  const [durationDays, setDurationDays] = useState("7");
+  const [auctionLaunching, setAuctionLaunching] = useState(false);
+  const [auctionSuccess, setAuctionSuccess] = useState(null);
+  const [auctionError, setAuctionError] = useState("");
+
+  useEffect(() => {
+    if (startup?.startupName && !auctionTitle) {
+      setAuctionTitle(`${startup.startupName} Community Auction Round`);
+    }
+  }, [startup, auctionTitle]);
+
+  const handleLaunchAuction = async (e) => {
+    if (e) e.preventDefault();
+    setAuctionLaunching(true);
+    setAuctionError("");
+    try {
+      const price = Number(tokenPrice);
+      const total = Number(totalTokens);
+      const min = Number(minInvestment) || 0;
+      const max = Number(maxInvestment) || 0;
+      const days = Number(durationDays) || 7;
+
+      if (!price || price <= 0) throw new Error("Price per token must be greater than zero.");
+      if (!total || total <= 0) throw new Error("Total tokens must be greater than zero.");
+
+      const payload = {
+        title: auctionTitle.trim() || `${startup.startupName} Community Auction Round`,
+        tokenPrice: price,
+        totalTokens: total,
+        minInvestment: min,
+        maxInvestment: max,
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString(),
+      };
+
+      const res = await launchAdminAuction(startupId, payload);
+      setAuctionSuccess(res?.presale || res?.data || true);
+      setActionSuccess(`🚀 Community auction successfully launched for ${startup.startupName}!`);
+      await loadStartup();
+    } catch (err) {
+      setAuctionError(err.message || "Failed to launch auction.");
+    } finally {
+      setAuctionLaunching(false);
+    }
+  };
 
   useEffect(() => {
     const token = getAdminToken();
@@ -171,22 +226,34 @@ export default function StartupDossierPage() {
               {status}
             </span>
 
-            {status !== "approved" && (
+            {status === "approved" ? (
               <button
-                onClick={() => setShowApproveModal(true)}
-                className="rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition cursor-pointer shadow-md"
+                type="button"
+                onClick={() => setShowAuctionModal(true)}
+                className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-400 px-3.5 py-1.5 text-xs font-bold text-slate-950 hover:from-emerald-400 hover:to-teal-300 transition cursor-pointer shadow-md"
               >
-                Approve Startup
+                <Rocket className="h-3.5 w-3.5" />
+                Launch Community Auction
               </button>
-            )}
-
-            {status !== "rejected" && (
-              <button
-                onClick={() => setShowRejectModal(true)}
-                className="rounded-lg bg-rose-500/20 border border-rose-500/30 px-3.5 py-1.5 text-xs font-semibold text-rose-400 hover:bg-rose-500/30 transition cursor-pointer"
-              >
-                Reject Application
-              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setShowApproveModal(true)}
+                  className="rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition cursor-pointer shadow-md"
+                >
+                  Approve Startup
+                </button>
+                {status !== "rejected" && (
+                  <button
+                    type="button"
+                    onClick={() => setShowRejectModal(true)}
+                    className="rounded-lg bg-rose-500/20 border border-rose-500/30 px-3.5 py-1.5 text-xs font-semibold text-rose-400 hover:bg-rose-500/30 transition cursor-pointer"
+                  >
+                    Reject Application
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -397,6 +464,37 @@ export default function StartupDossierPage() {
                 </p>
               </div>
             </div>
+
+            {/* Community Auction Status Card */}
+            {status === "approved" && (
+              <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-b from-[#111822] to-[#111318] p-6 shadow-xl">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <Rocket className="h-5 w-5 text-emerald-400" />
+                  <h3 className="text-sm font-bold text-white">Community Auction Status</h3>
+                </div>
+                <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                  This startup is approved and eligible for community token auctions. You can launch an auction round to open public bidding on Base Sepolia.
+                </p>
+                <div className="flex flex-col gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowAuctionModal(true)}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-2.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition shadow-lg cursor-pointer"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Launch Community Auction
+                  </button>
+                  <Link
+                    href="/auction/live"
+                    target="_blank"
+                    className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-semibold text-white hover:bg-white/10 transition"
+                  >
+                    <span>View Public Live Auctions</span>
+                    <ExternalLink className="h-3.5 w-3.5 text-slate-400" />
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>
@@ -490,6 +588,204 @@ export default function StartupDossierPage() {
                 {actionLoading ? "Processing Rejection..." : "Confirm Rejection"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* LAUNCH AUCTION MODAL */}
+      {showAuctionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-2xl border border-emerald-500/30 bg-[#11151f] p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Rocket className="h-5 w-5 text-emerald-400" />
+                Launch Community Auction
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAuctionModal(false);
+                  setAuctionError("");
+                  setAuctionSuccess(null);
+                }}
+                className="text-slate-400 hover:text-white transition"
+              >
+                <XCircle className="h-5 w-5" />
+              </button>
+            </div>
+
+            {auctionSuccess ? (
+              <div className="py-6 text-center space-y-4">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  <CheckCircle2 className="h-8 w-8" />
+                </div>
+                <h4 className="text-lg font-bold text-white">Auction is Live!</h4>
+                <p className="text-xs text-slate-400 leading-relaxed max-w-sm mx-auto">
+                  The community auction round has been created in MongoDB and is now open for public bids from retail investors.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                  <Link
+                    href="/auction/live"
+                    target="_blank"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition"
+                  >
+                    <span>View on Live Auctions</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAuctionModal(false);
+                      setAuctionSuccess(null);
+                    }}
+                    className="w-full sm:w-auto rounded-lg border border-white/10 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:bg-white/5 transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleLaunchAuction} className="mt-4 space-y-4">
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Configure token economics and auction rules for <strong className="text-white">{startup.startupName}</strong>. Bidding will immediately open on the public marketplace.
+                </p>
+
+                {auctionError && (
+                  <div className="rounded-lg bg-rose-500/10 border border-rose-500/30 p-3 text-xs text-rose-400">
+                    {auctionError}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">
+                    Auction Round Title
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={auctionTitle}
+                    onChange={(e) => setAuctionTitle(e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-[#090a0f] p-2.5 text-xs text-white outline-none focus:border-emerald-400 transition"
+                    placeholder="e.g. AeroDynamics Community Genesis Round"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">
+                      Token Price (₹)
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min="0.01"
+                      step="any"
+                      value={tokenPrice}
+                      onChange={(e) => setTokenPrice(e.target.value)}
+                      className="w-full rounded-lg border border-white/10 bg-[#090a0f] p-2.5 text-xs text-white outline-none focus:border-emerald-400 transition font-mono"
+                      placeholder="10"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">
+                      Total Tokens for Auction
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      step="1"
+                      value={totalTokens}
+                      onChange={(e) => setTotalTokens(e.target.value)}
+                      className="w-full rounded-lg border border-white/10 bg-[#090a0f] p-2.5 text-xs text-white outline-none focus:border-emerald-400 transition font-mono"
+                      placeholder="100000"
+                    />
+                  </div>
+                </div>
+
+                {/* Live Target Raise calculation */}
+                <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 flex items-center justify-between text-xs">
+                  <span className="text-emerald-400 font-semibold">Total Target Raise:</span>
+                  <span className="font-mono font-bold text-white text-sm">
+                    ₹{((Number(tokenPrice) || 0) * (Number(totalTokens) || 0)).toLocaleString("en-IN")}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">
+                      Min Bid (₹)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={minInvestment}
+                      onChange={(e) => setMinInvestment(e.target.value)}
+                      className="w-full rounded-lg border border-white/10 bg-[#090a0f] p-2.5 text-xs text-white outline-none focus:border-emerald-400 transition font-mono"
+                      placeholder="500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">
+                      Max Bid (₹) (0 for unlimited)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={maxInvestment}
+                      onChange={(e) => setMaxInvestment(e.target.value)}
+                      className="w-full rounded-lg border border-white/10 bg-[#090a0f] p-2.5 text-xs text-white outline-none focus:border-emerald-400 transition font-mono"
+                      placeholder="50000"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">
+                    Auction Duration
+                  </label>
+                  <select
+                    value={durationDays}
+                    onChange={(e) => setDurationDays(e.target.value)}
+                    className="w-full rounded-lg border border-white/10 bg-[#090a0f] p-2.5 text-xs text-white outline-none focus:border-emerald-400 transition cursor-pointer"
+                  >
+                    <option value="3">3 Days (Fast Round)</option>
+                    <option value="7">7 Days (Standard 1 Week)</option>
+                    <option value="14">14 Days (2 Weeks)</option>
+                    <option value="30">30 Days (1 Month)</option>
+                  </select>
+                </div>
+
+                <div className="mt-6 flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setShowAuctionModal(false)}
+                    className="rounded-lg border border-white/10 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-white/5 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={auctionLaunching}
+                    className="flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition cursor-pointer disabled:opacity-50"
+                  >
+                    {auctionLaunching ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        Launching...
+                      </>
+                    ) : (
+                      <>
+                        <Rocket className="h-3.5 w-3.5" />
+                        Confirm & Launch Auction
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

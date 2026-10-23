@@ -41,21 +41,23 @@ export default function InsightsPage() {
             : null;
 
         const merged = {
-          ...(startupData || {}),
           ...(insightsData || {}),
+          ...(startupData || {}),
           startupName:
-            insightsData?.startupName ||
             startupData?.startupName ||
+            insightsData?.startupName ||
             "Startup Overview",
           industrySector:
-            insightsData?.category ||
             startupData?.industrySector ||
             startupData?.category ||
+            insightsData?.category ||
             "Web3 Tech",
           currentStartupValuation:
-            insightsData?.valuation ||
+            startupData?.currentStartupValuation ||
             startupData?.funding?.valuation ||
-            startupData?.currentStartupValuation,
+            insightsData?.valuation,
+          stage: startupData?.stage || startupData?.status || "pending",
+          status: startupData?.status || startupData?.stage || "pending",
         };
 
         setData(merged);

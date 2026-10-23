@@ -475,8 +475,8 @@ export default function AdminDashboardPage() {
               </p>
 
               <div className="mt-6 space-y-4">
-                {fundraises.map((f) => (
-                  <div key={f._id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-xl border border-white/[0.08] bg-[#090a0f] p-5 gap-4">
+                {fundraises.map((f, idx) => (
+                  <div key={f._id || f.id || `fundraise-${idx}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-xl border border-white/[0.08] bg-[#090a0f] p-5 gap-4">
                     <div>
                       <div className="flex items-center gap-2">
                         <h3 className="font-bold text-white">{f.startupName || "Startup Auction Round"}</h3>
@@ -520,8 +520,8 @@ export default function AdminDashboardPage() {
             <p className="mt-1 text-xs text-slate-400">Every sensitive administrative operation is signed, verified, and preserved.</p>
 
             <div className="mt-6 divide-y divide-white/[0.06]">
-              {auditEvents.map((ev) => (
-                <div key={ev._id} className="py-3.5 flex items-center justify-between text-xs">
+              {auditEvents.map((ev, idx) => (
+                <div key={ev._id || ev.id || `audit-${idx}`} className="py-3.5 flex items-center justify-between text-xs">
                   <div>
                     <span className="font-mono font-bold text-violet-400">{ev.action}</span>
                     <span className="mx-2 text-slate-600">•</span>
