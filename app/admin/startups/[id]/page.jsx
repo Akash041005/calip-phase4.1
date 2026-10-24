@@ -442,14 +442,22 @@ export default function StartupDossierPage() {
                 <div className="rounded-xl bg-[#090a0f] border border-white/[0.06] p-4">
                   <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold">Target Raise Goal</span>
                   <p className="mt-1 text-xl font-bold font-mono text-emerald-400">
-                    {startup.targetGoal || startup.fundraisingGoal || "10.0 ETH"}
+                    {startup.targetGoal || startup.fundraisingGoal
+                      ? !isNaN(Number(startup.targetGoal || startup.fundraisingGoal))
+                        ? `₹${Number(startup.targetGoal || startup.fundraisingGoal).toLocaleString("en-IN")}`
+                        : (startup.targetGoal || startup.fundraisingGoal)
+                      : "To be determined"}
                   </p>
                 </div>
 
                 <div className="rounded-xl bg-[#090a0f] border border-white/[0.06] p-4">
                   <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold">Current Startup Valuation</span>
                   <p className="mt-1 text-lg font-bold font-mono text-white">
-                    {startup.currentStartupValuation || "$1,000,000"}
+                    {startup.currentStartupValuation
+                      ? !isNaN(Number(startup.currentStartupValuation))
+                        ? `₹${Number(startup.currentStartupValuation).toLocaleString("en-IN")}`
+                        : startup.currentStartupValuation
+                      : "Under ₹1 Cr"}
                   </p>
                 </div>
 

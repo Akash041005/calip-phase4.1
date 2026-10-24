@@ -727,7 +727,13 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
                 <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-3.5">
                   <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Target Raise Goal</span>
                   <span className="text-base font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 block">
-                    {startupData?.targetGoal || "10.0 ETH"}
+                    {targetRaise > 0
+                      ? `₹${targetRaise.toLocaleString("en-IN")}`
+                      : startupData?.targetGoal || startupData?.fundraisingGoal
+                        ? !isNaN(Number(startupData.targetGoal || startupData.fundraisingGoal))
+                          ? `₹${Number(startupData.targetGoal || startupData.fundraisingGoal).toLocaleString("en-IN")}`
+                          : (startupData.targetGoal || startupData.fundraisingGoal)
+                        : "To be announced"}
                   </span>
                 </div>
 
