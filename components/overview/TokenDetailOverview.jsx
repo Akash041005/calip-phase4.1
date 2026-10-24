@@ -33,6 +33,7 @@ import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../../lib/use
 import { getTokens, getTokenOHLC, getTokenSupply, getTokenTrades, getTokenHolders } from "../../lib/tradingApi";
 import { getPresaleByStartupId, getPresaleBids, placePresaleBid } from "../../lib/presalesApi";
 import { useAuth } from "../auth/AuthProvider";
+import { signWalletMessage } from "../../lib/wallet";
 import TokenTradePanel from "../marketplace/TokenTradePanel";
 import { useTheme } from "../auth/ThemeProvider";
 
@@ -55,7 +56,7 @@ const PLACEHOLDER_TOKEN = {
 export default function TokenDetailOverview({ tokenId = "grid", startupData = null }) {
   const router = useRouter();
   const { isDark } = useTheme();
-  const { user, address, isAuthenticated, openConnectModal } = useAuth();
+  const { user, address, walletAddress, isAuthenticated, openConnectModal } = useAuth();
 
   // 1. Live token check — backend is the sole source of truth
   const [liveToken, setLiveToken] = useState(null);
@@ -221,14 +222,36 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
 
     setBiddingSubmitting(true);
     setBidError("");
-    setBidSuccess("");
+    setBidSuccess("Requesting wallet signature in MetaMask…");
+
+    let signature = null;
+    const activeWallet = walletAddress || address;
+    try {
+      const commitmentMsg = 
+`Calip.io Auction Investment Commitment
+Startup: ${startupName}
+Round ID: ${presale._id}
+Commitment Amount: ₹${amount.toLocaleString("en-IN")}
+Tokens Allocated: ~${tokens.toLocaleString()} ${token.symbol || "SPT"}
+Investor Wallet: ${activeWallet}
+Escrow Gate: Base Sepolia L2 (70% Soft-Cap Rule)
+
+By signing, I authorize this investment commitment into the smart-contract escrow. If the soft-cap is met, tokens will be allocated upon round completion. If unsuccessful, 100% of my commitment will be refunded.`;
+
+      signature = await signWalletMessage(commitmentMsg, activeWallet);
+    } catch (signErr) {
+      setBidError(signErr?.message || "Wallet commitment signature was rejected in MetaMask.");
+      setBiddingSubmitting(false);
+      return;
+    }
 
     try {
       await placePresaleBid(presale._id, {
         bidAmount: amount,
         tokenAmount: tokens,
+        signature,
       });
-      setBidSuccess(`✅ Commitment of ₹${amount.toLocaleString("en-IN")} recorded! You will receive ~${tokens.toLocaleString()} tokens upon successful auction close.`);
+      setBidSuccess(`✅ Commitment of ₹${amount.toLocaleString("en-IN")} signed and recorded! You will receive ~${tokens.toLocaleString()} tokens upon successful auction close.`);
       setBidAmount("");
       await refreshPresale();
     } catch (err) {

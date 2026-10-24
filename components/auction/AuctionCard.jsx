@@ -7,6 +7,7 @@ import { X, Check, Gavel } from "lucide-react";
 import ModalPortal from "../ui/ModalPortal";
 import TokenSparkline from "../marketplace/TokenSparkline";
 import { useAuth } from "../auth/AuthProvider";
+import { signWalletMessage } from "../../lib/wallet";
 
 const badgeStyles = {
   live: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
@@ -40,10 +41,9 @@ function mapStatus(item) {
 
 export default function AuctionCard({ item }) {
   const router = useRouter();
-  const { isAuthenticated, openConnectModal } = useAuth();
+  const { isAuthenticated, walletAddress, openConnectModal } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [bidAmount, setBidAmount] = useState("");
-  const [tokenAmount, setTokenAmount] = useState("10");
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -95,33 +95,71 @@ export default function AuctionCard({ item }) {
   const badge = badgeStyles[status];
   const button = buttonConfig[status];
 
+  const tokenPrice = Number(item.tokenPrice) || 1;
+  const calculatedTokens = bidAmount ? Math.floor(Number(bidAmount) / tokenPrice) : 0;
+
   const handlePlaceBid = async (e) => {
     e.preventDefault();
-    if (!bidAmount || !tokenAmount) return;
+    if (!bidAmount) return;
     const amount = Number(bidAmount);
-    const tokens = Number(tokenAmount);
+    const tokens = calculatedTokens;
     const minInvestment = Number(item.minInvestment) || 0;
     const maxInvestment = Number(item.maxInvestment) || 0;
-    if (!Number.isFinite(amount) || amount <= 0 || !Number.isFinite(tokens) || tokens <= 0) {
-      setErrorMsg("Enter a valid positive bid amount and token quantity.");
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setErrorMsg("Please enter a valid investment amount.");
       return;
     }
-    if (amount < minInvestment || (maxInvestment > 0 && amount > maxInvestment)) {
-      setErrorMsg(
-        `Bid amount must be between ${formatINR(minInvestment)} and ${maxInvestment > 0 ? formatINR(maxInvestment) : "no maximum"}.`
-      );
+    if (tokens <= 0) {
+      setErrorMsg(`Allocated tokens must be at least 1. At ₹${tokenPrice}/token, minimum commitment is ₹${tokenPrice}.`);
       return;
     }
+    if (minInvestment > 0 && amount < minInvestment) {
+      setErrorMsg(`Bid amount must be at least ${formatINR(minInvestment)}.`);
+      return;
+    }
+    if (maxInvestment > 0 && amount > maxInvestment) {
+      setErrorMsg(`Bid amount cannot exceed ${formatINR(maxInvestment)}.`);
+      return;
+    }
+
+    if (!isAuthenticated) {
+      openConnectModal?.();
+      return;
+    }
+
     setSubmitting(true);
     setErrorMsg("");
-    setSuccessMsg("");
+    setSuccessMsg("Requesting wallet signature in MetaMask…");
+
+    let signature = null;
+    const activeWallet = walletAddress;
+    try {
+      const commitmentMsg = 
+`Calip.io Auction Investment Commitment
+Startup: ${companyName}
+Round ID: ${item._id}
+Commitment Amount: ₹${amount.toLocaleString("en-IN")}
+Tokens Allocated: ~${tokens.toLocaleString()}
+Investor Wallet: ${activeWallet}
+Escrow Gate: Base Sepolia L2 (70% Soft-Cap Rule)
+
+By signing, I authorize this investment commitment into the smart-contract escrow. If the soft-cap is met, tokens will be allocated upon round completion. If unsuccessful, 100% of my commitment will be refunded.`;
+
+      signature = await signWalletMessage(commitmentMsg, activeWallet);
+    } catch (signErr) {
+      setErrorMsg(signErr?.message || "Wallet commitment signature was rejected in MetaMask.");
+      setSubmitting(false);
+      return;
+    }
 
     try {
       await placePresaleBid(item._id, {
-        bidAmount: Number(bidAmount),
-        tokenAmount: Number(tokenAmount),
+        bidAmount: amount,
+        tokenAmount: tokens,
+        signature,
       });
-      setSuccessMsg("Bid placed successfully!");
+      setSuccessMsg(`✅ Commitment of ₹${amount.toLocaleString("en-IN")} signed and confirmed! Allocated ~${tokens.toLocaleString()} tokens.`);
       getPresaleBids(item._id)
         .then((res) => {
           const list = Array.isArray(res) ? res : res?.data || res?.bids || [];
@@ -132,7 +170,7 @@ export default function AuctionCard({ item }) {
         setModalOpen(false);
         setSuccessMsg("");
         setBidAmount("");
-      }, 1500);
+      }, 2000);
     } catch (err) {
       setErrorMsg(err?.message || "Failed to place bid");
     } finally {
@@ -296,18 +334,21 @@ export default function AuctionCard({ item }) {
           <form onSubmit={handlePlaceBid} className="mt-4 space-y-4">
             <div>
               <label className="block text-[13px] font-medium text-slate-300">
-                Bid Amount (INR)
+                Investment Commitment (INR)
               </label>
-              <input
-                type="number"
-                required
-                min={Math.max(1, Number(item.minInvestment) || 1)}
-                max={Number(item.maxInvestment) > 0 ? Number(item.maxInvestment) : undefined}
-                value={bidAmount}
-                onChange={(e) => setBidAmount(e.target.value)}
-                placeholder="e.g. 50000"
-                className="mt-1.5 h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] px-3.5 text-[14px] text-white outline-none focus:border-white/20 placeholder:text-zinc-600 transition-colors"
-              />
+              <div className="relative mt-1.5">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-slate-400 text-sm font-bold">₹</span>
+                <input
+                  type="number"
+                  required
+                  min={Math.max(1, Number(item.minInvestment) || 1)}
+                  max={Number(item.maxInvestment) > 0 ? Number(item.maxInvestment) : undefined}
+                  value={bidAmount}
+                  onChange={(e) => setBidAmount(e.target.value)}
+                  placeholder={`e.g. ${item.minInvestment || 1000}`}
+                  className="h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] pl-8 pr-3.5 text-[14px] text-white outline-none focus:border-emerald-500/50 placeholder:text-zinc-600 transition-colors font-mono"
+                />
+              </div>
               {(Number(item.minInvestment) > 0 || Number(item.maxInvestment) > 0) && (
                 <p className="mt-1 text-[11px] text-zinc-400">
                   {Number(item.minInvestment) > 0 ? `Minimum ${formatINR(item.minInvestment)}` : ""}
@@ -318,34 +359,60 @@ export default function AuctionCard({ item }) {
               )}
             </div>
 
-            <div>
-              <label className="block text-[13px] font-medium text-slate-300">
-                Tokens Requested
-              </label>
-              <input
-                type="number"
-                required
-                min="1"
-                value={tokenAmount}
-                onChange={(e) => setTokenAmount(e.target.value)}
-                placeholder="e.g. 100"
-                className="mt-1.5 h-[42px] w-full rounded-xl border border-white/[0.08] bg-[#0e1015] px-3.5 text-[14px] text-white outline-none focus:border-white/20 placeholder:text-zinc-600 transition-colors"
-              />
+            {/* Quick amount presets */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] text-zinc-400">Presets:</span>
+              {[1000, 2500, 5000, 10000].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setBidAmount(String(preset))}
+                  className="rounded-lg bg-white/[0.05] hover:bg-white/[0.1] px-2 py-0.5 text-[11px] font-mono text-zinc-300 transition cursor-pointer"
+                >
+                  ₹{preset.toLocaleString()}
+                </button>
+              ))}
             </div>
 
-            {errorMsg && <p className="text-[13px] text-rose-400">{errorMsg}</p>}
+            {/* Auto-calculated Allocated Tokens Display */}
+            <div>
+              <div className="flex items-center justify-between">
+                <label className="block text-[13px] font-medium text-slate-300">
+                  Allocated Tokens (Auto-calculated)
+                </label>
+                <span className="text-[11px] font-mono text-emerald-400 font-semibold">
+                  ₹{tokenPrice.toLocaleString("en-IN")}/token
+                </span>
+              </div>
+              <div className="mt-1.5 flex h-[42px] w-full items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/[0.04] px-3.5 text-[14px] font-mono text-white">
+                <span className="text-emerald-400 font-bold">
+                  {calculatedTokens > 0
+                    ? `~${calculatedTokens.toLocaleString()} Tokens`
+                    : "Enter commitment amount above"}
+                </span>
+                <span className="text-[11px] text-zinc-400">
+                  Formula: Amount ÷ Price
+                </span>
+              </div>
+            </div>
+
+            {errorMsg && (
+              <p className="text-[12px] text-rose-400 rounded-lg bg-rose-500/10 border border-rose-500/20 p-2.5">
+                {errorMsg}
+              </p>
+            )}
             {successMsg && (
-              <p className="flex items-center gap-1 text-[13px] text-emerald-400">
-                <Check className="h-4 w-4" /> {successMsg}
+              <p className="flex items-center gap-1.5 text-[12px] text-emerald-400 rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-2.5">
+                <Check className="h-4 w-4 shrink-0" /> {successMsg}
               </p>
             )}
 
             <button
               type="submit"
-              disabled={submitting}
-              className="cl-btn-primary h-[42px] w-full text-[14px] font-semibold disabled:opacity-50"
+              disabled={submitting || !bidAmount}
+              className="cl-btn-primary h-[44px] w-full text-[14px] font-bold disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
             >
-              {submitting ? "Submitting Bid…" : "Confirm Bid"}
+              {submitting ? "Signing in MetaMask…" : "Authorize & Commit Funds"}
             </button>
           </form>
         </div>
