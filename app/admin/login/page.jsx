@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,12 +12,13 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(() => {
+  const [error, setError] = useState("");
+
+  useEffect(() => {
     if (typeof window !== "undefined" && window.location.search.includes("expired=1")) {
-      return "Your admin session expired. Please sign in again to continue.";
+      setError("Your admin session expired. Please sign in again to continue.");
     }
-    return "";
-  });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

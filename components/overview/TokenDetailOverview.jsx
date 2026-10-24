@@ -646,13 +646,18 @@ By signing, I authorize this investment commitment into the smart-contract escro
                     </div>
                   ) : (
                     <div className="divide-y divide-slate-100 dark:divide-white/[0.04] border border-slate-200 dark:border-white/[0.06] rounded-xl overflow-hidden bg-slate-50/50 dark:bg-[#090a0f]">
-                      {presaleBids.slice(0, 5).map((b, idx) => (
+                      {presaleBids.slice(0, 10).map((b, idx) => (
                         <div key={b._id || idx} className="p-3 flex items-center justify-between text-xs font-mono">
                           <div className="flex items-center gap-2.5">
                             <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                            <span className="text-slate-800 dark:text-neutral-200">
-                              {b.walletAddress ? `${b.walletAddress.slice(0, 6)}...${b.walletAddress.slice(-4)}` : "Backer"}
+                            <span className="font-semibold text-slate-800 dark:text-neutral-200">
+                              {b.address || b.bidder || (b.walletAddress ? `${b.walletAddress.slice(0, 6)}...${b.walletAddress.slice(-4)}` : "Backer")}
                             </span>
+                            {b.bidder && b.address && (
+                              <span className="hidden sm:inline rounded bg-white/5 border border-white/10 px-1.5 py-0.5 text-[10px] text-slate-400">
+                                {b.bidder}
+                              </span>
+                            )}
                             <span className="text-[11px] text-slate-400">
                               {b.createdAt ? new Date(b.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
                             </span>
@@ -663,7 +668,7 @@ By signing, I authorize this investment commitment into the smart-contract escro
                               ₹{Number(b.bidAmount).toLocaleString("en-IN")}
                             </span>
                             <span className="text-[11px] text-slate-500 ml-2">
-                              ({Number(b.tokenAmount).toLocaleString()} {token.symbol})
+                              (~{Number(b.tokenAmount).toLocaleString()} {token.symbol || "tokens"})
                             </span>
                           </div>
                         </div>

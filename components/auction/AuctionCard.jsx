@@ -315,16 +315,21 @@ By signing, I authorize this investment commitment into the smart-contract escro
               <p className="text-[12px] font-semibold text-[#94a3b8]">
                 Recent bids ({bids.length})
               </p>
-              <ul className="mt-2 max-h-[140px] space-y-1.5 overflow-y-auto">
-                {[...bids].reverse().slice(0, 5).map((bid) => (
+              <ul className="mt-2 max-h-[140px] space-y-1.5 overflow-y-auto divide-y divide-white/[0.04]">
+                {[...bids].slice(0, 5).map((bid) => (
                   <li
                     key={bid._id}
-                    className="flex items-center justify-between font-mono text-[12px] text-[#6b7280] dark:text-[#9ca3af]"
+                    className="flex items-center justify-between font-mono text-[12px] pt-1.5 first:pt-0"
                   >
-                    <span>{bid.bidder || "0x…"}</span>
-                    <span className="font-semibold text-[#1a1a2e] dark:text-white">
-                      {formatINR(bid.bidAmount)}
-                    </span>
+                    <span className="text-slate-400 font-semibold">{bid.address || bid.bidder || "0x…"}</span>
+                    <div className="text-right">
+                      <span className="font-bold text-emerald-400">
+                        {formatINR(bid.bidAmount)}
+                      </span>
+                      <span className="text-[11px] text-zinc-500 ml-1.5">
+                        (~{Number(bid.tokenAmount).toLocaleString()} tokens)
+                      </span>
+                    </div>
                   </li>
                 ))}
               </ul>
