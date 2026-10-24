@@ -12,7 +12,12 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() => {
+    if (typeof window !== "undefined" && window.location.search.includes("expired=1")) {
+      return "Your admin session expired. Please sign in again to continue.";
+    }
+    return "";
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();

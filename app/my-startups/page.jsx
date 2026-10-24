@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Rocket, Loader2, Trash2, Plus, Bookmark, Check, ArrowRight } from "lucide-react";
+import { Rocket, Loader2, Trash2, Plus, Bookmark, Check, ArrowRight, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "../../components/dashboard/Navbar";
@@ -163,19 +163,7 @@ export default function MyStartupsPage() {
     }
   };
 
-  const handleEditStartup = async (startup) => {
-    const newDesc = prompt("Update startup description:", startup.description || startup.startupDescription || "");
-    if (newDesc === null) return;
-    try {
-      await updateStartup(startup._id, { description: newDesc });
-      setStartups((prev) =>
-        prev.map((s) => (s._id === startup._id ? { ...s, description: newDesc, startupDescription: newDesc } : s))
-      );
-      setToast("Startup description updated successfully.");
-    } catch (err) {
-      setToast(err?.message || "Failed to update startup.");
-    }
-  };
+
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 dark:bg-[#090a0f] dark:text-[#f8fafc] transition-colors">
@@ -285,6 +273,16 @@ export default function MyStartupsPage() {
                         {startup.industrySector || "Tech"} · {startup.startupStage || startup.stage || "Early Stage"} ·{" "}
                         {startup.fundingStatus || "Bootstrapped"}
                       </p>
+
+                      {startup.status === "rejected" && (
+                        <div className="mt-2.5 flex items-start gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-2.5 text-xs text-rose-300">
+                          <XCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+                          <div>
+                            <span className="font-bold text-rose-200">Application Rejected: </span>
+                            <span>{startup.rejectionReason || startup.adminFeedback || "Your application was reviewed and rejected by the platform administrators."}</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 self-end sm:self-auto">
@@ -334,16 +332,6 @@ export default function MyStartupsPage() {
                         )}
                       </button>
 
-                      {/* EDIT STARTUP BUTTON */}
-                      <button
-                        type="button"
-                        onClick={() => handleEditStartup(startup)}
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-[12px] font-semibold text-slate-800 shadow-xs hover:bg-slate-50 hover:text-slate-900 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-white dark:hover:bg-white/[0.08] transition-all"
-                        title="Edit Startup Profile"
-                      >
-                        <span>Edit</span>
-                      </button>
-
                       {/* OPEN DETAILS BUTTON */}
                       <button
                         type="button"
@@ -355,24 +343,26 @@ export default function MyStartupsPage() {
                         <ArrowRight className="h-3.5 w-3.5" />
                       </button>
 
-                      {/* DELETE ACTION */}
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(startup._id)}
-                        disabled={removing === startup._id}
-                        className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                          confirming === startup._id
-                            ? "bg-rose-600 text-white"
-                            : "border border-rose-500/30 text-rose-500 dark:text-rose-400 hover:bg-rose-500/10"
-                        }`}
-                      >
-                        {removing === startup._id ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2} />
-                        ) : (
-                          <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
-                        )}
-                        <span>{confirming === startup._id ? "Confirm?" : "Delete"}</span>
-                      </button>
+                      {/* DELETE ACTION - Locked and hidden once approved */}
+                      {startup.status !== "approved" && startup.stage !== "approved" && (
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(startup._id)}
+                          disabled={removing === startup._id}
+                          className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                            confirming === startup._id
+                              ? "bg-rose-600 text-white"
+                              : "border border-rose-500/30 text-rose-500 dark:text-rose-400 hover:bg-rose-500/10"
+                          }`}
+                        >
+                          {removing === startup._id ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={2} />
+                          ) : (
+                            <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
+                          )}
+                          <span>{confirming === startup._id ? "Confirm?" : "Delete"}</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 );

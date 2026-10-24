@@ -454,7 +454,7 @@ export default function StartupDossierPage() {
               </div>
 
               <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                Per Calip SRS Section 8.5 & FR-052, token benefits represent software access, VIP demo days, discounts, and community perks—not equity stock.
+                Under platform compliance standards, token benefits represent software access, VIP demo days, discounts, and community perks—not equity stock.
               </p>
 
               <div className="rounded-xl bg-violet-500/10 border border-violet-500/20 p-4 text-xs text-violet-300">

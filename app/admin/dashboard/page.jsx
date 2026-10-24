@@ -55,6 +55,7 @@ export default function AdminDashboardPage() {
 
   // Startups State
   const [startups, setStartups] = useState([]);
+  const [startupFilter, setStartupFilter] = useState("all"); // "all" | "pending" | "approved" | "rejected"
   const [selectedStartup, setSelectedStartup] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionMessage, setActionMessage] = useState("");
@@ -87,10 +88,22 @@ export default function AdminDashboardPage() {
     setLoading(true);
     try {
       const [sumRes, spRes, frRes, audRes] = await Promise.all([
-        getAdminDashboardSummary().catch(() => ({})),
-        getAdminStartups().catch(() => ({})),
-        getAdminFundraises().catch(() => ({})),
-        getAdminAuditEvents().catch(() => ({})),
+        getAdminDashboardSummary().catch((err) => {
+          console.warn("getAdminDashboardSummary error:", err);
+          return {};
+        }),
+        getAdminStartups().catch((err) => {
+          console.warn("getAdminStartups error:", err);
+          return {};
+        }),
+        getAdminFundraises().catch((err) => {
+          console.warn("getAdminFundraises error:", err);
+          return {};
+        }),
+        getAdminAuditEvents().catch((err) => {
+          console.warn("getAdminAuditEvents error:", err);
+          return {};
+        }),
       ]);
 
       const sumData = sumRes?.data?.counts ?? sumRes?.counts ?? sumRes?.stats ?? {};
@@ -102,6 +115,8 @@ export default function AdminDashboardPage() {
       if (Array.isArray(spData)) setStartups(spData);
       if (Array.isArray(frData)) setFundraises(frData);
       if (Array.isArray(audData)) setAuditEvents(audData);
+    } catch (err) {
+      setActionMessage("Error loading admin data: " + (err.message || "Session error"));
     } finally {
       setLoading(false);
     }
@@ -257,29 +272,42 @@ export default function AdminDashboardPage() {
 
       {/* Main Workspace */}
       <main className="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
-        {/* KPI Summary Cards */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4">
-            <p className="text-[11px] uppercase tracking-wider text-slate-500">Active Admin Sessions</p>
-            <p className="mt-1.5 text-xl font-bold text-white font-mono">{stats.activeAdminSessions ?? 1}</p>
-          </div>
-          <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4">
-            <p className="text-[11px] uppercase tracking-wider text-slate-500">Pending Startups</p>
-            <p className="mt-1.5 text-xl font-bold text-amber-400 font-mono">
-              {stats.pendingStartupDecisions ?? startups.filter(s => (s.stage || s.status) !== "approved").length}
-            </p>
-          </div>
-          <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4">
-            <p className="text-[11px] uppercase tracking-wider text-slate-500">Active Presales</p>
-            <p className="mt-1.5 text-xl font-bold text-emerald-400 font-mono">
-              {stats.fundraisesAtThreshold ?? fundraises.length}
-            </p>
-          </div>
-          <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4">
-            <p className="text-[11px] uppercase tracking-wider text-slate-500">Refund Workflows</p>
-            <p className="mt-1.5 text-xl font-bold text-violet-400 font-mono">{stats.refundWorkflows ?? 0}</p>
-          </div>
-        </div>
+        {(() => {
+          const pendingList = startups.filter(
+            (s) => (s.status || s.stage) === "pending" || (s.status || s.stage) === "under_review"
+          );
+          const approvedList = startups.filter(
+            (s) => (s.status || s.stage) === "approved"
+          );
+          const rejectedList = startups.filter(
+            (s) => (s.status || s.stage) === "rejected"
+          );
+
+          return (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500">Active Admin Sessions</p>
+                <p className="mt-1.5 text-xl font-bold text-white font-mono">{stats.activeAdminSessions ?? 1}</p>
+              </div>
+              <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500">Pending Startups</p>
+                <p className="mt-1.5 text-xl font-bold text-amber-400 font-mono">
+                  {stats.pendingStartupDecisions ?? pendingList.length}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500">Active Presales</p>
+                <p className="mt-1.5 text-xl font-bold text-emerald-400 font-mono">
+                  {stats.fundraisesAtThreshold ?? fundraises.length}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/[0.08] bg-[#111318] p-4">
+                <p className="text-[11px] uppercase tracking-wider text-slate-500">Approved Startups</p>
+                <p className="mt-1.5 text-xl font-bold text-indigo-400 font-mono">{approvedList.length}</p>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Action message banner */}
         {actionMessage && (
@@ -334,136 +362,202 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Tab 1: Startups Management */}
-        {activeTab === "startups" && (
-          <div className="mt-6 rounded-2xl border border-white/[0.08] bg-[#111318] overflow-hidden shadow-xl">
-            <div className="border-b border-white/[0.08] px-6 py-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold text-white">Startup Application Review Queue</h2>
-                <p className="text-xs text-slate-400">Evaluate KYC, legal documentation, financials, and approve for fundraising auctions.</p>
+        {activeTab === "startups" && (() => {
+          const pendingList = startups.filter(
+            (s) => (s.status || s.stage) === "pending" || (s.status || s.stage) === "under_review"
+          );
+          const approvedList = startups.filter(
+            (s) => (s.status || s.stage) === "approved"
+          );
+          const rejectedList = startups.filter(
+            (s) => (s.status || s.stage) === "rejected"
+          );
+
+          const displayedStartups = startups.filter((s) => {
+            const st = s.status || s.stage || "pending";
+            if (startupFilter === "pending") return st === "pending" || st === "under_review";
+            if (startupFilter === "approved") return st === "approved";
+            if (startupFilter === "rejected") return st === "rejected";
+            return true;
+          });
+
+          return (
+            <div className="mt-6 rounded-2xl border border-white/[0.08] bg-[#111318] overflow-hidden shadow-xl">
+              <div className="border-b border-white/[0.08] px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-base font-bold text-white">Startup Applications & Dossier Queue</h2>
+                  <p className="text-xs text-slate-400">Evaluate KYC, legal documentation, financials, and approve for fundraising auctions.</p>
+                </div>
+
+                {/* Filter Pills */}
+                <div className="flex items-center gap-1.5 bg-[#090a0f] p-1 rounded-xl border border-white/[0.08]">
+                  <button
+                    onClick={() => setStartupFilter("all")}
+                    className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+                      startupFilter === "all" ? "bg-white text-slate-900 font-bold" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    All ({startups.length})
+                  </button>
+                  <button
+                    onClick={() => setStartupFilter("pending")}
+                    className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+                      startupFilter === "pending" ? "bg-amber-400 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Pending ({pendingList.length})
+                  </button>
+                  <button
+                    onClick={() => setStartupFilter("approved")}
+                    className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+                      startupFilter === "approved" ? "bg-emerald-400 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Approved ({approvedList.length})
+                  </button>
+                  <button
+                    onClick={() => setStartupFilter("rejected")}
+                    className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+                      startupFilter === "rejected" ? "bg-rose-500 text-white font-bold" : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Rejected ({rejectedList.length})
+                  </button>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-[#090a0f] text-slate-400 uppercase tracking-wider border-b border-white/[0.08]">
+                    <tr>
+                      <th className="px-6 py-3.5 font-semibold">Venture</th>
+                      <th className="px-6 py-3.5 font-semibold">Founder</th>
+                      <th className="px-6 py-3.5 font-semibold">Stage & Sector</th>
+                      <th className="px-6 py-3.5 font-semibold">Valuation</th>
+                      <th className="px-6 py-3.5 font-semibold">Status</th>
+                      <th className="px-6 py-3.5 font-semibold">Compliance Checklist</th>
+                      <th className="px-6 py-3.5 font-semibold text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/[0.06] text-slate-300">
+                    {displayedStartups.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
+                          No startup applications found under "{startupFilter}" filter.
+                        </td>
+                      </tr>
+                    ) : (
+                      displayedStartups.map((s) => {
+                        const id = s.id || s._id;
+                        const status = s.status || s.stage || "pending";
+                        const founder = s.founderName || s.reviewOwner || "Founder";
+                        const sector = s.industrySector || s.sector || "General";
+                        const stage = s.fundingStage || s.startupStage || "Seed";
+                        const valuation = s.currentStartupValuation || s.valuation || "Not disclosed";
+                        const chk = s.verificationChecklist || {};
+
+                        return (
+                          <tr key={id} className="hover:bg-white/[0.02] transition">
+                            <td className="px-6 py-4">
+                              <p className="font-bold text-white">{s.startupName}</p>
+                              <p className="text-[11px] text-slate-500 font-mono truncate max-w-[160px]">{id}</p>
+                            </td>
+                            <td className="px-6 py-4">
+                              <p className="text-slate-200">{founder}</p>
+                              <p className="text-[11px] text-slate-500">{s.email || "No email"}</p>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="rounded bg-white/[0.06] px-2 py-0.5 text-[11px] font-medium text-slate-300">
+                                {stage}
+                              </span>
+                              <p className="mt-1 text-[11px] text-slate-500">{sector}</p>
+                            </td>
+                            <td className="px-6 py-4 font-mono font-semibold text-white">
+                              {valuation}
+                            </td>
+                            <td className="px-6 py-4">
+                              <span
+                                className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                                  status === "approved"
+                                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                    : status === "under_review"
+                                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                    : status === "rejected"
+                                    ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                                    : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                }`}
+                              >
+                                {status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  onClick={() => handleToggleChecklist(id, "kycVerified", !!chk.kycVerified)}
+                                  className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${
+                                    chk.kycVerified ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : "bg-white/[0.05] text-slate-500 border-white/[0.05]"
+                                  }`}
+                                >
+                                  KYC {chk.kycVerified ? "✓" : "✗"}
+                                </button>
+                                <button
+                                  onClick={() => handleToggleChecklist(id, "legalIncorporation", !!chk.legalIncorporation)}
+                                  className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${
+                                    chk.legalIncorporation ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : "bg-white/[0.05] text-slate-500 border-white/[0.05]"
+                                  }`}
+                                >
+                                  Legal {chk.legalIncorporation ? "✓" : "✗"}
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <Link
+                                  href={`/admin/startups/${id}`}
+                                  className="rounded bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 text-xs font-semibold text-indigo-400 hover:bg-indigo-500/20 transition"
+                                >
+                                  Inspect Dossier
+                                </Link>
+                                {status === "approved" ? (
+                                  <Link
+                                    href={`/insights/${id}`}
+                                    target="_blank"
+                                    className="rounded bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition"
+                                  >
+                                    View Live ↗
+                                  </Link>
+                                ) : (
+                                  <>
+                                    <button
+                                      disabled={actionLoading}
+                                      onClick={() => handleApprove(id)}
+                                      className="rounded bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/30 transition cursor-pointer"
+                                    >
+                                      Approve
+                                    </button>
+                                    {status !== "rejected" && (
+                                      <button
+                                        disabled={actionLoading}
+                                        onClick={() => handleReject(id)}
+                                        className="rounded bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 text-xs font-medium text-rose-400 hover:bg-rose-500/20 cursor-pointer"
+                                      >
+                                        Reject
+                                      </button>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-[#090a0f] text-slate-400 uppercase tracking-wider border-b border-white/[0.08]">
-                  <tr>
-                    <th className="px-6 py-3.5 font-semibold">Venture</th>
-                    <th className="px-6 py-3.5 font-semibold">Founder</th>
-                    <th className="px-6 py-3.5 font-semibold">Stage & Sector</th>
-                    <th className="px-6 py-3.5 font-semibold">Valuation</th>
-                    <th className="px-6 py-3.5 font-semibold">Status</th>
-                    <th className="px-6 py-3.5 font-semibold">Compliance Checklist</th>
-                    <th className="px-6 py-3.5 font-semibold text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.06] text-slate-300">
-                  {startups.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
-                        No startup applications currently in queue.
-                      </td>
-                    </tr>
-                  ) : (
-                    startups.map((s) => {
-                      const id = s.id || s._id;
-                      const status = s.stage || s.status || "pending";
-                      const founder = s.founderName || s.reviewOwner || "Founder";
-                      const sector = s.industrySector || s.sector || "General";
-                      const stage = s.fundingStage || s.startupStage || "Seed";
-                      const valuation = s.currentStartupValuation || s.valuation || "Not disclosed";
-                      const chk = s.verificationChecklist || {};
-
-                      return (
-                        <tr key={id} className="hover:bg-white/[0.02] transition">
-                          <td className="px-6 py-4">
-                            <p className="font-bold text-white">{s.startupName}</p>
-                            <p className="text-[11px] text-slate-500 font-mono truncate max-w-[160px]">{id}</p>
-                          </td>
-                          <td className="px-6 py-4">
-                            <p className="text-slate-200">{founder}</p>
-                            <p className="text-[11px] text-slate-500">{s.email || "No email"}</p>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className="rounded bg-white/[0.06] px-2 py-0.5 text-[11px] font-medium text-slate-300">
-                              {stage}
-                            </span>
-                            <p className="mt-1 text-[11px] text-slate-500">{sector}</p>
-                          </td>
-                          <td className="px-6 py-4 font-mono font-semibold text-white">
-                            {valuation}
-                          </td>
-                          <td className="px-6 py-4">
-                            <span
-                              className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                                status === "approved"
-                                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                  : status === "under_review"
-                                  ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                                  : status === "rejected"
-                                  ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
-                                  : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                              }`}
-                            >
-                              {status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-1.5">
-                              <button
-                                onClick={() => handleToggleChecklist(id, "kycVerified", !!chk.kycVerified)}
-                                className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${
-                                  chk.kycVerified ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : "bg-white/[0.05] text-slate-500 border-white/[0.05]"
-                                }`}
-                              >
-                                KYC {chk.kycVerified ? "✓" : "✗"}
-                              </button>
-                              <button
-                                onClick={() => handleToggleChecklist(id, "legalIncorporation", !!chk.legalIncorporation)}
-                                className={`rounded px-1.5 py-0.5 text-[10px] font-semibold border ${
-                                  chk.legalIncorporation ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" : "bg-white/[0.05] text-slate-500 border-white/[0.05]"
-                                }`}
-                              >
-                                Legal {chk.legalIncorporation ? "✓" : "✗"}
-                              </button>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
-                              <Link
-                                href={`/admin/startups/${id}`}
-                                className="rounded bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 text-xs font-semibold text-indigo-400 hover:bg-indigo-500/20 transition"
-                              >
-                                Inspect
-                              </Link>
-                              {status !== "approved" && (
-                                <button
-                                  disabled={actionLoading}
-                                  onClick={() => handleApprove(id)}
-                                  className="rounded bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/30 transition cursor-pointer"
-                                >
-                                  Approve
-                                </button>
-                              )}
-                              {status !== "rejected" && (
-                                <button
-                                  disabled={actionLoading}
-                                  onClick={() => handleReject(id)}
-                                  className="rounded bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 text-xs font-medium text-rose-400 hover:bg-rose-500/20 cursor-pointer"
-                                >
-                                  Reject
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Tab 2: Fundraises & Token Deployments */}
         {activeTab === "fundraises" && (
@@ -475,39 +569,57 @@ export default function AdminDashboardPage() {
               </p>
 
               <div className="mt-6 space-y-4">
-                {fundraises.map((f, idx) => (
-                  <div key={f._id || f.id || `fundraise-${idx}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-xl border border-white/[0.08] bg-[#090a0f] p-5 gap-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-white">{f.startupName || "Startup Auction Round"}</h3>
-                        <span className="rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold uppercase">
-                          {f.status || "Active"}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-xs text-slate-400">
-                        Target: <span className="font-mono text-white font-semibold">${f.targetAmount?.toLocaleString()}</span> | Raised: <span className="font-mono text-emerald-400 font-semibold">${f.raisedAmount?.toLocaleString()}</span>
-                      </p>
-                      <p className="mt-1 text-[11px] text-slate-500 font-mono">
-                        Soft Cap Threshold: 70% | Deadline: {new Date(f.deadline).toLocaleDateString()}
-                      </p>
-                    </div>
+                {fundraises.map((f, idx) => {
+                  const targetVal = f.targetAmount || (f.targetMinor ? Number(f.targetMinor) / 100 : 0);
+                  const raisedVal = f.raisedAmount || (f.paidMinor ? Number(f.paidMinor) / 100 : (f.committedMinor ? Number(f.committedMinor) / 100 : 0));
+                  const deadlineStr = f.deadlineAt || f.deadline;
+                  const deadlineDate = deadlineStr ? new Date(deadlineStr) : null;
+                  const formattedDeadline = deadlineDate && !isNaN(deadlineDate.getTime()) ? deadlineDate.toLocaleDateString() : "—";
+                  const sId = f.startupId?._id || f.startupId || "";
 
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => handleCloseAuction(f._id)}
-                        className="rounded-lg border border-white/[0.12] bg-[#151824] px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white transition"
-                      >
-                        Evaluate & Close
-                      </button>
-                      <button
-                        onClick={() => handleDeployToken(f._id)}
-                        className="rounded-lg bg-violet-600 px-4 py-2 text-xs font-semibold text-white hover:bg-violet-500 transition shadow-lg shadow-violet-600/20"
-                      >
-                        Queue Token Deployment
-                      </button>
+                  return (
+                    <div key={f._id || f.id || `fundraise-${idx}`} className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-xl border border-white/[0.08] bg-[#090a0f] p-5 gap-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-white">{f.startupName || f.title || "Startup Auction Round"}</h3>
+                          <span className="rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold uppercase">
+                            {f.status || "Active"}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs text-slate-400">
+                          Target: <span className="font-mono text-white font-semibold">₹{targetVal.toLocaleString("en-IN")}</span> | Raised: <span className="font-mono text-emerald-400 font-semibold">₹{raisedVal.toLocaleString("en-IN")}</span>
+                        </p>
+                        <p className="mt-1 text-[11px] text-slate-500 font-mono">
+                          Soft Cap Threshold: {f.thresholdPercent || 70}% | Deadline: {formattedDeadline}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        {sId && (
+                          <Link
+                            href={`/insights/${sId}`}
+                            target="_blank"
+                            className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-2 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition flex items-center gap-1.5"
+                          >
+                            Live Auction ↗
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => handleCloseAuction(f._id || f.id)}
+                          className="rounded-lg border border-white/[0.12] bg-[#151824] px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white transition"
+                        >
+                          Evaluate & Close
+                        </button>
+                        <button
+                          onClick={() => handleDeployToken(f._id || f.id)}
+                          className="rounded-lg bg-violet-600 px-4 py-2 text-xs font-semibold text-white hover:bg-violet-500 transition shadow-lg shadow-violet-600/20"
+                        >
+                          Queue Token Deployment
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>

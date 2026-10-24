@@ -57,7 +57,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
   const { isDark } = useTheme();
   const { user, address, isAuthenticated, openConnectModal } = useAuth();
 
-  // 1. Live token check — backend is the sole source of truth (SRS FR-024)
+  // 1. Live token check — backend is the sole source of truth
   const [liveToken, setLiveToken] = useState(null);
   const [tokenMissing, setTokenMissing] = useState(false);
 
@@ -77,7 +77,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
     return () => { cancelled = true; };
   }, [tokenId]);
 
-  // 2. Real Presale / Auction check for this startup (SRS Section 7.2 & FR-030)
+  // 2. Real Presale / Auction check for this startup
   const targetId = startupData?._id || startupData?.id || tokenId;
   const startupId = startupData?._id || liveToken?.startupId || targetId;
 
@@ -185,7 +185,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
     }
   };
 
-  // 4. Handle Placing an Auction Bid directly from this page (SRS FR-032)
+  // 4. Handle Placing an Auction Bid directly from this page
   const handlePlaceAuctionBid = async (e) => {
     if (e) e.preventDefault();
     if (!presale?._id) return;
@@ -285,14 +285,14 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
   const isAuctionLive = presale?.status === "active";
   const targetRaise = (presale?.totalTokens || 0) * (presale?.tokenPrice || 0);
   const raisedAmount = presale?.raisedAmount ?? ((presale?.soldTokens || 0) * (presale?.tokenPrice || 0));
-  const softCapAmount = targetRaise * 0.7; // 70% soft cap rule (SRS Section 7.3 & FR-050)
+  const softCapAmount = targetRaise * 0.7; // 70% soft cap rule
   const progressPercent = targetRaise > 0 ? Math.min(100, (raisedAmount / targetRaise) * 100) : 0;
   const isSoftCapMet = raisedAmount >= softCapAmount && softCapAmount > 0;
   const calculatedTokens = bidAmount && presale?.tokenPrice ? Math.floor(Number(bidAmount) / presale.tokenPrice) : 0;
 
   // =========================================================================
   // VIEW A: PRE-TOKEN / COMMUNITY AUCTION VIEW (When no secondary token exists)
-  // Per Calip SRS Section 5.2, 7.1, 7.2 & 10.2:
+  // Platform Policy:
   // No fake secondary market charts, mock order books, or fake ticker prices
   // before the community auction successfully closes and mints a token.
   // =========================================================================
@@ -429,7 +429,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Main Column (2/3 width): Auction Participation & Company Dossier */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Live Community Auction Card (SRS FR-030 - FR-040) */}
+            {/* Live Community Auction Card */}
             {isAuctionLive ? (
               <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-white via-white to-emerald-500/[0.04] dark:from-[#111318] dark:via-[#111318] dark:to-emerald-950/20 p-6 sm:p-7 shadow-xl space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/[0.08] pb-5">
@@ -608,7 +608,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
                   </form>
                 </div>
 
-                {/* Real Recent Commitments Table (SRS FR-033) */}
+                {/* Real Recent Commitments Table */}
                 <div className="space-y-3 pt-2">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
@@ -658,11 +658,17 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
                   </div>
                   <div>
                     <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                      {startupStage === "approved" ? "Primary Auction Scheduled" : "Application Curation In Progress"}
+                      {startupStage === "approved"
+                        ? "Primary Auction Scheduled"
+                        : startupStage === "rejected"
+                        ? "Application Rejected"
+                        : "Application Curation In Progress"}
                     </h2>
                     <p className="text-xs text-slate-500 dark:text-neutral-400">
                       {startupStage === "approved"
                         ? "This startup has been vetted and approved. The founder or administrator will launch the community auction round shortly."
+                        : startupStage === "rejected"
+                        ? (startupData?.rejectionReason || startupData?.adminFeedback || "This startup application was reviewed and rejected by the platform administrators.")
                         : "Calip administrators review team credentials, valuation, and utility specifications prior to authorizing an auction round."}
                     </p>
                   </div>
@@ -670,7 +676,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
 
                 <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-4 text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
                   <strong className="text-slate-900 dark:text-white block mb-1">
-                    🛡️ Calip Protocol Regulatory Safeguard (SRS FR-024 & FR-050):
+                    🛡️ Calip Protocol Regulatory Safeguard:
                   </strong>
                   Secondary market decentralized trading, live order books, and candlestick charts will unlock only after the primary community auction completes successfully and meets the 70% soft-cap funding threshold. No mock or synthetic pricing is presented.
                 </div>
@@ -687,7 +693,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
               </p>
             </div>
 
-            {/* Utility Token Value Proposition (SRS FR-052 & Section 8.5) */}
+            {/* Utility Token Value Proposition */}
             <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-3">
               <div className="flex items-center gap-2">
                 <Award className="w-4 h-4 text-violet-500" />
@@ -790,7 +796,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
                 Participant Protection
               </h4>
               <p className="leading-relaxed">
-                All auction commitments are held in transparent smart contracts on Base. In accordance with Calip SRS Section 7.3, if the 70% threshold is not attained by the auction deadline, participants can claim 100% of their contributed funds.
+                All auction commitments are held in transparent smart contracts on Base. In accordance with platform safeguard policies, if the 70% soft-cap threshold is not attained by the auction deadline, participants can claim a 100% refund of their contributed funds directly from escrow.
               </p>
             </div>
           </div>
