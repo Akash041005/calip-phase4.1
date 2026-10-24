@@ -340,9 +340,15 @@ export default function MarketTerminal() {
     async function pollTrades() {
       try {
         const res = await getLiveTrades(6);
-        if (!cancelled && res.trades && res.trades.length > 0) setLiveTrades(res.trades);
+        if (!cancelled) {
+          setLiveTrades(Array.isArray(res?.trades) ? res.trades : []);
+          setTradesError("");
+        }
       } catch {
-        if (!cancelled) setTradesError("Live trades unavailable.");
+        if (!cancelled) {
+          setLiveTrades([]);
+          setTradesError("Live trades unavailable.");
+        }
       }
     }
     pollTrades();
