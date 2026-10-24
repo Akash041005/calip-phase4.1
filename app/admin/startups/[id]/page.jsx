@@ -227,14 +227,30 @@ export default function StartupDossierPage() {
             </span>
 
             {status === "approved" ? (
-              <button
-                type="button"
-                onClick={() => setShowAuctionModal(true)}
-                className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-400 px-3.5 py-1.5 text-xs font-bold text-slate-950 hover:from-emerald-400 hover:to-teal-300 transition cursor-pointer shadow-md"
-              >
-                <Rocket className="h-3.5 w-3.5" />
-                Launch Community Auction
-              </button>
+              startup?.hasActiveAuction || startup?.activePresale ? (
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-xs font-bold text-emerald-400">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                    Auction Active
+                  </span>
+                  <Link
+                    href={`/insights/${startupId}`}
+                    target="_blank"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition shadow-sm"
+                  >
+                    View Live Auction ↗
+                  </Link>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowAuctionModal(true)}
+                  className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-400 px-3.5 py-1.5 text-xs font-bold text-slate-950 hover:from-emerald-400 hover:to-teal-300 transition cursor-pointer shadow-md"
+                >
+                  <Rocket className="h-3.5 w-3.5" />
+                  Launch Community Auction
+                </button>
+              )
             ) : (
               <>
                 <button
@@ -472,27 +488,50 @@ export default function StartupDossierPage() {
                   <Rocket className="h-5 w-5 text-emerald-400" />
                   <h3 className="text-sm font-bold text-white">Community Auction Status</h3>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                  This startup is approved and eligible for community token auctions. You can launch an auction round to open public bidding on Base Sepolia.
-                </p>
-                <div className="flex flex-col gap-2.5">
-                  <button
-                    type="button"
-                    onClick={() => setShowAuctionModal(true)}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-2.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition shadow-lg cursor-pointer"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    Launch Community Auction
-                  </button>
-                  <Link
-                    href="/auction/live"
-                    target="_blank"
-                    className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 py-2.5 text-xs font-semibold text-white hover:bg-white/10 transition"
-                  >
-                    <span>View Public Live Auctions</span>
-                    <ExternalLink className="h-3.5 w-3.5 text-slate-400" />
-                  </Link>
-                </div>
+
+                {startup?.hasActiveAuction || startup?.activePresale ? (
+                  <>
+                    <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Live Round Active</span>
+                      </div>
+                      <p className="mt-1 text-xs text-white font-semibold">
+                        {startup.activePresale?.title || `${startup.startupName} Community Auction Round`}
+                      </p>
+                      <p className="mt-1 text-[11px] text-slate-400 font-mono">
+                        Price: ₹{startup.activePresale?.tokenPrice || 10} • Tokens: {startup.activePresale?.totalTokens?.toLocaleString()} • Sold: {startup.activePresale?.soldTokens?.toLocaleString() || 0}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-2.5">
+                      <Link
+                        href={`/insights/${startupId}`}
+                        target="_blank"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-2.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition shadow-lg cursor-pointer"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        Open Live Auction Terminal ↗
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                      This startup is approved and eligible for community token auctions. You can launch an auction round to open public bidding on Base Sepolia.
+                    </p>
+                    <div className="flex flex-col gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => setShowAuctionModal(true)}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-2.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition shadow-lg cursor-pointer"
+                      >
+                        <Sparkles className="h-4 w-4" />
+                        Launch Community Auction
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
