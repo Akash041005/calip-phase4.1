@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import {
-  Wallet,
-  TrendingUp,
-  FolderKanban,
-  PlusCircle,
-} from "lucide-react";
+import { Wallet } from "lucide-react";
 import { useAuth } from "../auth/AuthProvider";
 import { truncateAddress } from "../../lib/format";
 import { getParticipationHistory } from "../../lib/participationApi";
@@ -114,32 +108,6 @@ export default function TraderPortfolioBanner() {
           </div>
         </div>
 
-        {/* Quick Action Navigation Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href="/performance-summary"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.08] transition-colors"
-          >
-            <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Full Portfolio</span>
-          </Link>
-
-          <Link
-            href="/my-startups"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.08] transition-colors"
-          >
-            <FolderKanban className="h-3.5 w-3.5 text-indigo-500" />
-            <span>My Startups</span>
-          </Link>
-
-          <Link
-            href="/founders"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.08] transition-colors"
-          >
-            <PlusCircle className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Register Startup</span>
-          </Link>
-        </div>
       </div>
 
       {/* Bottom Row: Key Personal Metrics */}
