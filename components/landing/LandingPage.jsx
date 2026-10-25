@@ -23,14 +23,11 @@ import {
   X,
 } from "lucide-react";
 import { searchStartups } from "../../lib/startupsApi";
-import { MOCK_STARTUPS } from "../../lib/mock/startups";
-import { mockAddToWatchlist, mockRemoveFromWatchlist } from "../../lib/mock/watchlist";
-import { isMockEnabled } from "../../lib/mock/enabled";
 import { AUTH_STATUS, useAuth } from "../auth/AuthProvider";
 
 const assets = "/landing";
 const watchlistKey = "calip.watchlist.v1";
-const initialWatchlist = ["mock-nova-pay", "mock-voltgrid", "mock-fleetai"];
+const initialWatchlist = [];
 
 function getWorkspaceDestination() {
   if (typeof window !== "undefined") {
@@ -282,20 +279,19 @@ export default function LandingPage() {
 
   const [liveStartups, setLiveStartups] = useState([]);
   useEffect(() => {
-    if (!isMockEnabled()) {
-      searchStartups().then((res) => {
+    searchStartups()
+      .then((res) => {
         const list = res?.data?.startups ?? res?.startups ?? (Array.isArray(res?.data) ? res.data : []);
         setLiveStartups(Array.isArray(list) ? list : []);
-      }).catch(() => {
+      })
+      .catch(() => {
         setLiveStartups([]);
       });
-    }
   }, []);
 
   const companies = useMemo(() => {
     const search = query.trim().toLowerCase();
-    const source = isMockEnabled() ? MOCK_STARTUPS : liveStartups;
-    return source.filter((company) => {
+    return liveStartups.filter((company) => {
       const matchesSector = sector === "All sectors" || company.industrySector === sector;
       const haystack = `${company.startupName || ""} ${company.industrySector || ""} ${company.startupStage || ""} ${company.description || ""}`.toLowerCase();
       return matchesSector && (!search || haystack.includes(search));
@@ -326,8 +322,10 @@ export default function LandingPage() {
 
   function toggleSaved(id) {
     const isSaved = watchlist.includes(id);
-    if (isSaved) mockRemoveFromWatchlist(id);
-    else mockAddToWatchlist(id);
+    try {
+      const next = isSaved ? watchlist.filter((x) => x !== id) : [...watchlist, id];
+      window.localStorage.setItem(watchlistKey, JSON.stringify(next));
+    } catch {}
     window.dispatchEvent(new Event("calip-watchlist-updated"));
     setToast(isSaved ? "Removed from your watchlist" : "Saved to your watchlist");
   }

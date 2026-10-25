@@ -16,30 +16,30 @@ export const raiseBenefits = [
   {
     id: 3,
     icon: "sparkle",
-    title: "Real Tie Analysis",
+    title: "Real-Time Analysis",
     description:
-      "Get a comprehensive AI analysis score that builds investor confidence and surfaces your startup to the right audience.",
+      "Continuous streaming metrics, valuation benchmarking, and traction feeds across your venture lifecycle.",
   },
   {
     id: 4,
     icon: "sparkle",
-    title: "Smart Contact Security",
+    title: "Smart Contract Security",
     description:
-      "Get a comprehensive AI analysis score that builds investor confidence and surfaces your startup to the right audience.",
+      "Audited ERC-20 and Dutch auction vaults deployed directly to Base L2 with cryptographically enforced soft-caps.",
   },
   {
     id: 5,
     icon: "sparkle",
     title: "Investor Network",
     description:
-      "Get a comprehensive AI analysis score that builds investor confidence and surfaces your startup to the right audience.",
+      "Direct syndicate access to verified institutional traders and accredited web3 angel backers.",
   },
   {
     id: 6,
     icon: "globe",
     title: "Global Reach",
     description:
-      "Get a comprehensive AI analysis score that builds investor confidence and surfaces your startup to the right audience.",
+      "Raise capital borderlessly with instant on-chain settlement and decentralized compliance screening.",
   },
 ];
 
@@ -61,20 +61,20 @@ export const howItWorksSteps = [
   },
   {
     id: 2,
-    title: "Due Diligence Review",
+    title: "AI & Due Diligence Review",
     description:
-      "Our investment committee reviews your application within 5 business days.",
+      "Our AI engine and compliance analysts review your company metrics within 48 hours.",
   },
   {
     id: 3,
-    title: "Profile Goes Live",
+    title: "Launch Token Auction",
     description:
-      "Your profile and company page go live to all verified investors.",
+      "Upon approval, set your valuation target, soft-cap threshold, and initiate your on-chain presale auction.",
   },
   {
     id: 4,
-    title: "Launch Your Auction",
+    title: "Trade & Grow Community",
     description:
-      "Set your raise terms and launch a live token auction with real-time bidding.",
+      "Successful presales unlock automated liquidity pools and secondary market trading on Base L2.",
   },
 ];

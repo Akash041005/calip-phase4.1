@@ -26,7 +26,7 @@ import { useAuth } from "../auth/AuthProvider";
 import { fetchProfile } from "../../lib/authApi";
 import { getWatchlist, removeFromWatchlist } from "../../lib/usersApi";
 import { getMyStartups } from "../../lib/startupsManageApi";
-import { getTradeHistory, getListings, cancelListing, updateListingPrice } from "../../lib/marketplaceApi";
+import { getTradeHistory, getListings, cancelListing } from "../../lib/marketplaceApi";
 import { getParticipationHistory } from "../../lib/participationApi";
 
 export default function UserInsights() {

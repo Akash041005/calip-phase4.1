@@ -1,4 +1,4 @@
-import { howItWorksSteps } from "./foundersMockData";
+import { howItWorksSteps } from "./foundersContent";
 
 export default function HowItWorks() {
   return (

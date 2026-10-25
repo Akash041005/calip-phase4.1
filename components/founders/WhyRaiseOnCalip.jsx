@@ -1,5 +1,5 @@
 import { Globe, Sparkle } from "lucide-react";
-import { raiseBenefits } from "./foundersMockData";
+import { raiseBenefits } from "./foundersContent";
 
 const benefitIcons = {
   sparkle: Sparkle,

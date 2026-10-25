@@ -53,6 +53,7 @@ next-env.d.ts
 *.md
 !history.md
 !context.md
+!ARCHITECTURE.md
 *.docx
 
 # dev server logs

@@ -64,7 +64,7 @@ function resolveActivePage(pathname, propActive) {
   if (pathname.startsWith("/performance-summary") || pathname.startsWith("/performance")) return "performance";
   if (pathname.startsWith("/my-startups")) return "my-startups";
   if (pathname.startsWith("/profile")) return "profile";
-  if (pathname.startsWith("/settings") || pathname.startsWith("/setting")) return "settings";
+  if (pathname.startsWith("/settings")) return "settings";
   return null;
 }
 
