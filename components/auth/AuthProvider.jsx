@@ -38,8 +38,6 @@ import {
   SESSION_IDLE_TIMEOUT_MS,
 } from "../../lib/tokenStore";
 import { onAuthFailure, onTokenRefreshed, ApiError, setAccessToken as setApiAccessToken } from "../../lib/apiClient";
-import { isMockEnabled } from "../../lib/mock/enabled";
-import { mockLogin } from "../../lib/mock/auth";
 import { disconnectSocket, updateSocketToken } from "../../lib/socketClient";
 
 const AuthContext = createContext(null);
@@ -334,7 +332,7 @@ export function AuthProvider({ children }) {
         setIsReady(true);
         return;
       }
-      if (!isMockEnabled() && (session.sessionId?.includes("mock") || session.sessionId?.includes("demo"))) {
+      if (session.sessionId?.includes("mock") || session.sessionId?.includes("demo")) {
         clearStoredSession();
         resetSession();
         setIsReady(true);
@@ -344,15 +342,8 @@ export function AuthProvider({ children }) {
       setRole(session.role || "user");
       setSessionId(session.sessionId);
       try {
-        if (isMockEnabled()) {
-          const { session: mockSession, user: mockUser } = mockLogin();
-          setAccessToken(mockSession.accessToken);
-          setApiAccessToken(mockSession.accessToken);
-          setUser(mockUser);
-          setStatus(AUTH_STATUS.AUTHENTICATED);
-        } else {
-          let currentToken = session.accessToken;
-          const isTokenUnexpired = session.expiresAt > Date.now();
+        let currentToken = session.accessToken;
+        const isTokenUnexpired = session.expiresAt > Date.now();
 
           // Immediately hydrate if token is still valid
           if (currentToken && isTokenUnexpired) {
@@ -396,7 +387,6 @@ export function AuthProvider({ children }) {
           if (mountedRef.current && (currentToken || isTokenUnexpired)) {
             setStatus(AUTH_STATUS.AUTHENTICATED);
           }
-        }
       } catch {
         clearStoredSession();
         setAccessToken(null);

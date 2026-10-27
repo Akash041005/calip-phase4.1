@@ -1,5 +1,5 @@
 import { Bookmark, Clock, Star } from "lucide-react";
-import { badgeColors } from "./trendingNewsMockData";
+import { badgeColors } from "./badgeColors";
 
 export default function NewsListItem({
   badge,

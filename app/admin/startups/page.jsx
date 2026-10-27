@@ -241,7 +241,15 @@ export default function AdminStartupsQueuePage() {
                               Inspect Dossier
                             </Link>
 
-                            {status !== "approved" && (
+                            {status === "approved" ? (
+                              <Link
+                                href={`/insights/${id}`}
+                                target="_blank"
+                                className="rounded bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition"
+                              >
+                                View Live ↗
+                              </Link>
+                            ) : (
                               <button
                                 disabled={actionLoading}
                                 onClick={(e) => handleQuickApprove(id, e)}

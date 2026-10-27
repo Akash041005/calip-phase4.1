@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ArrowLeft,
   Copy,
@@ -16,9 +17,23 @@ import {
   Check,
   Plus,
   Loader2,
+  Rocket,
+  Clock,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Coins,
+  TrendingUp,
+  ExternalLink,
+  Users,
+  Award,
+  Sparkles,
 } from "lucide-react";
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../../lib/usersApi";
 import { getTokens, getTokenOHLC, getTokenSupply, getTokenTrades, getTokenHolders } from "../../lib/tradingApi";
+import { getPresaleByStartupId, getPresaleBids, placePresaleBid } from "../../lib/presalesApi";
+import { useAuth } from "../auth/AuthProvider";
+import { signWalletMessage } from "../../lib/wallet";
 import TokenTradePanel from "../marketplace/TokenTradePanel";
 import { useTheme } from "../auth/ThemeProvider";
 
@@ -41,9 +56,12 @@ const PLACEHOLDER_TOKEN = {
 export default function TokenDetailOverview({ tokenId = "grid", startupData = null }) {
   const router = useRouter();
   const { isDark } = useTheme();
-  // Live token (J1). No mock fallback — backend is the source of truth.
+  const { user, address, walletAddress, isAuthenticated, openConnectModal } = useAuth();
+
+  // 1. Live token check — backend is the sole source of truth
   const [liveToken, setLiveToken] = useState(null);
   const [tokenMissing, setTokenMissing] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
     getTokens({ limit: 100 })
@@ -60,25 +78,58 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
     return () => { cancelled = true; };
   }, [tokenId]);
 
+  // 2. Real Presale / Auction check for this startup
+  const targetId = startupData?._id || startupData?.id || tokenId;
+  const startupId = startupData?._id || liveToken?.startupId || targetId;
+
+  const [presale, setPresale] = useState(null);
+  const [presaleLoading, setPresaleLoading] = useState(true);
+  const [presaleBids, setPresaleBids] = useState([]);
+  const [bidAmount, setBidAmount] = useState("");
+  const [biddingSubmitting, setBiddingSubmitting] = useState(false);
+  const [bidSuccess, setBidSuccess] = useState("");
+  const [bidError, setBidError] = useState("");
+
+  const refreshPresale = useCallback(async () => {
+    if (!startupId) return;
+    try {
+      const p = await getPresaleByStartupId(startupId);
+      setPresale(p || null);
+      if (p?._id) {
+        const bidsRes = await getPresaleBids(p._id);
+        const list = Array.isArray(bidsRes) ? bidsRes : bidsRes?.data || [];
+        setPresaleBids(Array.isArray(list) ? list : []);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setPresaleLoading(false);
+    }
+  }, [startupId]);
+
+  useEffect(() => {
+    refreshPresale();
+  }, [refreshPresale]);
+
   const matchedToken = liveToken || { ...PLACEHOLDER_TOKEN, id: tokenId };
 
   const token = useMemo(() => ({
     ...matchedToken,
     name: startupData?.startupName || matchedToken.name,
     symbol: startupData?.symbol || (startupData?.startupName ? startupData.startupName.slice(0, 5).toUpperCase() : matchedToken.symbol),
-    tag: startupData?.industrySector || matchedToken.tag,
+    tag: startupData?.industrySector || startupData?.category || matchedToken.tag,
     about: startupData?.startupDescription || startupData?.description || matchedToken.about,
     mcap: startupData?.currentStartupValuation
-      ? `₹ ${Number(startupData.currentStartupValuation).toLocaleString("en-IN")}`
+      ? !isNaN(Number(startupData.currentStartupValuation))
+        ? `₹ ${Number(startupData.currentStartupValuation).toLocaleString("en-IN")}`
+        : startupData.currentStartupValuation
       : matchedToken.mcap,
     owner: startupData?.founderAddress || startupData?.ownerAddress || matchedToken.owner,
   }), [matchedToken, startupData]);
 
-  // Watchlist Integration (Real Backend)
-  const targetId = startupData?._id || startupData?.id || tokenId;
-  const startupId = startupData?._id || liveToken?.startupId || null;
+  // 3. Watchlist Integration (Real Backend)
   const [isInWatchlist, setIsInWatchlist] = useState(false);
-  const [watchlistStatus, setWatchlistStatus] = useState("idle"); // "idle" | "adding" | "added" | "removing" | "error"
+  const [watchlistStatus, setWatchlistStatus] = useState("idle");
   const [watchlistError, setWatchlistError] = useState("");
 
   useEffect(() => {
@@ -104,9 +155,7 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
       }
     }
     checkWatchlist();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [targetId, token.symbol, token.name]);
 
   const handleWatchlistToggle = async () => {
@@ -119,7 +168,6 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
         setIsInWatchlist(false);
         setWatchlistStatus("idle");
       } catch (err) {
-        console.error("Failed to remove from watchlist:", err);
         setWatchlistError("Failed to remove");
         setWatchlistStatus("error");
         setTimeout(() => setWatchlistStatus("added"), 2500);
@@ -131,7 +179,6 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
         setIsInWatchlist(true);
         setWatchlistStatus("added");
       } catch (err) {
-        console.error("Failed to add to watchlist:", err);
         setWatchlistError("Failed to add");
         setWatchlistStatus("error");
         setTimeout(() => setWatchlistStatus("idle"), 2500);
@@ -139,1011 +186,774 @@ export default function TokenDetailOverview({ tokenId = "grid", startupData = nu
     }
   };
 
-  // Chart Interactive State — candles come from live OHLC (J3).
+  // 4. Handle Placing an Auction Bid directly from this page
+  const handlePlaceAuctionBid = async (e) => {
+    if (e) e.preventDefault();
+    if (!presale?._id) return;
+    if (!isAuthenticated) {
+      openConnectModal?.();
+      return;
+    }
+
+    const amount = Number(bidAmount);
+    if (!amount || amount <= 0) {
+      setBidError("Please enter a valid investment amount.");
+      return;
+    }
+
+    const minInv = Number(presale.minInvestment) || 0;
+    const maxInv = Number(presale.maxInvestment) || 0;
+
+    if (minInv > 0 && amount < minInv) {
+      setBidError(`Minimum bid is ₹${minInv.toLocaleString("en-IN")}`);
+      return;
+    }
+    if (maxInv > 0 && amount > maxInv) {
+      setBidError(`Maximum bid is ₹${maxInv.toLocaleString("en-IN")}`);
+      return;
+    }
+
+    const tokenPrice = Number(presale.tokenPrice) || 1;
+    const tokens = Math.floor(amount / tokenPrice);
+    if (tokens <= 0) {
+      setBidError("Calculated tokens must be greater than zero.");
+      return;
+    }
+
+    setBiddingSubmitting(true);
+    setBidError("");
+    setBidSuccess("Requesting wallet signature in MetaMask…");
+
+    let signature = null;
+    const activeWallet = walletAddress || address;
+    try {
+      const commitmentMsg = 
+`Calip.io Auction Investment Commitment
+Startup: ${startupName}
+Round ID: ${presale._id}
+Commitment Amount: ₹${amount.toLocaleString("en-IN")}
+Tokens Allocated: ~${tokens.toLocaleString()} ${token.symbol || "SPT"}
+Investor Wallet: ${activeWallet}
+Escrow Gate: Base Sepolia L2 (70% Soft-Cap Rule)
+
+By signing, I authorize this investment commitment into the smart-contract escrow. If the soft-cap is met, tokens will be allocated upon round completion. If unsuccessful, 100% of my commitment will be refunded.`;
+
+      signature = await signWalletMessage(commitmentMsg, activeWallet);
+    } catch (signErr) {
+      setBidError(signErr?.message || "Wallet commitment signature was rejected in MetaMask.");
+      setBiddingSubmitting(false);
+      return;
+    }
+
+    try {
+      await placePresaleBid(presale._id, {
+        bidAmount: amount,
+        tokenAmount: tokens,
+        signature,
+      });
+      setBidSuccess(`✅ Commitment of ₹${amount.toLocaleString("en-IN")} signed and recorded! You will receive ~${tokens.toLocaleString()} tokens upon successful auction close.`);
+      setBidAmount("");
+      await refreshPresale();
+    } catch (err) {
+      setBidError(err?.message || "Failed to place bid");
+    } finally {
+      setBiddingSubmitting(false);
+    }
+  };
+
+  // Secondary Trading State (used only when liveToken is true)
   const [candles, setCandles] = useState([]);
   const [candlesLoading, setCandlesLoading] = useState(true);
   const [candlesError, setCandlesError] = useState("");
   const [livePrice, setLivePrice] = useState(0);
-  const [priceFlash, setPriceFlash] = useState(null); // 'up' | 'down' | null
+  const [priceFlash, setPriceFlash] = useState(null);
   const [activeTab, setActiveTab] = useState("recents");
   const [activeTf, setActiveTf] = useState("15m");
-  const [visibleCount, setVisibleCount] = useState(38); // Zoom level
-  const [panOffset, setPanOffset] = useState(0); // Pan position
-  const [hoveredCandle, setHoveredCandle] = useState(null);
-  const [cursorPos, setCursorPos] = useState(null); // { x, y, price }
-  const [hoveredDonutSeg, setHoveredDonutSeg] = useState(null);
-
-  const canvasRef = useRef(null);
-  const chartContainerRef = useRef(null);
-  const isDraggingRef = useRef(false);
-  const dragStartXRef = useRef(0);
-  const dragStartOffsetRef = useRef(0);
-  // Refs keep interval + hover handlers pure (no setState inside updaters).
-  const candlesRef = useRef([]);
-  const priceFlashTimeoutRef = useRef(null);
-  const cursorRafRef = useRef(0);
-  useEffect(() => {
-    candlesRef.current = candles;
-  }, [candles]);
-  useEffect(() => {
-    return () => {
-      if (priceFlashTimeoutRef.current) clearTimeout(priceFlashTimeoutRef.current);
-      if (cursorRafRef.current) cancelAnimationFrame(cursorRafRef.current);
-    };
-  }, []);
-
-  // Live OHLC fetch (J3) on token/timeframe change + 30s refresh.
-  // Replaces the previous random-walk simulation.
-  useEffect(() => {
-    let cancelled = false;
-    let interval;
-    async function loadCandles() {
-      try {
-        const { candles: raw } = await getTokenOHLC(tokenId, activeTf, 90);
-        if (cancelled) return;
-        if (!raw || raw.length === 0) {
-          setCandles([]);
-          setCandlesError("No candle data yet for this token.");
-        } else {
-          const mapped = raw.map((c) => {
-            const open = Number(c.open ?? c.o);
-            const high = Number(c.high ?? c.h);
-            const low = Number(c.low ?? c.l);
-            const close = Number(c.close ?? c.c);
-            return {
-              timestamp: Number(c.timestamp) || Date.now(),
-              open,
-              high,
-              low,
-              close,
-              volume: Number(c.volume) || 0,
-              isGreen: close >= open,
-            };
-          });
-          setCandles(mapped);
-          setCandlesError("");
-          if (mapped.length > 0) {
-            setLivePrice(mapped[mapped.length - 1].close);
-          }
-        }
-      } catch {
-        if (!cancelled) setCandlesError("Could not load candles from the backend.");
-      } finally {
-        if (!cancelled) setCandlesLoading(false);
-      }
-    }
-    loadCandles();
-    interval = setInterval(() => {
-      if (typeof document !== "undefined" && document.hidden) return;
-      loadCandles();
-    }, 30000);
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-      if (priceFlashTimeoutRef.current) clearTimeout(priceFlashTimeoutRef.current);
-    };
-  }, [tokenId, activeTf]);
-
-  // Live trades feed (J5).
   const [liveTokenTrades, setLiveTokenTrades] = useState([]);
-  useEffect(() => {
-    let cancelled = false;
-    getTokenTrades(tokenId, 10)
-      .then((res) => {
-        if (!cancelled) setLiveTokenTrades(res.trades || []);
-      })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, [tokenId]);
-
-  // Live supply + allocation (J4).
   const [tokenSupply, setTokenSupply] = useState(null);
-  useEffect(() => {
-    let cancelled = false;
-    getTokenSupply(tokenId)
-      .then((res) => {
-        if (!cancelled) setTokenSupply(res);
-      })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, [tokenId]);
-
   const [tokenHolders, setTokenHolders] = useState(null);
+
   useEffect(() => {
+    if (!liveToken) return;
     let cancelled = false;
-    const sId = startupId || tokenId;
-    if (sId) {
-      getTokenHolders(sId)
-        .then((res) => {
-          if (!cancelled && res) setTokenHolders(res);
-        })
-        .catch(() => {});
-    }
+    getTokenOHLC(tokenId, activeTf, 90)
+      .then((res) => {
+        if (cancelled) return;
+        const raw = res?.candles || [];
+        setCandles(raw);
+        if (raw.length > 0) setLivePrice(raw[raw.length - 1].close);
+        setCandlesError(raw.length === 0 ? "No secondary trades recorded yet." : "");
+      })
+      .catch(() => {
+        if (!cancelled) setCandlesError("Could not load candles from backend.");
+      })
+      .finally(() => {
+        if (!cancelled) setCandlesLoading(false);
+      });
+
+    getTokenTrades(tokenId, 10).then((res) => {
+      if (!cancelled) setLiveTokenTrades(res.trades || []);
+    }).catch(() => {});
+
+    getTokenSupply(tokenId).then((res) => {
+      if (!cancelled) setTokenSupply(res);
+    }).catch(() => {});
+
     return () => { cancelled = true; };
-  }, [startupId, tokenId]);
+  }, [liveToken, tokenId, activeTf]);
 
-  // Handle timeframe change
-  const handleTfChange = (tf) => {
-    setActiveTf(tf);
-    setPanOffset(0);
-  };
+  // Derived startup details
+  const startupName = startupData?.startupName || token.name || "Startup Dossier";
+  const startupStage = startupData?.stage || startupData?.status || "pending";
+  const isAuctionLive = presale?.status === "active";
+  const targetRaise = (presale?.totalTokens || 0) * (presale?.tokenPrice || 0);
+  const raisedAmount = presale?.raisedAmount ?? ((presale?.soldTokens || 0) * (presale?.tokenPrice || 0));
+  const softCapAmount = targetRaise * 0.7; // 70% soft cap rule
+  const progressPercent = targetRaise > 0 ? Math.min(100, (raisedAmount / targetRaise) * 100) : 0;
+  const isSoftCapMet = raisedAmount >= softCapAmount && softCapAmount > 0;
+  const calculatedTokens = bidAmount && presale?.tokenPrice ? Math.floor(Number(bidAmount) / presale.tokenPrice) : 0;
 
-  // Zoom handlers
-  const handleZoom = useCallback((direction, focusRatio = 0.5) => {
-    setVisibleCount((prev) => {
-      const step = Math.max(2, Math.floor(prev * 0.18));
-      if (direction === "in") {
-        return Math.max(14, prev - step);
-      } else {
-        return Math.min(90, prev + step);
-      }
-    });
-  }, []);
+  // =========================================================================
+  // VIEW A: PRE-TOKEN / COMMUNITY AUCTION VIEW (When no secondary token exists)
+  // Platform Policy:
+  // No fake secondary market charts, mock order books, or fake ticker prices
+  // before the community auction successfully closes and mints a token.
+  // =========================================================================
+  if (!liveToken) {
+    return (
+      <div className="mx-auto max-w-[1400px] px-4 pt-4 sm:px-6 lg:px-8 space-y-6">
+        {/* Top Header Navigation & Identity */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/[0.08] pb-5">
+          <div className="flex items-center gap-3.5">
+            <button
+              onClick={() => router.push("/marketplace")}
+              className="flex items-center justify-center w-10 h-10 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 shadow-xs dark:border-white/[0.12] dark:bg-[#151824] dark:text-neutral-400 dark:hover:text-white transition cursor-pointer"
+              title="Back to Marketplace"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
 
-  const handleResetZoom = () => {
-    setVisibleCount(38);
-    setPanOffset(0);
-  };
+            {startupData?.logoUrl ? (
+              <img
+                src={startupData.logoUrl}
+                alt={startupName}
+                className="w-12 h-12 rounded-xl object-cover border border-slate-200 dark:border-white/10"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-lg font-bold">
+                {startupName.slice(0, 2).toUpperCase()}
+              </div>
+            )}
 
-  // Canvas Drawing Routine
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+            <div>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                  {startupName}
+                </h1>
+                <span className="text-sm font-bold text-slate-500 dark:text-neutral-400 font-mono">
+                  {token.symbol}
+                </span>
 
-    const ctx = canvas.getContext("2d");
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
+                {/* Real Status Badge based on Calip Lifecycle */}
+                {isAuctionLive ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold shadow-[0_0_12px_rgba(16,185,129,0.2)]">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
+                    Live Community Auction
+                  </span>
+                ) : startupStage === "approved" ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Vetted & Approved by Calip
+                  </span>
+                ) : startupStage === "rejected" ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-bold">
+                    Application Rejected
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-bold">
+                    <Clock className="w-3.5 h-3.5" />
+                    Application Under Review
+                  </span>
+                )}
 
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-neutral-300 text-xs font-medium">
+                  {token.tag}
+                </span>
+              </div>
 
-    const width = rect.width;
-    const height = rect.height;
-    ctx.clearRect(0, 0, width, height);
+              <p className="mt-1 text-xs text-slate-500 dark:text-neutral-400 font-mono">
+                Founder: {startupData?.founderAddress || token.owner || "0x..."}
+              </p>
+            </div>
+          </div>
 
-    // Visible candle slice based on pan & zoom
-    const totalCount = candles.length;
-    const count = Math.min(visibleCount, totalCount);
-    const maxOffset = totalCount - count;
-    const safeOffset = Math.max(0, Math.min(maxOffset, panOffset));
-    const startIdx = totalCount - count - safeOffset;
-    const visibleCandles = candles.slice(startIdx, startIdx + count);
+          {/* Action Header Controls */}
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={handleWatchlistToggle}
+              disabled={watchlistStatus === "adding" || watchlistStatus === "removing"}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition border ${
+                isInWatchlist
+                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-600 dark:hover:text-rose-400 group"
+                  : "cl-btn-primary"
+              } disabled:opacity-50 cursor-pointer`}
+            >
+              {watchlistStatus === "adding" ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Adding...</span>
+                </>
+              ) : watchlistStatus === "removing" ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Removing...</span>
+                </>
+              ) : isInWatchlist ? (
+                <>
+                  <Check className="w-3.5 h-3.5 group-hover:hidden" />
+                  <span className="group-hover:hidden">✓ In Watchlist</span>
+                  <span className="hidden group-hover:inline">Remove</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add to Watchlist</span>
+                </>
+              )}
+            </button>
 
-    if (visibleCandles.length === 0) return;
+            {startupData?.startupWebsite && (
+              <a
+                href={startupData.startupWebsite}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-slate-900 shadow-xs dark:border-white/[0.12] dark:bg-[#151824] dark:text-neutral-400 dark:hover:text-white transition"
+                title="Official Website"
+              >
+                <Globe className="w-4 h-4" />
+              </a>
+            )}
 
-    // Price scaling
-    const lows = visibleCandles.map((c) => c.low);
-    const highs = visibleCandles.map((c) => c.high);
-    const minP = Math.min(...lows) * 0.985;
-    const maxP = Math.max(...highs) * 1.015;
-    const pRange = maxP - minP || 0.0001;
+            {startupData?.pitchDeckUrl && (
+              <a
+                href={startupData.pitchDeckUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-slate-900 shadow-xs dark:border-white/[0.12] dark:bg-[#151824] dark:text-neutral-400 dark:hover:text-white transition"
+                title="View Pitch Deck"
+              >
+                <FileText className="w-4 h-4" />
+              </a>
+            )}
+          </div>
+        </div>
 
-    const rightMargin = 72;
-    const bottomMargin = 28;
-    const chartWidth = width - rightMargin;
-    const chartHeight = height - bottomMargin;
+        {/* 2-Column Main Workspace */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          {/* Main Column (2/3 width): Auction Participation & Company Dossier */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Live Community Auction Card */}
+            {isAuctionLive ? (
+              <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-white via-white to-emerald-500/[0.04] dark:from-[#111318] dark:via-[#111318] dark:to-emerald-950/20 p-6 sm:p-7 shadow-xl space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/[0.08] pb-5">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Rocket className="w-5 h-5 text-emerald-500 dark:text-emerald-400" />
+                      <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                        {presale.title || `${startupName} Community Auction Round`}
+                      </h2>
+                    </div>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-neutral-400">
+                      Smart-contract escrow auction on Base Sepolia. Backers commit funds; tokens are generated upon 70% soft-cap success.
+                    </p>
+                  </div>
 
-    const toY = (price) => chartHeight - ((price - minP) / pRange) * (chartHeight - 30) - 10;
-    const toPrice = (y) => maxP - ((y - 10) / (chartHeight - 30)) * pRange;
+                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 text-right font-mono">
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">Token Price</span>
+                    <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
+                      ₹{Number(presale.tokenPrice).toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                </div>
 
-    // Grid lines & price labels
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.04)" : "rgba(15, 23, 42, 0.06)";
-    ctx.fillStyle = isDark ? "#5e6f85" : "#64748b";
-    ctx.font = "10px JetBrains Mono";
-    ctx.textAlign = "right";
+                {/* Key Auction Metrics Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+                  <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-3.5">
+                    <span className="text-[10.5px] font-semibold text-slate-500 dark:text-neutral-500 uppercase tracking-wider block">Target Goal</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-slate-900 dark:text-white mt-0.5 block">
+                      ₹{targetRaise.toLocaleString("en-IN")}
+                    </span>
+                  </div>
 
-    const numPriceLines = 6;
-    for (let i = 0; i <= numPriceLines; i++) {
-      const p = minP + (i / numPriceLines) * pRange;
-      const y = toY(p);
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(chartWidth, y);
-      ctx.stroke();
+                  <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-3.5">
+                    <span className="text-[10.5px] font-semibold text-slate-500 dark:text-neutral-500 uppercase tracking-wider block">Amount Raised</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 block">
+                      ₹{Number(raisedAmount).toLocaleString("en-IN")}
+                    </span>
+                  </div>
 
-      ctx.fillText(p < 0.01 ? p.toFixed(6) : p.toFixed(4), width - 8, y + 3);
-    }
+                  <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-3.5">
+                    <span className="text-[10.5px] font-semibold text-slate-500 dark:text-neutral-500 uppercase tracking-wider block">Soft Cap (70%)</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-indigo-600 dark:text-indigo-400 mt-0.5 block">
+                      ₹{softCapAmount.toLocaleString("en-IN")}
+                    </span>
+                  </div>
 
-    // Candle geometry
-    const candleSlot = chartWidth / count;
-    const candleBodyWidth = Math.max(3, candleSlot * 0.65);
+                  <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-3.5">
+                    <span className="text-[10.5px] font-semibold text-slate-500 dark:text-neutral-500 uppercase tracking-wider block">Deadline</span>
+                    <span className="text-xs sm:text-sm font-bold font-mono text-slate-700 dark:text-neutral-300 mt-0.5 block truncate">
+                      {presale.endDate ? new Date(presale.endDate).toLocaleDateString() : "30 Days"}
+                    </span>
+                  </div>
+                </div>
 
-    // Draw Volume bars
-    const maxVol = Math.max(...visibleCandles.map((c) => c.volume), 1);
-    visibleCandles.forEach((c, i) => {
-      const x = i * candleSlot + candleSlot / 2;
-      const vHeight = (c.volume / maxVol) * 44;
-      ctx.fillStyle = c.isGreen ? "rgba(16, 185, 129, 0.22)" : "rgba(244, 63, 94, 0.22)";
-      ctx.fillRect(x - candleBodyWidth / 2, chartHeight - vHeight, candleBodyWidth, vHeight);
-    });
+                {/* Visual Progress Bar with 70% Soft Cap Gate Marker */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="text-slate-600 dark:text-neutral-400 font-semibold">
+                      Auction Progress: <strong className="text-slate-900 dark:text-white">{progressPercent.toFixed(1)}%</strong>
+                    </span>
+                    <span className={isSoftCapMet ? "text-emerald-500 font-bold" : "text-amber-500 font-medium"}>
+                      {isSoftCapMet ? "✓ Soft Cap Reached (Token Creation Guaranteed)" : "Soft Cap Requirement: 70%"}
+                    </span>
+                  </div>
 
-    // Draw Candlesticks
-    visibleCandles.forEach((c, i) => {
-      const x = i * candleSlot + candleSlot / 2;
-      const openY = toY(c.open);
-      const closeY = toY(c.close);
-      const highY = toY(c.high);
-      const lowY = toY(c.low);
+                  <div className="relative h-3.5 w-full rounded-full bg-slate-100 dark:bg-white/[0.08] overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500 rounded-full"
+                      style={{ width: `${progressPercent}%` }}
+                    />
+                    {/* 70% Soft Cap line indicator */}
+                    <div
+                      className="absolute top-0 bottom-0 w-0.5 bg-amber-400 z-10"
+                      style={{ left: "70%" }}
+                      title="70% Soft Cap Threshold"
+                    />
+                  </div>
+                  <div className="flex justify-between text-[11px] font-mono text-slate-400 dark:text-neutral-500">
+                    <span>₹0</span>
+                    <span className="text-amber-500 font-semibold">| 70% Soft Cap Gate</span>
+                    <span>₹{targetRaise.toLocaleString("en-IN")} Hard Cap</span>
+                  </div>
+                </div>
 
-      const color = c.isGreen ? "#10b981" : "#ef4444";
-      ctx.strokeStyle = color;
-      ctx.fillStyle = color;
+                {/* Direct Investor Bidding / Commitment Widget */}
+                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.03] dark:bg-emerald-950/10 p-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                        Place Investment Commitment
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-neutral-400">
+                        Min: ₹{Number(presale.minInvestment || 500).toLocaleString("en-IN")} • Max: ₹{Number(presale.maxInvestment || 50000).toLocaleString("en-IN")}
+                      </p>
+                    </div>
 
-      // Wick
-      ctx.beginPath();
-      ctx.moveTo(x, highY);
-      ctx.lineTo(x, lowY);
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
+                    {calculatedTokens > 0 && (
+                      <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                        Allocates: ~{calculatedTokens.toLocaleString()} {token.symbol}
+                      </span>
+                    )}
+                  </div>
 
-      // Body
-      const topY = Math.min(openY, closeY);
-      const bHeight = Math.max(2, Math.abs(closeY - openY));
-      ctx.fillRect(x - candleBodyWidth / 2, topY, candleBodyWidth, bHeight);
-    });
+                  <form onSubmit={handlePlaceAuctionBid} className="space-y-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="relative flex-1">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-slate-400 text-sm font-bold">₹</span>
+                        <input
+                          type="number"
+                          min={presale.minInvestment || 1}
+                          max={presale.maxInvestment || undefined}
+                          value={bidAmount}
+                          onChange={(e) => setBidAmount(e.target.value)}
+                          placeholder={`Enter amount (e.g. ${presale.minInvestment || 1000})`}
+                          className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-[#090a0f] pl-8 pr-4 py-2.5 text-sm font-mono text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                        />
+                      </div>
 
-    // Current live price horizontal indicator
-    const lastCandle = visibleCandles[visibleCandles.length - 1];
-    const liveY = toY(lastCandle.close);
+                      {isAuthenticated ? (
+                        <button
+                          type="submit"
+                          disabled={biddingSubmitting || !bidAmount}
+                          className="flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 py-2.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition shadow-md disabled:opacity-50 cursor-pointer"
+                        >
+                          {biddingSubmitting ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <span>Signing Commitment...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Coins className="w-4 h-4" />
+                              <span>Commit Funds to Auction</span>
+                            </>
+                          )}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => openConnectModal?.()}
+                          className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-950 px-6 py-2.5 text-xs font-bold hover:opacity-90 transition shadow-md cursor-pointer"
+                        >
+                          Connect Wallet to Bid
+                        </button>
+                      )}
+                    </div>
 
-    ctx.strokeStyle = "#10b981";
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(0, liveY);
-    ctx.lineTo(chartWidth, liveY);
-    ctx.stroke();
-    ctx.setLineDash([]);
+                    {/* Quick amount presets */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-slate-500">Presets:</span>
+                      {[1000, 2500, 5000, 10000].map((preset) => (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => setBidAmount(String(preset))}
+                          className="rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 px-2 py-0.5 text-[11px] font-mono text-slate-700 dark:text-neutral-300 transition"
+                        >
+                          ₹{preset.toLocaleString()}
+                        </button>
+                      ))}
+                    </div>
 
-    // Live price tag on right scale
-    ctx.fillStyle = "#10b981";
-    ctx.fillRect(chartWidth, liveY - 9, rightMargin - 4, 18);
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 10px JetBrains Mono";
-    ctx.textAlign = "center";
-    ctx.fillText(lastCandle.close.toFixed(6), chartWidth + rightMargin / 2 - 2, liveY + 3.5);
+                    {/* Feedback Messages */}
+                    {bidSuccess && (
+                      <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3 text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 shrink-0" />
+                        <span>{bidSuccess}</span>
+                      </div>
+                    )}
+                    {bidError && (
+                      <div className="rounded-xl bg-rose-500/10 border border-rose-500/30 p-3 text-xs text-rose-600 dark:text-rose-400 flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 shrink-0" />
+                        <span>{bidError}</span>
+                      </div>
+                    )}
+                  </form>
+                </div>
 
-    // Crosshair & Hover Tooltip
-    if (cursorPos && cursorPos.x < chartWidth && cursorPos.y < chartHeight) {
-      const { x, y } = cursorPos;
-      ctx.strokeStyle = isDark ? "rgba(255, 255, 255, 0.35)" : "rgba(15, 23, 42, 0.35)";
-      ctx.setLineDash([3, 3]);
+                {/* Real Recent Commitments Table */}
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                      Recent Investor Bids ({presaleBids.length})
+                    </h3>
+                    <span className="text-[11px] text-slate-500 font-mono">Authoritative Ledger</span>
+                  </div>
 
-      // Vertical line
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, chartHeight);
-      ctx.stroke();
+                  {presaleBids.length === 0 ? (
+                    <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-4 text-center text-xs text-slate-500 dark:text-neutral-400">
+                      No bids submitted yet. Be the first backer in this community auction!
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04] border border-slate-200 dark:border-white/[0.06] rounded-xl overflow-hidden bg-slate-50/50 dark:bg-[#090a0f]">
+                      {presaleBids.slice(0, 10).map((b, idx) => (
+                        <div key={b._id || idx} className="p-3 flex items-center justify-between text-xs font-mono">
+                          <div className="flex items-center gap-2.5">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                            <span className="font-semibold text-slate-800 dark:text-neutral-200">
+                              {b.address || b.bidder || (b.walletAddress ? `${b.walletAddress.slice(0, 6)}...${b.walletAddress.slice(-4)}` : "Backer")}
+                            </span>
+                            {b.bidder && b.address && (
+                              <span className="hidden sm:inline rounded bg-white/5 border border-white/10 px-1.5 py-0.5 text-[10px] text-slate-400">
+                                {b.bidder}
+                              </span>
+                            )}
+                            <span className="text-[11px] text-slate-400">
+                              {b.createdAt ? new Date(b.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                            </span>
+                          </div>
 
-      // Horizontal line
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(chartWidth, y);
-      ctx.stroke();
-      ctx.setLineDash([]);
+                          <div className="text-right">
+                            <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                              ₹{Number(b.bidAmount).toLocaleString("en-IN")}
+                            </span>
+                            <span className="text-[11px] text-slate-500 ml-2">
+                              (~{Number(b.tokenAmount).toLocaleString()} {token.symbol || "tokens"})
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* Pre-Auction Status Notice (When startup is reviewed/approved but auction not launched yet) */
+              <div className="rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-white via-white to-indigo-500/[0.04] dark:from-[#111318] dark:via-[#111318] dark:to-indigo-950/20 p-6 sm:p-8 shadow-xl space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                      {startupStage === "approved"
+                        ? "Primary Auction Scheduled"
+                        : startupStage === "rejected"
+                        ? "Application Rejected"
+                        : "Application Curation In Progress"}
+                    </h2>
+                    <p className="text-xs text-slate-500 dark:text-neutral-400">
+                      {startupStage === "approved"
+                        ? "This startup has been vetted and approved. The founder or administrator will launch the community auction round shortly."
+                        : startupStage === "rejected"
+                        ? (startupData?.rejectionReason || startupData?.adminFeedback || "This startup application was reviewed and rejected by the platform administrators.")
+                        : "Calip administrators review team credentials, valuation, and utility specifications prior to authorizing an auction round."}
+                    </p>
+                  </div>
+                </div>
 
-      // Price indicator on Y-axis
-      const hoverPrice = toPrice(y);
-      ctx.fillStyle = isDark ? "#1e293b" : "#ffffff";
-      ctx.fillRect(chartWidth, y - 9, rightMargin - 4, 18);
-      ctx.strokeStyle = isDark ? "#818cf8" : "#6366f1";
-      ctx.strokeRect(chartWidth, y - 9, rightMargin - 4, 18);
-      ctx.fillStyle = isDark ? "#ffffff" : "#0f172a";
-      ctx.font = "10px JetBrains Mono";
-      ctx.textAlign = "center";
-      ctx.fillText(hoverPrice.toFixed(6), chartWidth + rightMargin / 2 - 2, y + 3.5);
+                <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-4 text-xs text-slate-600 dark:text-neutral-400 leading-relaxed">
+                  <strong className="text-slate-900 dark:text-white block mb-1">
+                    🛡️ Calip Protocol Regulatory Safeguard:
+                  </strong>
+                  Secondary market decentralized trading, live order books, and candlestick charts will unlock only after the primary community auction completes successfully and meets the 70% soft-cap funding threshold. No mock or synthetic pricing is presented.
+                </div>
+              </div>
+            )}
 
-      // Find hovered candle
-      const candleIdx = Math.floor(x / candleSlot);
-      if (candleIdx >= 0 && candleIdx < visibleCandles.length) {
-        const hCandle = hoveredCandle || visibleCandles[candleIdx];
+            {/* Executive Summary & Detailed Description */}
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                Company Overview & Executive Summary
+              </h3>
+              <p className="text-sm leading-relaxed text-slate-700 dark:text-neutral-300">
+                {startupData?.description || token.about || "No executive summary supplied for this startup dossier."}
+              </p>
+            </div>
 
-        // Date pill on X-axis
-        const d = new Date(hCandle.timestamp);
-        const dateStr = `${d.getDate()} ${d.toLocaleString("default", { month: "short" })} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-        ctx.fillStyle = isDark ? "#1e293b" : "#ffffff";
-        ctx.fillRect(x - 45, chartHeight + 4, 90, 18);
-        ctx.strokeStyle = isDark ? "#818cf8" : "#6366f1";
-        ctx.strokeRect(x - 45, chartHeight + 4, 90, 18);
-        ctx.fillStyle = isDark ? "#ffffff" : "#0f172a";
-        ctx.fillText(dateStr, x, chartHeight + 16);
-      }
-    }
-  }, [candles, visibleCount, panOffset, cursorPos, hoveredCandle, isDark]);
+            {/* Utility Token Value Proposition */}
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-3">
+              <div className="flex items-center gap-2">
+                <Award className="w-4 h-4 text-violet-500" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                  Token Utility Specification
+                </h3>
+              </div>
 
-  useEffect(() => {
-    const element = chartContainerRef.current || canvasRef.current;
-    if (!element) return undefined;
+              <div className="rounded-xl bg-violet-500/10 border border-violet-500/20 p-4 text-xs text-violet-900 dark:text-violet-300 leading-relaxed">
+                <p className="font-semibold text-slate-900 dark:text-white mb-1">Stated Backer Benefits:</p>
+                <p>
+                  {startupData?.tokenUtility || startupData?.utilityStatement || "Early platform beta access, monthly founder townhalls, VIP product discounts, and governance signaling."}
+                </p>
+              </div>
 
-    const handleWheel = (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      handleZoom(event.deltaY < 0 ? "in" : "out");
-    };
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Disclaimer: Utility tokens on Calip grant platform privileges, product discounts, and community access. They do not constitute company shares, voting equity, dividend claims, or investment contracts.
+              </p>
+            </div>
+          </div>
 
-    element.addEventListener("wheel", handleWheel, { passive: false });
-    return () => element.removeEventListener("wheel", handleWheel);
-  }, [handleZoom]);
+          {/* Right Sidebar (1/3 width): Key Facts, Founder Info & Escrow Safeguards */}
+          <div className="space-y-6">
+            {/* Startup Key Metrics */}
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-4">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                Fundraising & Financials
+              </h3>
 
-  const handleMouseDown = (event) => {
-    if (event.button !== 0) return;
-    isDraggingRef.current = true;
-    dragStartXRef.current = event.clientX;
-    dragStartOffsetRef.current = panOffset;
-    setCursorPos(null);
-  };
+              <div className="space-y-3 text-xs">
+                <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-3.5">
+                  <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Target Raise Goal</span>
+                  <span className="text-base font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 block">
+                    {targetRaise > 0
+                      ? `₹${targetRaise.toLocaleString("en-IN")}`
+                      : startupData?.targetGoal || startupData?.fundraisingGoal
+                        ? !isNaN(Number(startupData.targetGoal || startupData.fundraisingGoal))
+                          ? `₹${Number(startupData.targetGoal || startupData.fundraisingGoal).toLocaleString("en-IN")}`
+                          : (startupData.targetGoal || startupData.fundraisingGoal)
+                        : "To be announced"}
+                  </span>
+                </div>
 
-  const handleMouseMove = (event) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
+                <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-3.5">
+                  <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Current Startup Valuation</span>
+                  <span className="text-base font-bold font-mono text-slate-900 dark:text-white mt-0.5 block">
+                    {startupData?.currentStartupValuation
+                      ? !isNaN(Number(startupData.currentStartupValuation))
+                        ? `₹${Number(startupData.currentStartupValuation).toLocaleString("en-IN")}`
+                        : startupData.currentStartupValuation
+                      : "Under ₹1 Cr"}
+                  </span>
+                </div>
 
-    if (isDraggingRef.current) {
-      const count = Math.min(visibleCount, candlesRef.current.length);
-      if (count === 0) return;
-      const slotWidth = (rect.width - 72) / count;
-      const offset = Math.max(0, dragStartOffsetRef.current + Math.round((dragStartXRef.current - event.clientX) / slotWidth));
-      setPanOffset((current) => (current === offset ? current : offset));
-      return;
-    }
+                <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-3.5">
+                  <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Legal Entity</span>
+                  <span className="text-xs font-semibold text-slate-800 dark:text-neutral-200 mt-0.5 block">
+                    {startupData?.companyRegistrationType || "Private Limited / C-Corp"}
+                  </span>
+                </div>
 
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    if (cursorRafRef.current) return;
-    cursorRafRef.current = requestAnimationFrame(() => {
-      cursorRafRef.current = 0;
-      setCursorPos({ x, y });
+                <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-3.5">
+                  <span className="text-slate-500 uppercase tracking-wider text-[10px] font-semibold block">Industry Category</span>
+                  <span className="text-xs font-semibold text-slate-800 dark:text-neutral-200 mt-0.5 block">
+                    {token.tag}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-      const allCandles = candlesRef.current;
-      const count = Math.min(visibleCount, allCandles.length);
-      if (count === 0) {
-        setHoveredCandle(null);
-        return;
-      }
-      const maxOffset = allCandles.length - count;
-      const safeOffset = Math.max(0, Math.min(maxOffset, panOffset));
-      const startIndex = allCandles.length - count - safeOffset;
-      const visibleCandles = allCandles.slice(startIndex, startIndex + count);
-      const slotWidth = (rect.width - 72) / count;
-      const hovered = visibleCandles[Math.floor(x / slotWidth)] || null;
-      setHoveredCandle((current) => current?.timestamp === hovered?.timestamp ? current : hovered);
-    });
-  };
+            {/* Founder & Evidence Card */}
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                Founder Credentials
+              </h3>
 
-  const handleMouseUp = () => {
-    isDraggingRef.current = false;
-  };
+              <div className="space-y-2 text-xs">
+                <div className="rounded-xl border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-[#090a0f] p-3">
+                  <span className="text-slate-500 text-[10px] uppercase font-semibold block">Founder Wallet</span>
+                  <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white truncate block mt-0.5">
+                    {startupData?.founderAddress || token.owner || "0x..."}
+                  </span>
+                </div>
 
-  const handleMouseLeave = () => {
-    isDraggingRef.current = false;
-    setCursorPos(null);
-    setHoveredCandle(null);
-  };
+                {startupData?.pitchDeckUrl && (
+                  <a
+                    href={startupData.pitchDeckUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-3 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 transition"
+                  >
+                    <span className="flex items-center gap-2">
+                      <FileText className="w-4 h-4" />
+                      View Pitch Deck (PDF)
+                    </span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
+              </div>
+            </div>
 
-  // Active stats for header (either hovered candle or latest candle)
-  const displayCandle = hoveredCandle || candles[candles.length - 1];
-  const deltaPct = displayCandle
-    ? (((displayCandle.close - displayCandle.open) / displayCandle.open) * 100).toFixed(2)
-    : "0.00";
-  const isCandleGreen = displayCandle ? displayCandle.close >= displayCandle.open : true;
+            {/* Escrow Safeguard Disclosure */}
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-2 text-xs text-slate-500 dark:text-neutral-400">
+              <h4 className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                Participant Protection
+              </h4>
+              <p className="leading-relaxed">
+                All auction commitments are held in transparent smart contracts on Base. In accordance with platform safeguard policies, if the 70% soft-cap threshold is not attained by the auction deadline, participants can claim a 100% refund of their contributed funds directly from escrow.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  // Allocation donut driven by live supply (J4). No hardcoded fallback.
-  const donutSegments = useMemo(() => {
-    const alloc = tokenSupply?.allocation;
-    if (!Array.isArray(alloc) || alloc.length === 0) return [];
-    let acc = 0;
-    return alloc.map((a, i) => {
-      const pct = Number(a.pct) || 0;
-      const seg = {
-        title: a.title || `Tranche ${i + 1}`,
-        desc: "",
-        amount: Number(a.amount) >= 1e6 ? `${(Number(a.amount) / 1e6).toFixed(1)}M` : `${Number(a.amount || 0).toLocaleString()}`,
-        pct,
-        color: DONUT_PALETTE[i % DONUT_PALETTE.length],
-        dash: (pct / 100) * DONUT_CIRCUMFERENCE,
-        offset: -(acc / 100) * DONUT_CIRCUMFERENCE,
-      };
-      acc += pct;
-      return seg;
-    });
-  }, [tokenSupply]);
-  const supplyLayers = useMemo(() => {
-    if (!Array.isArray(tokenSupply?.layers)) return [];
-    return tokenSupply.layers
-      .map((layer, index) => ({
-        label: layer.label || `Allocation ${index + 1}`,
-        amount: Number(layer.amount) || 0,
-        color: DONUT_PALETTE[index % DONUT_PALETTE.length],
-      }))
-      .filter((layer) => layer.amount > 0);
-  }, [tokenSupply]);
-  const supplyCap = Number(tokenSupply?.cap) || supplyLayers.reduce((sum, layer) => sum + layer.amount, 0);
-  const supplyCapLabel = tokenSupply?.cap
-    ? `${(Number(tokenSupply.cap) / 1e9).toFixed(1)}B Cap`
-    : "Cap not published";
-
+  // =========================================================================
+  // VIEW B: SECONDARY MARKET DEX TERMINAL (Only when a real liveToken exists)
+  // =========================================================================
   return (
-    <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-10 py-6 text-slate-900 dark:text-[#f8fafc] transition-colors">
-      {/* ASSET HEADER */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <div className="mx-auto max-w-[1400px] px-4 pt-4 sm:px-6 lg:px-8 space-y-4">
+      {/* Top Bar Navigation */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/[0.08] pb-4">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => router.push("/")}
-            className="flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 shadow-xs dark:border-white/[0.12] dark:bg-[#151824] dark:text-neutral-400 dark:hover:text-white dark:hover:bg-white/[0.06] transition"
-            title="Back to Dashboard"
+            onClick={() => router.push("/marketplace")}
+            className="flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 dark:border-white/[0.12] dark:bg-[#151824] dark:text-neutral-400 transition"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
 
-          <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 dark:bg-white/[0.05] dark:border-white/[0.12] dark:text-white flex items-center justify-center text-[18px]">
-            ▦
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-[20px] font-extrabold text-slate-900 dark:text-white tracking-tight">{token.name}</h1>
-            <span className="text-[13px] font-bold text-slate-500 dark:text-neutral-400">{token.symbol}</span>
-            <span
-              onClick={() => navigator.clipboard.writeText(token.contract)}
-              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[12px] font-mono text-slate-600 hover:text-slate-900 dark:bg-white/5 dark:border-white/[0.12] dark:text-neutral-400 dark:hover:text-white cursor-pointer transition"
-              title="Click to copy contract"
-            >
-              {token.contract}
-              <Copy className="w-3 h-3" />
-            </span>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[12px] font-semibold">
-              {token.tag}
-            </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white">{token.name}</h1>
+              <span className="text-xs font-mono font-bold text-slate-500">{token.symbol}</span>
+              <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-500">
+                Secondary DEX
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 font-mono">Contract: {token.contract || "Base Sepolia SPT"}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          {/* Watchlist Action */}
-          <button
-            onClick={handleWatchlistToggle}
-            disabled={watchlistStatus === "adding" || watchlistStatus === "removing"}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[12.5px] font-semibold transition border ${
-              isInWatchlist
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-600 dark:hover:text-rose-400 group"
-                : "cl-btn-primary"
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
-            title={isInWatchlist ? "Click to remove from Watchlist" : "Add to your Watchlist"}
-          >
-            {watchlistStatus === "adding" ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Adding...</span>
-              </>
-            ) : watchlistStatus === "removing" ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Removing...</span>
-              </>
-            ) : isInWatchlist ? (
-              <>
-                <Check className="w-3.5 h-3.5 group-hover:hidden" />
-                <span className="group-hover:hidden">✓ In Watchlist</span>
-                <span className="hidden group-hover:inline">Remove</span>
-              </>
-            ) : (
-              <>
-                <Plus className="w-3.5 h-3.5" />
-                <span>+ Add to Watchlist</span>
-              </>
-            )}
-          </button>
-          {watchlistError && (
-            <span className="text-[11px] text-rose-500 dark:text-rose-400 font-medium">{watchlistError}</span>
-          )}
-
-          <div className="h-5 w-px bg-slate-200 dark:bg-white/[0.08] mx-1" />
-
-          <button className="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-xs dark:border-white/[0.12] dark:bg-[#151824] dark:text-neutral-400 dark:hover:text-white flex items-center justify-center transition" title="Verified">
-            <ShieldCheck className="w-4 h-4" />
-          </button>
-          <button className="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-xs dark:border-white/[0.12] dark:bg-[#151824] dark:text-neutral-400 dark:hover:text-white flex items-center justify-center transition" title="Edit Metadata">
-            <Edit3 className="w-4 h-4" />
-          </button>
-          <button className="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-xs dark:border-white/[0.12] dark:bg-[#151824] dark:text-neutral-400 dark:hover:text-white flex items-center justify-center transition" title="Official Website">
-            <Globe className="w-4 h-4" />
-          </button>
-          <button className="w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-xs dark:border-white/[0.12] dark:bg-[#151824] dark:text-neutral-400 dark:hover:text-white flex items-center justify-center transition" title="X / Twitter">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          </button>
-        </div>
+        <button
+          onClick={handleWatchlistToggle}
+          className="cl-btn-primary px-4 py-1.5 text-xs font-semibold"
+        >
+          {isInWatchlist ? "✓ In Watchlist" : "+ Add to Watchlist"}
+        </button>
       </div>
 
-      {/* 3-COLUMN WORKSPACE */}
-      {tokenMissing && !liveToken && (
-        <p className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-[12.5px] text-amber-700 dark:text-amber-300">
-          This token isn&apos;t on the backend yet — showing startup info only. Charts, trades and allocation will appear once it&apos;s listed via <span className="font-mono">GET /tokens</span>.
-        </p>
-      )}
+      {/* 3-Column Trading Terminal */}
       <div className="grid min-w-0 grid-cols-1 gap-4 items-start xl:grid-cols-[260px_minmax(0,1fr)_320px]">
-        {/* COLUMN 1: TRADES FEED */}
-        <aside className="hidden lg:flex flex-col rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
-          <h3 className="text-[14px] font-bold text-slate-900 dark:text-white mb-2">Trades</h3>
-          <div className="flex items-center gap-4 border-b border-slate-200 dark:border-white/[0.08] pb-2 mb-3">
-            <button
-              onClick={() => setActiveTab("recents")}
-              className={`text-[12.5px] font-semibold relative pb-1 transition ${
-                activeTab === "recents" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white"
-              }`}
-            >
-              Recents
-              {activeTab === "recents" && <span className="absolute bottom-[-9px] left-0 w-full h-0.5 bg-emerald-500 dark:bg-emerald-400"></span>}
-            </button>
-            <button
-              onClick={() => setActiveTab("yours")}
-              className={`text-[12.5px] font-semibold transition ${
-                activeTab === "yours" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white"
-              }`}
-            >
-              Yours
-            </button>
-          </div>
-
-          <div className="space-y-3 font-mono text-[12px]">
+        {/* Trades Column */}
+        <aside className="hidden lg:flex flex-col rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm dark:border-white/[0.12] dark:bg-[#151824]">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">Live Trades (Base L2)</h3>
+          <div className="space-y-2 text-xs font-mono">
             {liveTokenTrades.length === 0 ? (
-              <p className="py-2 text-center font-sans text-[12px] text-slate-500 dark:text-[#5e6f85]">
-                No trades yet for this token.
-              </p>
+              <p className="text-slate-500 text-center py-6">No secondary trades recorded yet.</p>
             ) : (
-            liveTokenTrades.map((tr, idx) => (
-              <div key={tr.addr ? `${tr.addr}-${idx}` : idx} className="border-b border-slate-100 dark:border-white/[0.03] pb-2.5">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3.5 h-3.5 rounded-full" style={{ background: tr.isBuy ? "#10b981" : "#f43f5e" }}></span>
-                    <span className="text-slate-600 dark:text-neutral-400">{tr.addr}</span>
-                  </div>
-                  <span className={`font-semibold ${tr.isBuy ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500"}`}>
-                    {tr.isBuy ? "+" : "-"}{Number(tr.amount).toLocaleString()} {token.symbol}
+              liveTokenTrades.map((tr, idx) => (
+                <div key={idx} className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-white/[0.04]">
+                  <span className={tr.isBuy ? "text-emerald-500" : "text-rose-500"}>
+                    {tr.isBuy ? "BUY" : "SELL"} {Number(tr.amount).toLocaleString()}
                   </span>
+                  <span className="text-slate-400">@ ${Number(tr.price).toFixed(4)}</span>
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-neutral-500">
-                  <span>{tr.time ? new Date(tr.time).toLocaleString() : ""}</span>
-                  <span>@ ${Number(tr.price).toFixed(6)}</span>
-                </div>
-              </div>
-            )))}
+              ))
+            )}
           </div>
         </aside>
 
-        {/* COLUMN 2: CENTER AREA (CHART, ABOUT, TEAM, ALLOCATION, SUPPLY, FORUM) */}
+        {/* Center Area: Price & Interactive Candlestick Chart */}
         <section className="space-y-4">
-          {/* 1. Interactive Candlestick Chart */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] relative transition-colors">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-              <div className="flex items-baseline gap-2.5">
-                <span
-                  className={`text-[28px] font-extrabold font-mono text-slate-900 dark:text-white tracking-tight transition-colors duration-300 ${
-                    priceFlash === "up" ? "text-emerald-600 dark:text-emerald-400" : priceFlash === "down" ? "text-rose-500 dark:text-rose-400" : ""
-                  }`}
-                >
-                  ${(displayCandle ? displayCandle.close : livePrice).toFixed(6)}
-                </span>
-                <span className={`text-[14px] font-bold font-mono ${isCandleGreen ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500"}`}>
-                  {isCandleGreen ? "+" : ""}{deltaPct}%
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824]">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <span className="text-xs text-slate-500 uppercase tracking-wider block">Price / Market</span>
+                <span className="text-2xl font-bold font-mono text-slate-900 dark:text-white">
+                  ${livePrice > 0 ? livePrice.toFixed(4) : "Market Open"}
                 </span>
               </div>
-
-              {/* Chart Actions: Zoom In, Zoom Out, Reset */}
-              <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 dark:bg-[#0e111c] dark:border-white/[0.12] px-2 py-1 rounded-lg text-[12px]">
-                <button
-                  onClick={() => handleZoom("in")}
-                  className="p-1 text-slate-600 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white rounded hover:bg-slate-200 dark:hover:bg-white/10 transition"
-                  title="Zoom In (or scroll wheel)"
-                >
-                  <ZoomIn className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleZoom("out")}
-                  className="p-1 text-slate-600 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white rounded hover:bg-slate-200 dark:hover:bg-white/10 transition"
-                  title="Zoom Out (or scroll wheel)"
-                >
-                  <ZoomOut className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={handleResetZoom}
-                  className="p-1 text-slate-600 hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white rounded hover:bg-slate-200 dark:hover:bg-white/10 transition"
-                  title="Reset View"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Timeframe & Display Toggles */}
-            <div className="flex flex-wrap items-center justify-between border-y border-slate-200 dark:border-white/[0.08] py-2 mb-3 text-[12px]">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 font-mono text-xs">
                 {["15m", "1h", "4h", "1d"].map((tf) => (
                   <button
                     key={tf}
-                    onClick={() => handleTfChange(tf)}
-                    className={`px-2.5 py-1 rounded font-semibold transition ${
-                      activeTf === tf
-                        ? "bg-slate-900 text-white shadow-xs dark:bg-white/15 dark:text-white"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-white/5"
-                    }`}
+                    onClick={() => setActiveTf(tf)}
+                    className={`px-2 py-1 rounded ${activeTf === tf ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold" : "text-slate-500"}`}
                   >
                     {tf}
                   </button>
                 ))}
-                <span className="text-slate-300 dark:text-neutral-600 mx-1">|</span>
-                <span className="text-slate-600 dark:text-neutral-400 font-semibold cursor-pointer hover:text-slate-900 dark:hover:text-white">fx Indicators</span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="font-semibold text-slate-800 dark:text-white">Price / MCAP</span>
-                <div className="inline-flex bg-slate-100 border border-slate-200 dark:bg-[#0e111c] dark:border-white/[0.12] rounded p-0.5 text-[11px] font-bold">
-                  <span className="px-2 py-0.5 bg-white text-slate-900 shadow-xs dark:bg-white/[0.08] dark:text-white rounded">USD</span>
-                  <span className="px-2 py-0.5 text-slate-500 cursor-pointer hover:text-slate-900 dark:text-neutral-400 dark:hover:text-white">VIRTUAL</span>
-                </div>
               </div>
             </div>
 
-            {/* Canvas Viewport with Pan, Zoom & Hover Tracking — responsive canvas for candles */}
-            <div
-              ref={chartContainerRef}
-              style={{ touchAction: "none", overscrollBehavior: "contain" }}
-              className="relative w-full h-[320px] bg-slate-50 dark:bg-[#090b11] rounded-lg border border-slate-200 dark:border-white/[0.08] overflow-hidden select-none cursor-crosshair transition-colors"
-            >
-              {/* Dynamic OHLC Bar on Top */}
-              <div className="absolute top-2 left-3 right-3 text-[11px] font-mono text-slate-500 dark:text-neutral-400 pointer-events-none z-10 flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <span className="text-slate-900 dark:text-white font-bold">{token.symbol}/USD</span> · {activeTf} · GeckoTerminal{" "}
-                  <span className="text-emerald-500 dark:text-emerald-400">●</span>
-                </div>
-                {displayCandle && (
-                  <div className="flex items-center gap-3 text-[10.5px]">
-                    <span>O: <strong className="text-slate-900 dark:text-white">{displayCandle.open.toFixed(6)}</strong></span>
-                    <span>H: <strong className="text-slate-900 dark:text-white">{displayCandle.high.toFixed(6)}</strong></span>
-                    <span>L: <strong className="text-slate-900 dark:text-white">{displayCandle.low.toFixed(6)}</strong></span>
-                    <span>C: <strong className={isCandleGreen ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"}>{displayCandle.close.toFixed(6)}</strong></span>
-                    <span>Vol: <strong className="text-slate-900 dark:text-white">{displayCandle.volume}K</strong></span>
-                  </div>
-                )}
-              </div>
-
-              <canvas
-                ref={canvasRef}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseLeave}
-                style={{ touchAction: "none", overscrollBehavior: "contain" }} className="w-full h-full block"
-              />
-              {(candlesLoading || candles.length === 0) && (
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <p className="rounded-lg border border-slate-200 bg-white/95 px-4 py-2 text-[12px] text-slate-700 shadow-md dark:border-white/10 dark:bg-[#111318]/90 dark:text-[#94a3b8]">
-                    {candlesLoading ? "Loading candles…" : (candlesError || "No candle data yet for this token.")}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-neutral-500 mt-2.5">
-              <span>💡 Scroll wheel to zoom in/out · Click & drag to pan history</span>
-              <span>powered by <strong className="text-emerald-600 dark:text-emerald-400">Calip · GeckoTerminal</strong></span>
-            </div>
-          </div>
-
-          {/* 2. About Card */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
-            <div className="flex items-center justify-between mb-2.5">
-              <h3 className="text-[15px] font-bold text-slate-900 dark:text-white">About</h3>
-              <span className="text-[12px] text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white cursor-pointer">See more ▾</span>
-            </div>
-            <p className="text-[13px] leading-relaxed text-slate-600 dark:text-neutral-300">
-              {token.about}
-            </p>
-          </div>
-
-          {/* 3. Team Card */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
-            <h3 className="text-[15px] font-bold text-slate-900 dark:text-white mb-3">Team</h3>
-            <div className="inline-flex items-center gap-2.5 bg-slate-50 border border-slate-200 dark:bg-[#0e111c] dark:border-white/[0.12] px-3.5 py-2 rounded-lg">
-              <span className="w-6 h-6 rounded bg-slate-200/80 border border-slate-300 dark:bg-white/10 dark:border-white/10 flex items-center justify-center text-xs text-slate-800 dark:text-white">▦</span>
-              <span className="font-mono text-[13px] text-slate-900 dark:text-white">{token.owner}</span>
-              <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-                Owner
-              </span>
-            </div>
-          </div>
-
-          {/* 4. Allocation Donut Section with Hover Tooltip */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[15px] font-bold text-slate-900 dark:text-white">Allocation</h3>
-              <span className="text-[11.5px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full font-mono font-semibold">
-                {supplyCapLabel}
-              </span>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              {donutSegments.length === 0 ? (
-                <p className="w-full py-8 text-center text-[12.5px] text-slate-500 dark:text-[#5e6f85]">
-                  Allocation not published for this token yet.
+            <div className="h-[300px] w-full rounded-xl bg-slate-50 dark:bg-[#090a0f] border border-slate-200 dark:border-white/[0.08] flex items-center justify-center">
+              {candles.length === 0 ? (
+                <p className="text-xs text-slate-500 font-mono">
+                  {candlesLoading ? "Querying Base L2 indexing engine..." : "No candlestick transactions recorded on Base L2 yet."}
                 </p>
               ) : (
-              <>
-              <div className="relative w-40 h-40 flex-shrink-0 cursor-pointer">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 160 160">
-                  {donutSegments.map((seg, i) => (
-                    <circle
-                      key={seg.title}
-                      cx="80"
-                      cy="80"
-                      r="64"
-                      fill="transparent"
-                      stroke={seg.color}
-                      strokeWidth={hoveredDonutSeg === i ? "24" : "19"}
-                      strokeDasharray={`${seg.dash} ${402 - seg.dash}`}
-                      strokeDashoffset={seg.offset}
-                      onMouseEnter={() => setHoveredDonutSeg(i)}
-                      onMouseLeave={() => setHoveredDonutSeg(null)}
-                      className="transition-all duration-200 cursor-pointer"
-                    />
-                  ))}
-                </svg>
-
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none p-2">
-                  <span className="text-[10px] text-slate-500 dark:text-neutral-400 uppercase tracking-wider">
-                    {hoveredDonutSeg !== null ? donutSegments[hoveredDonutSeg].title.slice(0, 14) : "Total"}
-                  </span>
-                  <span className="text-[18px] font-extrabold font-mono text-slate-900 dark:text-white">
-                    {hoveredDonutSeg !== null ? `${donutSegments[hoveredDonutSeg].pct}%` : supplyCapLabel}
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-3 flex-1 w-full text-[12.5px]">
-                {donutSegments.map((item, i) => (
-                  <div
-                    key={item.title}
-                    onMouseEnter={() => setHoveredDonutSeg(i)}
-                    onMouseLeave={() => setHoveredDonutSeg(null)}
-                    className={`flex items-start justify-between gap-2 p-1.5 rounded-md transition ${
-                      hoveredDonutSeg === i ? "bg-slate-100 dark:bg-white/5" : ""
-                    }`}
-                  >
-                    <div className="flex items-start gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full mt-1 flex-shrink-0" style={{ background: item.color }} />
-                      <div>
-                        <div className="font-semibold text-slate-900 dark:text-white leading-tight">{item.title}</div>
-                        <div className="text-[11px] text-slate-500 dark:text-neutral-500">{item.desc}</div>
-                      </div>
-                    </div>
-                    <div className="text-right font-mono">
-                      <div className="font-bold text-slate-900 dark:text-white">{item.amount}</div>
-                      <div className="text-[11px] text-slate-500 dark:text-neutral-500">{item.pct}%</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              </>
+                <p className="text-xs text-emerald-500 font-mono">
+                  {candles.length} confirmed trading candles loaded from Base L2.
+                </p>
               )}
             </div>
           </div>
 
-          {/* 5. Supply allocation from the backend token supply record */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-[15px] font-bold text-slate-900 dark:text-white">Supply by category</h3>
-              <span className="text-[11px] text-slate-500 dark:text-[#5e6f85] font-mono">{supplyCapLabel}</span>
-            </div>
-
-            {supplyLayers.length === 0 ? (
-              <p className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-8 text-center text-[12.5px] text-slate-500 dark:border-white/5 dark:bg-[#0e111c] dark:text-[#5e6f85]">
-                Supply breakdown isn&apos;t available for this token yet.
-              </p>
-            ) : (
-              <div className="space-y-4 rounded-lg border border-slate-200/80 bg-slate-50 p-4 dark:border-white/[0.04] dark:bg-[#0e111c]">
-                {supplyLayers.map((layer) => {
-                  const percentage = supplyCap > 0 ? Math.min(100, (layer.amount / supplyCap) * 100) : 0;
-                  return (
-                    <div key={layer.label}>
-                      <div className="mb-1.5 flex items-center justify-between gap-4 text-[12px]">
-                        <span className="truncate font-medium text-slate-800 dark:text-neutral-300">{layer.label}</span>
-                        <span className="shrink-0 font-mono text-slate-600 dark:text-neutral-400">
-                          {layer.amount.toLocaleString("en-IN")} ({percentage.toFixed(1)}%)
-                        </span>
-                      </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-white/5">
-                        <div className="h-full rounded-full" style={{ width: `${percentage}%`, backgroundColor: layer.color }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* 6. Token Holders & Cap Table Distribution */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h3 className="text-[15px] font-bold text-slate-900 dark:text-white">Token Holders & Distribution</h3>
-                <p className="text-[11.5px] text-slate-500 dark:text-neutral-400">On-chain cap table transparency on Base L2</p>
-              </div>
-              <span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                {tokenHolders?.totalHolders ? `${tokenHolders.totalHolders} Holders` : "Verified Ledger"}
-              </span>
-            </div>
-
-            {tokenHolders && Array.isArray(tokenHolders.holders) && tokenHolders.holders.length > 0 ? (
-              <div className="divide-y divide-slate-100 dark:divide-white/[0.05]">
-                {tokenHolders.holders.slice(0, 5).map((h, i) => (
-                  <div key={h.address || i} className="py-2.5 flex items-center justify-between text-[12px]">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-mono text-slate-400 w-4">#{i + 1}</span>
-                      <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">{h.address ? `${h.address.slice(0, 6)}...${h.address.slice(-4)}` : "Treasury Contract"}</span>
-                      {h.tag && (
-                        <span className="rounded bg-slate-100 dark:bg-white/[0.08] px-1.5 py-0.5 text-[10px] text-slate-500">
-                          {h.tag}
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-right font-mono">
-                      <span className="font-bold text-slate-900 dark:text-white">{Number(h.amount || h.balance || 0).toLocaleString()}</span>
-                      <span className="text-slate-500 dark:text-neutral-500 ml-1.5">({h.percentage ? `${h.percentage}%` : "Cap"})</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-lg border border-slate-200/80 bg-slate-50 p-4 dark:border-white/[0.04] dark:bg-[#0e111c] text-center text-xs text-slate-500">
-                Top token holder distribution ledger is indexed upon live auction completion.
-              </div>
-            )}
-          </div>
-
-          {/* 7. Forum */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
-            <h3 className="text-[15px] font-bold text-slate-900 dark:text-white mb-3">Forum</h3>
-            <div className="rounded-xl bg-slate-50 border border-slate-200 p-5 text-center flex flex-col items-center gap-3 mb-3 dark:bg-[#0e111c] dark:border-white/[0.08]">
-              <p className="text-[13px] text-slate-700 dark:text-neutral-300 max-w-sm">
-                Hold at least <strong className="text-slate-900 dark:text-white">10,000 ${token.symbol}</strong> or <strong className="text-slate-900 dark:text-white">1,000 veVIRTUAL</strong> to join the conversation.
-              </p>
-              <button
-                onClick={() => alert(`Redirecting to swap for $${token.symbol}`)}
-                className="cl-btn-primary px-6 py-2 text-[13px] font-semibold"
-              >
-                Buy ${token.symbol}
-              </button>
-            </div>
-
-            <div className="flex items-start gap-3 bg-slate-50 border border-slate-200 p-3 rounded-xl dark:bg-[#0e111c] dark:border-white/[0.08]">
-              <div className="w-7 h-7 rounded-full bg-slate-200 border border-slate-300 text-slate-700 dark:bg-white/10 dark:border-white/10 dark:text-white flex-shrink-0 flex items-center justify-center text-[10px]">●</div>
-              <div>
-                <div className="text-[12px] font-mono text-slate-500 dark:text-neutral-400">
-                  <span className="text-slate-900 dark:text-white font-semibold">0x6E09...45D7</span> · 2 months
-                </div>
-                <p className="text-[13px] text-slate-700 dark:text-neutral-200 mt-0.5">who&apos;s the dev?</p>
-              </div>
-            </div>
+          {/* Token About & Utility */}
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-2">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">About {token.name}</h3>
+            <p className="text-xs leading-relaxed text-slate-600 dark:text-neutral-300">
+              {token.about || "Utility token minted following successful primary community auction on Calip."}
+            </p>
           </div>
         </section>
 
-        {/* COLUMN 3: RIGHT SIDEBAR */}
+        {/* Right Column: Trade Panel & Overview */}
         <aside className="space-y-4">
-          {/* Top Route & Connect Wallet Card */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-2.5 transition-colors">
-            <div className="flex items-center justify-between text-[12px] text-slate-500 dark:text-neutral-400">
-              <span className="font-semibold text-slate-800 dark:text-neutral-300">Route</span>
-              <div className="flex items-center gap-2">
-                <button className="p-1 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-white/5 transition">
-                  <Search className="w-3.5 h-3.5" />
-                </button>
-                <button className="px-3 py-0.5 rounded-full border border-slate-300 bg-slate-100 text-slate-700 text-[11.5px] font-semibold hover:bg-slate-200 dark:border-white/20 dark:text-white dark:bg-white/5 dark:hover:bg-white/10 transition">
-                  Login
-                </button>
-              </div>
-            </div>
-            <button
-              onClick={() => alert("Connecting Web3 Wallet...")}
-              className="w-full py-2.5 rounded-lg text-[13.5px] font-semibold bg-slate-900 text-white hover:bg-slate-800 shadow-sm dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 transition"
-            >
-              Connect Wallet
-            </button>
-          </div>
-
-          {/* 1. Market Overview Card */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-[14px] font-bold text-slate-900 dark:text-white">Market Overview</h3>
-              <span className="text-[11.5px] text-emerald-600 dark:text-emerald-400 font-semibold cursor-pointer hover:underline">Mechanics</span>
-            </div>
-            <div className="grid grid-cols-2 gap-3.5 text-[12px]">
-              <div>
-                <div className="text-slate-500 dark:text-[#5e6f85] uppercase text-[10.5px]">Mcap</div>
-                <div className="text-[16px] font-bold font-mono text-slate-900 dark:text-white">{token.mcap}</div>
-              </div>
-              <div>
-                <div className="text-slate-500 dark:text-[#5e6f85] uppercase text-[10.5px]">FDV</div>
-                <div className="text-[16px] font-bold font-mono text-slate-900 dark:text-white">{token.fdv}</div>
-              </div>
-              <div>
-                <div className="text-slate-500 dark:text-[#5e6f85] uppercase text-[10.5px]">Liq.</div>
-                <div className="text-[16px] font-bold font-mono text-slate-900 dark:text-white">{token.liquidity}</div>
-              </div>
-              <div>
-                <div className="text-slate-500 dark:text-[#5e6f85] uppercase text-[10.5px]">Holders</div>
-                <div className="text-[16px] font-bold font-mono text-slate-900 dark:text-white">{token.holders}</div>
-              </div>
-              <div className="col-span-2">
-                <div className="text-slate-500 dark:text-[#5e6f85] uppercase text-[10.5px]">24h Vol</div>
-                <div className="text-[16px] font-bold font-mono text-slate-900 dark:text-white">{token.vol}</div>
-              </div>
-            </div>
-          </div>
-
           <TokenTradePanel token={token} startupId={startupId} />
 
-          {/* 3. Holders Card */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] transition-colors">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-[14px] font-bold text-slate-900 dark:text-white">Holders (1.7K)</h3>
-              <span className="text-[11.5px] text-emerald-600 dark:text-emerald-400 font-semibold cursor-pointer hover:underline">View top 500</span>
-            </div>
-
-            <div className="flex justify-between text-[11.5px] mb-1.5">
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">● Top 10: 73.5%</span>
-              <span className="text-slate-500 dark:text-neutral-500 font-semibold">● Others: 26.5%</span>
-            </div>
-
-            <div className="w-full h-1 bg-slate-100 dark:bg-white/[0.08] rounded-full overflow-hidden mb-3">
-              <div className="h-full w-[73.5%] bg-emerald-500 dark:bg-emerald-400"></div>
-            </div>
-
-            <div className="space-y-2 text-[12px] max-h-[220px] overflow-y-auto">
-              {[
-                { addr: "0xd7c2...cc00", badge: "Unlocker", val: "349.9M GRID", color: "#ef4444" },
-                { addr: "0xe289...ee8a", badge: "ACF Vault", val: "189.5M GRID", color: "#6366f1" },
-                { addr: "0xa072...0f27", badge: "LP", val: "52.6M GRID", color: "#ec4899" },
-                { addr: "0xefc1...7e5f", badge: "ACF Pool", val: "51.3M GRID", color: "#3b82f6" },
-                { addr: "0x829d...224a", badge: null, val: "44.8M GRID", color: "#10b981" },
-              ].map((h, i) => (
-                <div key={i} className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-white/[0.02]">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full" style={{ background: h.color }}></span>
-                    <span className="font-mono text-slate-600 dark:text-neutral-400">{h.addr}</span>
-                    {h.badge && <span className="text-[10px] px-1 rounded bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-neutral-400">{h.badge}</span>}
-                  </div>
-                  <span className="font-mono font-semibold text-slate-900 dark:text-white">{h.val}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 4. Twitter Feed Card */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-3 transition-colors">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-[14px] font-bold text-slate-900 dark:text-white">Twitter Feed</h3>
-              <div className="flex items-center gap-2">
-                <button className="p-1 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-white/5 transition">
-                  <Search className="w-3.5 h-3.5" />
-                </button>
-                <button className="px-2.5 py-0.5 rounded-full border border-slate-300 bg-slate-100 text-slate-700 text-[11px] font-semibold hover:bg-slate-200 dark:border-white/20 dark:text-white dark:bg-white/5 dark:hover:bg-white/10 transition">
-                  Login
-                </button>
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm dark:border-white/[0.12] dark:bg-[#151824] space-y-3">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Token Supply & Liquidity</h3>
+            <div className="space-y-2 text-xs font-mono">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Token Cap</span>
+                <span className="font-bold text-slate-900 dark:text-white">{tokenSupply?.cap ? Number(tokenSupply.cap).toLocaleString() : "10,000,000"}</span>
               </div>
-            </div>
-
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between text-[12px]">
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded bg-slate-100 border border-slate-200 text-slate-700 dark:bg-white/10 dark:border-white/10 dark:text-white flex items-center justify-center text-[10px]">▦</span>
-                  <span className="font-bold text-slate-900 dark:text-white">Grid</span>
-                  <span className="text-slate-500 dark:text-neutral-500">@grid_arena</span>
-                </div>
-                <span className="text-slate-400 dark:text-neutral-500 text-[11px]">Sep 7</span>
-              </div>
-              <p className="text-[12.5px] text-slate-600 dark:text-neutral-300 leading-relaxed">
-                Wall Street gets the day off. Crypto doesn&apos;t. Stocks. Crypto. Prediction Markets. Perps. Markets run on different clocks. Traders shouldn&apos;t need different worlds.
-              </p>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center text-[11px] font-bold text-slate-700 tracking-wider dark:border-white/[0.08] dark:bg-[#0e111c] dark:text-slate-300">
-                MARKETS DON&apos;T SHARE A CLOCK.<br />THEY SHOULDN&apos;T NEED DIFFERENT WORLDS.
+              <div className="flex justify-between">
+                <span className="text-slate-500">Network</span>
+                <span className="font-bold text-emerald-500">Base Sepolia</span>
               </div>
             </div>
           </div>

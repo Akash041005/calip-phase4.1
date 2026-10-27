@@ -7,20 +7,18 @@ import Navbar from "../dashboard/Navbar";
 import Footer from "../dashboard/Footer";
 import { AUTH_STATUS, useAuth } from "./AuthProvider";
 
-// Only these personal/management routes strictly require an active Web3 wallet session:
+// Only user-facing state-mutating routes require an active Web3 wallet session:
 const PROTECTED_PREFIXES = [
   "/performance-summary",
   "/performance",
   "/my-startups",
   "/profile",
   "/settings",
-  "/setting",
   "/marketplace/create",
-  "/admin/dashboard",
 ];
 
 function isRouteProtected(pathname) {
-  if (!pathname) return false;
+  if (!pathname || pathname.startsWith("/admin")) return false;
   return PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 

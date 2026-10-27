@@ -4,7 +4,7 @@ import { useState } from "react";
 import PricingToggle from "./PricingToggle";
 import PricingCard from "./PricingCard";
 import UpgradeModal from "./UpgradeModal";
-import { pricingPlans } from "./proMockData";
+import { pricingPlans } from "./pricingPlans";
 
 export default function PricingSection() {
   const [billing, setBilling] = useState("monthly");

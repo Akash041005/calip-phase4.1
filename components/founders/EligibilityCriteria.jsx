@@ -1,5 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
-import { eligibilityCriteria } from "./foundersMockData";
+import { eligibilityCriteria } from "./foundersContent";
 
 export default function EligibilityCriteria() {
   return (

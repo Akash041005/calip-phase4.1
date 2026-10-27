@@ -1,5 +1,5 @@
 import { Bookmark, Clock } from "lucide-react";
-import { badgeColors } from "./trendingNewsMockData";
+import { badgeColors } from "./badgeColors";
 
 export default function FeaturedCard({
   badge,

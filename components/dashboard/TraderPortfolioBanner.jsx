@@ -1,22 +1,53 @@
 "use client";
 
-import Link from "next/link";
-import {
-  Wallet,
-  Zap,
-  TrendingUp,
-  ArrowUpRight,
-  ShieldCheck,
-  FolderKanban,
-  PlusCircle,
-  BarChart3,
-  ExternalLink,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Wallet } from "lucide-react";
 import { useAuth } from "../auth/AuthProvider";
 import { truncateAddress } from "../../lib/format";
+import { getParticipationHistory } from "../../lib/participationApi";
 
 export default function TraderPortfolioBanner() {
   const { isAuthenticated, walletAddress, user, openConnectModal } = useAuth();
+  const [participations, setParticipations] = useState([]);
+  const [ethBalance, setEthBalance] = useState("0.00 ETH");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated || !walletAddress) {
+      setParticipations([]);
+      setEthBalance("0.00 ETH");
+      return;
+    }
+
+    // 1. Fetch live wallet balance from MetaMask provider
+    if (typeof window !== "undefined" && window.ethereum) {
+      window.ethereum
+        .request({
+          method: "eth_getBalance",
+          params: [walletAddress, "latest"],
+        })
+        .then((balanceHex) => {
+          try {
+            const wei = BigInt(balanceHex);
+            const eth = Number(wei) / 1e18;
+            setEthBalance(`${eth.toFixed(4)} ETH`);
+          } catch {
+            setEthBalance("0.00 ETH");
+          }
+        })
+        .catch(() => setEthBalance("0.00 ETH"));
+    }
+
+    // 2. Fetch participation history for active bids and held allocations
+    setLoading(true);
+    getParticipationHistory()
+      .then((res) => {
+        const parts = res?.data || res?.participations || (Array.isArray(res) ? res : []);
+        setParticipations(parts.filter(Boolean));
+      })
+      .catch(() => setParticipations([]))
+      .finally(() => setLoading(false));
+  }, [isAuthenticated, walletAddress]);
 
   if (!isAuthenticated) {
     return (
@@ -39,7 +70,7 @@ export default function TraderPortfolioBanner() {
           <button
             type="button"
             onClick={openConnectModal}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 transition-colors shrink-0"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 transition-colors shrink-0 cursor-pointer"
           >
             <Wallet className="h-3.5 w-3.5" />
             <span>Connect Wallet to Access</span>
@@ -50,6 +81,9 @@ export default function TraderPortfolioBanner() {
   }
 
   const displayName = user?.username || (walletAddress ? truncateAddress(walletAddress) : "Verified Trader");
+  const activeBids = participations.filter((p) => p.status === "pending" || p.status === "confirmed");
+  const settledAllocations = participations.filter((p) => p.status === "settled" || p.status === "completed");
+  const totalCommitted = participations.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
 
   return (
     <div className="mb-8 rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm dark:border-white/[0.08] dark:bg-[#111318]">
@@ -69,37 +103,11 @@ export default function TraderPortfolioBanner() {
               </span>
             </div>
             <p className="text-xs font-mono text-slate-500 dark:text-zinc-400 mt-0.5">
-              {walletAddress || "0xMock7a...0001"} • Base Mainnet
+              {walletAddress} • Base Sepolia
             </p>
           </div>
         </div>
 
-        {/* Quick Action Navigation Buttons */}
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href="/performance-summary"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.08] transition-colors"
-          >
-            <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Full Portfolio</span>
-          </Link>
-
-          <Link
-            href="/my-startups"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.08] transition-colors"
-          >
-            <FolderKanban className="h-3.5 w-3.5 text-indigo-500" />
-            <span>My Startups</span>
-          </Link>
-
-          <Link
-            href="/founders"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.08] transition-colors"
-          >
-            <PlusCircle className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Register Startup</span>
-          </Link>
-        </div>
       </div>
 
       {/* Bottom Row: Key Personal Metrics */}
@@ -110,11 +118,13 @@ export default function TraderPortfolioBanner() {
           </span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tabular-nums">
-              $48,250.00
+              {totalCommitted > 0 ? `₹${totalCommitted.toLocaleString("en-IN")}` : "$0.00"}
             </span>
-            <span className="font-mono text-[10.5px] font-semibold text-emerald-600 dark:text-emerald-400">
-              +12.4%
-            </span>
+            {totalCommitted > 0 && (
+              <span className="font-mono text-[10.5px] font-semibold text-emerald-600 dark:text-emerald-400">
+                Live
+              </span>
+            )}
           </div>
         </div>
 
@@ -124,10 +134,10 @@ export default function TraderPortfolioBanner() {
           </span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tabular-nums">
-              14.28 ETH
+              {ethBalance}
             </span>
             <span className="font-mono text-[10.5px] text-slate-500 dark:text-zinc-400">
-              ~$37.1K
+              Sepolia
             </span>
           </div>
         </div>
@@ -138,10 +148,10 @@ export default function TraderPortfolioBanner() {
           </span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tabular-nums">
-              3 Tokens
+              {settledAllocations.length} Tokens
             </span>
             <span className="text-[10.5px] font-mono text-slate-500 dark:text-zinc-400">
-              NOVAP, VOLTG, FLEET
+              {settledAllocations.length === 0 ? "None yet" : settledAllocations.map((p) => p.symbol).join(", ")}
             </span>
           </div>
         </div>
@@ -152,10 +162,10 @@ export default function TraderPortfolioBanner() {
           </span>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tabular-nums">
-              2 Pending
+              {activeBids.length} Pending
             </span>
             <span className="font-mono text-[10.5px] text-emerald-600 dark:text-emerald-400">
-              In Auction
+              {activeBids.length === 0 ? "None" : "In Auction"}
             </span>
           </div>
         </div>
