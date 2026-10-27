@@ -1,7 +1,13 @@
 # Project Modification History & Redesign Logs
 
+> [!WARNING]
+> **REPOSITORY DEPRECATED & MOVED**  
+> This repository (`calip-phase4.1`) is no longer in active use and has been deprecated. The entire codebase has been merged into the official company frontend repository:  
+> **Official Repository**: [Team-calip/calip.io-frontend](https://github.com/Team-calip/calip.io-frontend)  
+> All future development, PRs, and deployments now take place in `calip.io-frontend`.
+
 **Lead Developer / Author**: Vismay  
-**Repository**: `calip-phase4.1` (Frontend)  
+**Repository**: `calip-phase4.1` (Frontend - Deprecated)  
 **Target Viewport**: Google Chrome (Optimized for 100% Zoom)
 
 ---
@@ -775,5 +781,17 @@
 - **Verification**:
   - Validated live public analytics endpoints (`/analytics/funding-by-sector`, `/analytics/deal-stages`, `/analytics/monthly-activity`, `/analytics/leaderboard`) returning 200 OK with real database records.
   - Validated `GET /admin/v1/startups?stage=pending` and `GET /startups` returning the user's submitted startups (`vismay`, `Apex Cloud AI`) with `status: "pending"`.
+
+---
+
+### [2026-10-27 23:15:00] - Repository Deprecated & Merged into calip.io-frontend
+- **Author**: Vismay
+- **Status**: **DEPRECATED / ARCHIVED**
+- **Target Repository**: `https://github.com/Team-calip/calip.io-frontend`
+- **Notice**:
+  - This repository (`calip-phase4.1`) is **no longer in active use** and will be archived.
+  - 100% of the platform codebase, components, API integration, styling, and assets have been successfully merged into the official company repository `calip.io-frontend` on branch `vismay`.
+  - All future development, PRs, and production deployments must take place in `calip.io-frontend`.
+
 
 
